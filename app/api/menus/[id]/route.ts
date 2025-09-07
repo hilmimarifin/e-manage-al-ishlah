@@ -3,18 +3,18 @@ import { prisma } from '@/lib/prisma'
 import { withUpdatePermission, withDeletePermission } from '@/lib/auth-middleware'
 import { createSuccessResponse, createErrorResponse } from '@/lib/api-response'
 
-export const PUT = withUpdatePermission('/menus', async (req: NextRequest, user: any, { params }: { params: { id: string } }) => {
+export const PUT = withUpdatePermission('/menus', async (req: NextRequest, user: any, context: any) => {
   try {
-    const { name, path, icon, parentId, orderIndex } = await req.json()
-    const { id } = params
 
+    const { name, path, icon, parentId, orderIndex, id } = await req.json()
+    const safeParentId = !parentId ? null : parentId
     const menu = await prisma.menu.update({
       where: { id },
       data: {
         name,
         path,
         icon,
-        parentId,
+        parentId: safeParentId,
         orderIndex
       }
     })
@@ -22,7 +22,7 @@ export const PUT = withUpdatePermission('/menus', async (req: NextRequest, user:
     return NextResponse.json(createSuccessResponse(menu, 'Menu updated successfully'))
   } catch (error) {
     return NextResponse.json(
-      createErrorResponse('Failed to update menu', 'Internal server error'),
+      createErrorResponse(error as string, 'Internal server error'),
       { status: 500 }
     )
   }
@@ -31,7 +31,6 @@ export const PUT = withUpdatePermission('/menus', async (req: NextRequest, user:
 export const DELETE = withDeletePermission('/menus', async (req: NextRequest, user: any, { params }: { params: { id: string } }) => {
   try {
     const { id } = params
-
     await prisma.menu.delete({
       where: { id }
     })

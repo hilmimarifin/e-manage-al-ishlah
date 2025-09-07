@@ -1,53 +1,48 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useMenus } from '@/hooks/use-menus'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useState, useEffect } from "react";
+import { useMenus } from "@/hooks/use-menus";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const iconOptions = [
-  { value: 'LayoutDashboard', label: 'Dashboard' },
-  { value: 'Users', label: 'Users' },
-  { value: 'UserCheck', label: 'User Check' },
-  { value: 'MenuIcon', label: 'Menu' },
-  { value: 'Home', label: 'Home' }
-]
+  { value: "LayoutDashboard", label: "Dashboard" },
+  { value: "Users", label: "Users" },
+  { value: "UserCheck", label: "User Check" },
+  { value: "MenuIcon", label: "Menu" },
+  { value: "Home", label: "Home" },
+];
 
 interface MenuFormProps {
-  menu?: any
-  onSubmit: (data: any) => void
-  isLoading?: boolean
+  menu?: any;
+  onSubmit: (data: any) => void;
+  isLoading?: boolean;
 }
 
 export function MenuForm({ menu, onSubmit, isLoading }: MenuFormProps) {
   const [formData, setFormData] = useState({
-    name: '',
-    path: '',
-    icon: '',
-    parentId: '',
-    orderIndex: 0
-  })
+    id: menu?.id || "",
+    name: menu?.name || "",
+    path: menu?.path || "",
+    icon: menu?.icon || "",
+    parentId: menu?.parentId || "",
+    orderIndex: menu?.orderIndex || 0,
+  });
 
-  const { data: menus = [] } = useMenus()
-
-  useEffect(() => {
-    if (menu) {
-      setFormData({
-        name: menu.name || '',
-        path: menu.path || '',
-        icon: menu.icon || '',
-        parentId: menu.parentId || '',
-        orderIndex: menu.orderIndex || 0
-      })
-    }
-  }, [menu])
+  const { data: menus = [] } = useMenus();
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
-  }
+    e.preventDefault();
+    onSubmit(formData);
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -61,7 +56,7 @@ export function MenuForm({ menu, onSubmit, isLoading }: MenuFormProps) {
             required
           />
         </div>
-        
+
         <div className="grid gap-2">
           <Label htmlFor="path">Path</Label>
           <Input
@@ -72,7 +67,7 @@ export function MenuForm({ menu, onSubmit, isLoading }: MenuFormProps) {
             required
           />
         </div>
-        
+
         <div className="grid gap-2">
           <Label htmlFor="icon">Icon</Label>
           <Select
@@ -91,43 +86,55 @@ export function MenuForm({ menu, onSubmit, isLoading }: MenuFormProps) {
             </SelectContent>
           </Select>
         </div>
-        
+
         <div className="grid gap-2">
           <Label htmlFor="parent">Parent Menu</Label>
           <Select
             value={formData.parentId}
-            onValueChange={(value) => setFormData({ ...formData, parentId: value === 'none' ? '' : value })}
+            onValueChange={(value) =>
+              setFormData({
+                ...formData,
+                parentId: value === "none" ? "" : value,
+              })
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Select parent menu (optional)" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">No Parent</SelectItem>
-              {menus.filter((m: any) => m.id !== menu?.id).map((parentMenu: any) => (
-                <SelectItem key={parentMenu.id} value={parentMenu.id}>
-                  {parentMenu.name}
-                </SelectItem>
-              ))}
+              {menus
+                .filter((m: any) => m.id !== menu?.id)
+                .map((parentMenu: any) => (
+                  <SelectItem key={parentMenu.id} value={parentMenu.id}>
+                    {parentMenu.name}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </div>
-        
+
         <div className="grid gap-2">
           <Label htmlFor="orderIndex">Order Index</Label>
           <Input
             id="orderIndex"
             type="number"
             value={formData.orderIndex}
-            onChange={(e) => setFormData({ ...formData, orderIndex: parseInt(e.target.value) || 0 })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                orderIndex: parseInt(e.target.value) || 0,
+              })
+            }
           />
         </div>
       </div>
-      
+
       <div className="flex justify-end">
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : menu ? 'Update Menu' : 'Create Menu'}
+          {isLoading ? "Saving..." : menu ? "Update Menu" : "Create Menu"}
         </Button>
       </div>
     </form>
-  )
+  );
 }

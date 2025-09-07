@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, StudentStatus, PaymentStatus, Gender } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -6,9 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Starting database seed...");
 
-  // =========================
-  // ROLES
-  // =========================
+  // Roles
   const adminRole = await prisma.role.upsert({
     where: { name: "Super admin" },
     update: {},
@@ -18,27 +16,25 @@ async function main() {
     },
   });
 
-  const userRole = await prisma.role.upsert({
-    where: { name: "user" },
+  const teacherRole = await prisma.role.upsert({
+    where: { name: "Teacher" },
     update: {},
     create: {
-      name: "user",
+      name: "Teacher",
+      description: "Handles teaching and class management",
+    },
+  });
+
+  const userRole = await prisma.role.upsert({
+    where: { name: "User" },
+    update: {},
+    create: {
+      name: "User",
       description: "Regular user with limited access",
     },
   });
 
-  const teacherRole = await prisma.role.upsert({
-    where: { name: "guru" },
-    update: {},
-    create: {
-      name: "guru",
-      description: "Guru wali kelas yang mengelola siswa dan pembayaran",
-    },
-  });
-
-  // =========================
-  // MENUS
-  // =========================
+  // Menus
   const dashboardMenu = await prisma.menu.upsert({
     where: { path: "/dashboard" },
     update: {},
@@ -83,61 +79,11 @@ async function main() {
     },
   });
 
-  const studentsMenu = await prisma.menu.upsert({
-    where: { path: "/students" },
-    update: {},
-    create: {
-      name: "Students",
-      path: "/students",
-      icon: "GraduationCap",
-      orderIndex: 5,
-    },
-  });
-
-  const classesMenu = await prisma.menu.upsert({
-    where: { path: "/classes" },
-    update: {},
-    create: {
-      name: "Classes",
-      path: "/classes",
-      icon: "School",
-      orderIndex: 6,
-    },
-  });
-
-  const paymentsMenu = await prisma.menu.upsert({
-    where: { path: "/payments" },
-    update: {},
-    create: {
-      name: "Payments",
-      path: "/payments",
-      icon: "CreditCard",
-      orderIndex: 7,
-    },
-  });
-
-  // =========================
-  // ROLE-MENU ASSIGNMENTS
-  // =========================
-
-  const allMenus = [
-    dashboardMenu,
-    usersMenu,
-    rolesMenu,
-    menusMenu,
-    studentsMenu,
-    classesMenu,
-    paymentsMenu,
-  ];
-
-  // Full access for admin
-  for (const menu of allMenus) {
+  // RoleMenu - full access for admin
+  for (const menu of [dashboardMenu, usersMenu, rolesMenu, menusMenu]) {
     await prisma.roleMenu.upsert({
       where: {
-        roleId_menuId: {
-          roleId: adminRole.id,
-          menuId: menu.id,
-        },
+        roleId_menuId: { roleId: adminRole.id, menuId: menu.id },
       },
       update: {},
       create: {
@@ -151,30 +97,7 @@ async function main() {
     });
   }
 
-  // Limited access for guru (only students, classes, payments)
-  for (const menu of [dashboardMenu, studentsMenu, classesMenu, paymentsMenu]) {
-    await prisma.roleMenu.upsert({
-      where: {
-        roleId_menuId: {
-          roleId: teacherRole.id,
-          menuId: menu.id,
-        },
-      },
-      update: {},
-      create: {
-        roleId: teacherRole.id,
-        menuId: menu.id,
-        canRead: true,
-        canWrite: true,
-        canUpdate: false,
-        canDelete: false,
-      },
-    });
-  }
-
-  // =========================
-  // USERS
-  // =========================
+  // Users
   const adminPassword = await bcrypt.hash("admin123", 12);
   const adminUser = await prisma.user.upsert({
     where: { email: "admin@example.com" },
@@ -183,43 +106,27 @@ async function main() {
       email: "admin@example.com",
       username: "admin",
       password: adminPassword,
+      photo: "https://placehold.co/100x100",
       roleId: adminRole.id,
     },
   });
 
-  const userPassword = await bcrypt.hash("user123", 12);
-  const normalUser = await prisma.user.upsert({
-    where: { email: "user@example.com" },
-    update: {},
-    create: {
-      email: "user@example.com",
-      username: "user",
-      password: userPassword,
-      roleId: userRole.id,
-    },
-  });
-
-  const teacherPassword = await bcrypt.hash("guru123", 12);
+  const teacherPassword = await bcrypt.hash("teacher123", 12);
   const teacherUser = await prisma.user.upsert({
-    where: { email: "guru@example.com" },
+    where: { email: "teacher@example.com" },
     update: {},
     create: {
-      email: "guru@example.com",
-      username: "guru",
+      email: "teacher@example.com",
+      username: "teacher",
       password: teacherPassword,
+      photo: "https://placehold.co/100x100",
       roleId: teacherRole.id,
     },
   });
 
-  // =========================
-  // CLASSES & STUDENTS & PAYMENTS
-  // =========================
-
-  const class1 = await prisma.class.upsert({
-    where: { id: "class1" },
-    update: {},
-    create: {
-      id: "class1",
+  // Classes
+  const class1 = await prisma.class.create({
+    data: {
       name: "Kelas 1A",
       level: "1",
       year: "2025",
@@ -228,60 +135,77 @@ async function main() {
     },
   });
 
-  const student1 = await prisma.student.upsert({
-    where: { id: "student1" },
-    update: {},
-    create: {
-      id: "student1",
-      fullName: "Budi Santoso",
-      birthDate: new Date("2015-05-20"),
-      address: "Jl. Merdeka No. 10",
-      phone: "081234567890",
-      guardian: "Santoso",
-      classId: class1.id,
-      status: "ACTIVE",
+  const class2 = await prisma.class.create({
+    data: {
+      name: "Kelas 2A",
+      level: "2",
+      year: "2026",
+      capacity: 30,
+      teacherId: teacherUser.id,
     },
   });
 
-  const student2 = await prisma.student.upsert({
-    where: { id: "student2" },
-    update: {},
-    create: {
-      id: "student2",
+  // Students
+  const student1 = await prisma.student.create({
+    data: {
+      fullName: "Ahmad Fauzi",
+      birthDate: new Date("2015-01-10"),
+      address: "Jl. Merdeka No. 1",
+      phone: "08123456789",
+      gender: Gender.MALE,
+      guardian: "Bapak Fauzi",
+      photo: "https://placehold.co/100x100",
+      status: StudentStatus.ACTIVE,
+    },
+  });
+
+  const student2 = await prisma.student.create({
+    data: {
       fullName: "Siti Aminah",
-      birthDate: new Date("2015-08-15"),
-      address: "Jl. Melati No. 5",
-      phone: "081987654321",
-      guardian: "Aminah",
-      classId: class1.id,
-      status: "ACTIVE",
+      birthDate: new Date("2014-06-20"),
+      address: "Jl. Mawar No. 2",
+      phone: "08234567890",
+      gender: Gender.FEMALE,
+      guardian: "Ibu Aminah",
+      photo: "https://placehold.co/100x100",
+      status: StudentStatus.ACTIVE,
     },
   });
 
-  // Buat contoh pembayaran (September 2025)
-  await prisma.payment.upsert({
-    where: {
-      studentId_month_year: {
+  // StudentClass (riwayat kelas)
+  await prisma.studentClass.createMany({
+    data: [
+      { studentId: student1.id, classId: class1.id, year: "2025" },
+      { studentId: student1.id, classId: class2.id, year: "2026" },
+      { studentId: student2.id, classId: class1.id, year: "2025" },
+    ],
+  });
+
+  // Payments
+  await prisma.payment.createMany({
+    data: [
+      {
         studentId: student1.id,
-        month: 9,
+        amount: 500000,
+        month: 1,
         year: 2025,
+        status: PaymentStatus.PAID,
+        recordedBy: teacherUser.id,
       },
-    },
-    update: {},
-    create: {
-      studentId: student1.id,
-      amount: 300000,
-      month: 9,
-      year: 2025,
-      status: "PAID",
-      recordedBy: teacherUser.id,
-    },
+      {
+        studentId: student2.id,
+        amount: 500000,
+        month: 1,
+        year: 2025,
+        status: PaymentStatus.PENDING,
+        recordedBy: teacherUser.id,
+      },
+    ],
   });
 
   console.log("✅ Database seeded successfully!");
   console.log("🔑 Admin credentials: admin@example.com / admin123");
-  console.log("👤 User credentials: user@example.com / user123");
-  console.log("👨‍🏫 Guru credentials: guru@example.com / guru123");
+  console.log("👩‍🏫 Teacher credentials: teacher@example.com / teacher123");
 }
 
 main()

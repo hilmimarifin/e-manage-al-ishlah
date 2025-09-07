@@ -37,7 +37,7 @@ export function Sidebar() {
     )}>
       <div className="flex h-16 items-center justify-between border-b px-4">
         {sidebarOpen && (
-          <h2 className="text-lg font-semibold">RBAC Admin</h2>
+          <h2 className="text-lg font-semibold">SISTEM INFORMASI</h2>
         )}
         <Button
           variant="ghost"

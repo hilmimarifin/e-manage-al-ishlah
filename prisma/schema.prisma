@@ -1,5 +1,3 @@
-// --- RBAC core (tidak berubah) ---
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,15 +7,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//
+// --- ENUMS ---
+//
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+  GRADUATED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+//
+// --- AUTH & RBAC ---
+//
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
   username  String   @unique
   password  String
+  photo     String?  
   roleId    String
   role      Role     @relation(fields: [roleId], references: [id])
-  classes   Class[]  @relation("TeacherClasses") // relasi guru ke kelas
-  payments  Payment[] @relation("RecordedPayments") // pembayaran yang dicatat guru
+  classes   Class[]  @relation("TeacherClasses")
+  payments  Payment[] @relation("RecordedPayments")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -68,75 +92,73 @@ model RoleMenu {
 }
 
 //
-// --- Student Management System (MVP) ---
+// --- STUDENT MANAGEMENT ---
 //
 
 model Student {
-  id          String     @id @default(cuid())
+  id          String        @id @default(cuid())
   fullName    String
   birthDate   DateTime?
   address     String?
   phone       String?
-  guardian    String?     // wali murid
-  classId     String?
-  class       Class?      @relation(fields: [classId], references: [id])
+  guardian    String?  
+  gender      Gender
+  photo       String?     
+  classes     StudentClass[]
   payments    Payment[]
   status      StudentStatus @default(ACTIVE)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   @@map("students")
 }
 
 model Class {
-  id        String    @id @default(cuid())
+  id        String        @id @default(cuid())
   name      String
-  level     String?   // contoh: "Kelas 1", "Kelas 2"
-  year      String?   // tahun ajaran
+  level     String?   
+  year      String?   
   capacity  Int?
-  teacherId String?   // guru wali kelas
-  teacher   User?     @relation("TeacherClasses", fields: [teacherId], references: [id])
-  students  Student[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  teacherId String?   
+  teacher   User?       @relation("TeacherClasses", fields: [teacherId], references: [id])
+  students  StudentClass[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
   @@map("classes")
 }
 
+model StudentClass {
+  id        String   @id @default(cuid())
+  studentId String
+  classId   String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  year      String?  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, classId, year])
+  @@map("student_classes")
+}
+
 model Payment {
-  id          String   @id @default(cuid())
+  id          String        @id @default(cuid())
   studentId   String
-  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student     Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   amount      Float
-  month       Int      // 1-12
+  month       Int      
   year        Int
-  status      PaymentStatus @default(PAID) // cash → langsung tercatat sebagai PAID
+  status      PaymentStatus @default(PAID)
   paidAt      DateTime      @default(now())
 
-  // Guru yang mencatat pembayaran
   recordedBy  String
-  teacher     User     @relation("RecordedPayments", fields: [recordedBy], references: [id])
+  teacher     User          @relation("RecordedPayments", fields: [recordedBy], references: [id])
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
-  @@unique([studentId, month, year]) // 1 student hanya 1 payment per bulan
+  @@unique([studentId, month, year])
   @@map("payments")
-}
-
-//
-// --- ENUMS ---
-//
-
-enum StudentStatus {
-  ACTIVE
-  INACTIVE
-  GRADUATED
-}
-
-enum PaymentStatus {
-  PENDING
-  PAID
-  OVERDUE
 }

@@ -28,6 +28,7 @@ import { useEffect } from "react";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { ColumnDef } from "@tanstack/react-table";
 import { usePermissionGuard } from "@/hooks/use-permissions";
+import { log } from "node:console";
 
 type User = UserType;
 
@@ -201,7 +202,7 @@ export default function UsersPage() {
         >
           <ErrorBoundary>
             <UserForm
-              user={selectedUser}
+              user={selectedUser || undefined}
               onSubmit={selectedUser ? handleUpdateUser : handleCreateUser}
               isLoading={createUser.isPending || updateUser.isPending}
             />

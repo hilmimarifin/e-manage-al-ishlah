@@ -96,13 +96,13 @@ export async function GET(req: NextRequest) {
 export const POST = withWritePermission('/menus', async (req: NextRequest) => {
   try {
     const { name, path, icon, parentId, orderIndex } = await req.json()
-
+    const safeParentId = !parentId ? null : parentId
     const menu = await prisma.menu.create({
       data: {
         name,
         path,
         icon,
-        parentId,
+        parentId: safeParentId,
         orderIndex: orderIndex || 0
       }
     })
@@ -110,7 +110,7 @@ export const POST = withWritePermission('/menus', async (req: NextRequest) => {
     return NextResponse.json(createSuccessResponse(menu, 'Menu created successfully'))
   } catch (error) {
     return NextResponse.json(
-      createErrorResponse('Failed to create menu', 'Internal server error'),
+      createErrorResponse(error as string, 'Internal server error'),
       { status: 500 }
     )
   }

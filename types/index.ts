@@ -1,3 +1,5 @@
+import { Gender, StudentStatus } from "@prisma/client"
+
 export interface User {
   id: string
   email: string
@@ -21,6 +23,21 @@ export interface Role {
   createdAt: string
   updatedAt: string
 }
+
+export interface Student {
+  id: string;
+  fullName: string;
+  birthDate: string;
+  address: string;
+  phone: string;
+  guardian: string;
+  photo: string;
+  status: StudentStatus;
+  createdAt: string;
+  updatedAt: string;
+  gender: Gender;
+}
+
 
 export interface Menu {
   id: string
