@@ -2,17 +2,30 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withUpdatePermission, withDeletePermission } from '@/lib/auth-middleware'
 import { createSuccessResponse, createErrorResponse } from '@/lib/api-response'
+import { updateRoleSchema } from '@/lib/validations'
 
 export const PUT = withUpdatePermission('/roles', async (req: NextRequest, user: any, { params }: { params: { id: string } }) => {
   try {
-    const { name, description } = await req.json()
+    const body = await req.json()
     const { id } = params
+
+    // Validate request body
+    const validationResult = updateRoleSchema.safeParse(body)
+    if (!validationResult.success) {
+      const errorMessages = validationResult.error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+      return NextResponse.json(
+        createErrorResponse('Validation failed', errorMessages),
+        { status: 400 }
+      )
+    }
+
+    const { name, description } = validationResult.data
 
     const role = await prisma.role.update({
       where: { id },
       data: {
-        name,
-        description
+        ...(name !== undefined && { name }),
+        ...(description !== undefined && { description })
       }
     })
 

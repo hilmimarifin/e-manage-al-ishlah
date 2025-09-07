@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withReadPermission, withWritePermission } from '@/lib/auth-middleware'
 import { createSuccessResponse, createErrorResponse } from '@/lib/api-response'
+import { createStudentSchema } from '@/lib/validations'
 
 export const GET = withReadPermission('/students', async (req: NextRequest) => {
   try {
@@ -22,18 +23,30 @@ export const GET = withReadPermission('/students', async (req: NextRequest) => {
 
 export const POST = withWritePermission('/students', async (req: NextRequest) => {
   try {
-    const { fullName, birthDate, address, phone, guardian, photo, gender, status } = await req.json()
+    const body = await req.json()
+    
+    // Validate request body
+    const validationResult = createStudentSchema.safeParse(body)
+    if (!validationResult.success) {
+      const errorMessages = validationResult.error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+      return NextResponse.json(
+        createErrorResponse('Validation failed', errorMessages),
+        { status: 400 }
+      )
+    }
+
+    const { fullName, birthDate, address, phone, guardian, photo, gender, status } = validationResult.data
 
     const student = await prisma.student.create({
       data: {
         fullName,
-        birthDate: new Date(birthDate),
+        birthDate: birthDate ? new Date(birthDate) : null,
         address,
         phone,
         guardian,
         gender,
         status,
-        photo: "https://placehold.co/100x100",
+        photo: photo || "https://placehold.co/100x100",
       }
     })
 

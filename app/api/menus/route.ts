@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withReadPermission, withWritePermission } from '@/lib/auth-middleware'
 import { createSuccessResponse, createErrorResponse } from '@/lib/api-response'
+import { createMenuSchema } from '@/lib/validations'
 
 export async function GET(req: NextRequest) {
   try {
@@ -95,15 +96,28 @@ export async function GET(req: NextRequest) {
 
 export const POST = withWritePermission('/menus', async (req: NextRequest) => {
   try {
-    const { name, path, icon, parentId, orderIndex } = await req.json()
+    const body = await req.json()
+    
+    // Validate request body
+    const validationResult = createMenuSchema.safeParse(body)
+    if (!validationResult.success) {
+      const errorMessages = validationResult.error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+      return NextResponse.json(
+        createErrorResponse('Validation failed', errorMessages),
+        { status: 400 }
+      )
+    }
+
+    const { name, path, icon, parentId, orderIndex } = validationResult.data
     const safeParentId = !parentId ? null : parentId
+    
     const menu = await prisma.menu.create({
       data: {
         name,
         path,
         icon,
         parentId: safeParentId,
-        orderIndex: orderIndex || 0
+        orderIndex
       }
     })
 

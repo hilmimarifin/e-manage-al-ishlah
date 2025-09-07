@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withReadPermission, withWritePermission } from '@/lib/auth-middleware'
 import { createSuccessResponse, createErrorResponse } from '@/lib/api-response'
+import { createRoleSchema } from '@/lib/validations'
 
 export const GET = withReadPermission('/roles', async (req: NextRequest) => {
   try {
@@ -27,7 +28,19 @@ export const GET = withReadPermission('/roles', async (req: NextRequest) => {
 
 export const POST = withWritePermission('/roles', async (req: NextRequest) => {
   try {
-    const { name, description } = await req.json()
+    const body = await req.json()
+    
+    // Validate request body
+    const validationResult = createRoleSchema.safeParse(body)
+    if (!validationResult.success) {
+      const errorMessages = validationResult.error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+      return NextResponse.json(
+        createErrorResponse('Validation failed', errorMessages),
+        { status: 400 }
+      )
+    }
+
+    const { name, description } = validationResult.data
 
     const role = await prisma.role.create({
       data: {

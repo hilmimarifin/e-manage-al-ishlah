@@ -2,23 +2,36 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withUpdatePermission, withDeletePermission } from '@/lib/auth-middleware'
 import { createSuccessResponse, createErrorResponse } from '@/lib/api-response'
+import { updateStudentSchema } from '@/lib/validations'
 
 export const PUT = withUpdatePermission('/students', async (req: NextRequest, user: any, { params }: { params: { id: string } }) => {
   try {
-    const { fullName, birthDate, address, phone, gender, guardian, photo, status } = await req.json()
+    const body = await req.json()
     const { id } = params
+
+    // Validate request body
+    const validationResult = updateStudentSchema.safeParse(body)
+    if (!validationResult.success) {
+      const errorMessages = validationResult.error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+      return NextResponse.json(
+        createErrorResponse('Validation failed', errorMessages),
+        { status: 400 }
+      )
+    }
+
+    const { fullName, birthDate, address, phone, gender, guardian, photo, status } = validationResult.data
 
     const student = await prisma.student.update({
       where: { id },
       data: {
-        fullName,
-        birthDate,
-        address,
-        phone,
-        gender,
-        guardian,
-        photo,
-        status
+        ...(fullName !== undefined && { fullName }),
+        ...(birthDate !== undefined && { birthDate: birthDate ? new Date(birthDate) : null }),
+        ...(address !== undefined && { address }),
+        ...(phone !== undefined && { phone }),
+        ...(gender !== undefined && { gender }),
+        ...(guardian !== undefined && { guardian }),
+        ...(photo !== undefined && { photo }),
+        ...(status !== undefined && { status })
       }
     })
 

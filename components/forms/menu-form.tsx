@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMenus } from "@/hooks/use-menus";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { createMenuSchema, updateMenuSchema, CreateMenuInput, UpdateMenuInput } from '@/lib/validations'
 
 const iconOptions = [
   { value: "LayoutDashboard", label: "Dashboard" },
@@ -28,33 +31,59 @@ interface MenuFormProps {
 }
 
 export function MenuForm({ menu, onSubmit, isLoading }: MenuFormProps) {
-  const [formData, setFormData] = useState({
-    id: menu?.id || "",
-    name: menu?.name || "",
-    path: menu?.path || "",
-    icon: menu?.icon || "",
-    parentId: menu?.parentId || "",
-    orderIndex: menu?.orderIndex || 0,
-  });
+  const isEditing = !!menu
+  const schema = isEditing ? updateMenuSchema : createMenuSchema
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    reset
+  } = useForm<CreateMenuInput | UpdateMenuInput>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: menu?.name || '',
+      path: menu?.path || '',
+      icon: menu?.icon || '',
+      parentId: menu?.parentId || '',
+      orderIndex: menu?.orderIndex || 0,
+    }
+  })
 
+  const watchedValues = watch()
   const { data: menus = [] } = useMenus();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
+  useEffect(() => {
+    if (menu) {
+      reset({
+        name: menu.name || '',
+        path: menu.path || '',
+        icon: menu.icon || '',
+        parentId: menu.parentId || '',
+        orderIndex: menu.orderIndex || 0,
+      })
+    }
+  }, [menu, reset])
+
+  const onFormSubmit = (data: CreateMenuInput | UpdateMenuInput) => {
+    onSubmit(data);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(onFormSubmit)}>
       <div className="grid gap-4 py-4">
         <div className="grid gap-2">
           <Label htmlFor="name">Menu Name</Label>
           <Input
             id="name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
+            {...register('name')}
+            className={errors.name ? 'border-red-500' : ''}
           />
+          {errors.name && (
+            <span className="text-sm text-red-500">{errors.name.message}</span>
+          )}
         </div>
 
         <div className="grid gap-2">
@@ -62,19 +91,21 @@ export function MenuForm({ menu, onSubmit, isLoading }: MenuFormProps) {
           <Input
             id="path"
             placeholder="/dashboard"
-            value={formData.path}
-            onChange={(e) => setFormData({ ...formData, path: e.target.value })}
-            required
+            {...register('path')}
+            className={errors.path ? 'border-red-500' : ''}
           />
+          {errors.path && (
+            <span className="text-sm text-red-500">{errors.path.message}</span>
+          )}
         </div>
 
         <div className="grid gap-2">
           <Label htmlFor="icon">Icon</Label>
           <Select
-            value={formData.icon}
-            onValueChange={(value) => setFormData({ ...formData, icon: value })}
+            value={watchedValues.icon}
+            onValueChange={(value) => setValue('icon', value)}
           >
-            <SelectTrigger>
+            <SelectTrigger className={errors.icon ? 'border-red-500' : ''}>
               <SelectValue placeholder="Select an icon" />
             </SelectTrigger>
             <SelectContent>
@@ -85,20 +116,18 @@ export function MenuForm({ menu, onSubmit, isLoading }: MenuFormProps) {
               ))}
             </SelectContent>
           </Select>
+          {errors.icon && (
+            <span className="text-sm text-red-500">{errors.icon.message}</span>
+          )}
         </div>
 
         <div className="grid gap-2">
           <Label htmlFor="parent">Parent Menu</Label>
           <Select
-            value={formData.parentId}
-            onValueChange={(value) =>
-              setFormData({
-                ...formData,
-                parentId: value === "none" ? "" : value,
-              })
-            }
+            value={watchedValues.parentId}
+            onValueChange={(value) => setValue('parentId', value === "none" ? "" : value)}
           >
-            <SelectTrigger>
+            <SelectTrigger className={errors.parentId ? 'border-red-500' : ''}>
               <SelectValue placeholder="Select parent menu (optional)" />
             </SelectTrigger>
             <SelectContent>
@@ -112,6 +141,9 @@ export function MenuForm({ menu, onSubmit, isLoading }: MenuFormProps) {
                 ))}
             </SelectContent>
           </Select>
+          {errors.parentId && (
+            <span className="text-sm text-red-500">{errors.parentId.message}</span>
+          )}
         </div>
 
         <div className="grid gap-2">
@@ -119,14 +151,12 @@ export function MenuForm({ menu, onSubmit, isLoading }: MenuFormProps) {
           <Input
             id="orderIndex"
             type="number"
-            value={formData.orderIndex}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                orderIndex: parseInt(e.target.value) || 0,
-              })
-            }
+            {...register('orderIndex', { valueAsNumber: true })}
+            className={errors.orderIndex ? 'border-red-500' : ''}
           />
+          {errors.orderIndex && (
+            <span className="text-sm text-red-500">{errors.orderIndex.message}</span>
+          )}
         </div>
       </div>
 
