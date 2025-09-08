@@ -70,7 +70,7 @@ export const updateRoleMenuSchema = z.object({
 // Student validation schemas
 export const createStudentSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
-  birthDate: z.string().datetime().optional().or(z.date().optional()),
+  birthDate: z.string().min(1, 'Birth date is required').optional(),
   address: z.string().optional(),
   phone: z.string().optional(),
   guardian: z.string().optional(),
@@ -81,7 +81,7 @@ export const createStudentSchema = z.object({
 
 export const updateStudentSchema = z.object({
   fullName: z.string().min(1, 'Full name is required').optional(),
-  birthDate: z.string().datetime().optional().or(z.date().optional()),
+  birthDate: z.string().min(1, 'Birth date is required').optional(),
   address: z.string().optional(),
   phone: z.string().optional(),
   guardian: z.string().optional(),

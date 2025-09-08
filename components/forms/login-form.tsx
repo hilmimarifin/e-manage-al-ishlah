@@ -21,7 +21,14 @@ export function LoginForm() {
     
     try {
       await login.mutateAsync({ email, password })
-      router.push('/dashboard')
+      // Check if there's a stored redirect path
+      const redirectPath = sessionStorage.getItem('redirectAfterLogin')
+      if (redirectPath && redirectPath !== '/login') {
+        sessionStorage.removeItem('redirectAfterLogin')
+        router.push(redirectPath)
+      } else {
+        router.push('/dashboard')
+      }
     } catch (error) {
       // Error is handled by the mutation
     }
