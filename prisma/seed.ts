@@ -51,7 +51,7 @@ async function main() {
     update: {},
     create: {
       name: "Users",
-      path: "/users",
+      path: "/master/users",
       icon: "Users",
       orderIndex: 2,
     },
@@ -62,7 +62,7 @@ async function main() {
     update: {},
     create: {
       name: "Roles",
-      path: "/roles",
+      path: "/master/roles",
       icon: "UserCheck",
       orderIndex: 3,
     },
@@ -73,7 +73,7 @@ async function main() {
     update: {},
     create: {
       name: "Menus",
-      path: "/menus",
+      path: "/master/menus",
       icon: "MenuIcon",
       orderIndex: 4,
     },
@@ -128,20 +128,20 @@ async function main() {
   const class1 = await prisma.class.create({
     data: {
       name: "Kelas 1A",
-      level: "1",
-      year: "2025",
-      capacity: 30,
+      grade: "1",
+      year: "2025/2026",
       teacherId: teacherUser.id,
+      monthlyFee: 25000,
     },
   });
 
   const class2 = await prisma.class.create({
     data: {
       name: "Kelas 2A",
-      level: "2",
-      year: "2026",
-      capacity: 30,
+      grade: "2",
+      year: "2024/2025",
       teacherId: teacherUser.id,
+      monthlyFee: 30000,
     },
   });
 
@@ -152,6 +152,7 @@ async function main() {
       birthDate: new Date("2015-01-10"),
       address: "Jl. Merdeka No. 1",
       phone: "08123456789",
+      entryYear: "2025/2026",
       gender: Gender.MALE,
       guardian: "Bapak Fauzi",
       photo: "https://placehold.co/100x100",
@@ -165,6 +166,7 @@ async function main() {
       birthDate: new Date("2014-06-20"),
       address: "Jl. Mawar No. 2",
       phone: "08234567890",
+      entryYear: "2025/2026",
       gender: Gender.FEMALE,
       guardian: "Ibu Aminah",
       photo: "https://placehold.co/100x100",
@@ -188,17 +190,17 @@ async function main() {
         studentId: student1.id,
         amount: 500000,
         month: 1,
-        year: 2025,
         status: PaymentStatus.PAID,
         recordedBy: teacherUser.id,
+        classId: class1.id,
       },
       {
         studentId: student2.id,
         amount: 500000,
         month: 1,
-        year: 2025,
         status: PaymentStatus.PENDING,
         recordedBy: teacherUser.id,
+        classId: class1.id,
       },
     ],
   });

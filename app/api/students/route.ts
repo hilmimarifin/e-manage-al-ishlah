@@ -35,7 +35,7 @@ export const POST = withWritePermission('/students', async (req: NextRequest) =>
       )
     }
 
-    const { fullName, birthDate, address, phone, guardian, photo, gender, status } = validationResult.data
+    const { fullName, birthDate, address, phone, guardian, photo, gender, status, entryYear } = validationResult.data
 
     const student = await prisma.student.create({
       data: {
@@ -47,6 +47,7 @@ export const POST = withWritePermission('/students', async (req: NextRequest) =>
         gender,
         status,
         photo: photo || "https://placehold.co/100x100",
+        entryYear,
       }
     })
 

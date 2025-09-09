@@ -76,7 +76,8 @@ export const createStudentSchema = z.object({
   guardian: z.string().optional(),
   gender: GenderEnum,
   photo: z.string().optional(),
-  status: StudentStatusEnum.default('ACTIVE')
+  status: StudentStatusEnum.default('ACTIVE'),
+  entryYear: z.string().min(1, 'Entry year is required')
 })
 
 export const updateStudentSchema = z.object({
@@ -92,20 +93,28 @@ export const updateStudentSchema = z.object({
 
 // Class validation schemas
 export const createClassSchema = z.object({
-  name: z.string().min(1, 'Class name is required'),
-  level: z.string().optional(),
-  year: z.string().optional(),
-  capacity: z.number().int().positive().optional(),
-  teacherId: z.string().optional()
-})
+  name: z.string().min(1, "Class name is required"),
+  grade: z.string().min(1, "Grade is required"),
+  year: z.string().min(1, "Year is required"),
+  teacherId: z.string().min(1, "Teacher ID is required"),
+  monthlyFee: z.coerce
+    .number()
+    .int()
+    .positive()
+    .min(1, "Monthly fee is required"),
+});
 
 export const updateClassSchema = z.object({
-  name: z.string().min(1, 'Class name is required').optional(),
-  level: z.string().optional(),
-  year: z.string().optional(),
-  capacity: z.number().int().positive().optional(),
-  teacherId: z.string().optional()
-})
+  name: z.string().min(1, "Class name is required").optional(),
+  grade: z.string().min(1, "Grade is required").optional(),
+  year: z.string().min(1, "Year is required").optional(),
+  teacherId: z.string().min(1, "Teacher ID is required").optional(),
+  monthlyFee: z.coerce
+    .number()
+    .int()
+    .positive()
+    .min(1, "Monthly fee is required"),
+});
 
 // StudentClass validation schemas
 export const createStudentClassSchema = z.object({

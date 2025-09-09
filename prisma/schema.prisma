@@ -97,6 +97,7 @@ model RoleMenu {
 
 model Student {
   id          String        @id @default(cuid())
+  entryYear   String
   fullName    String
   birthDate   DateTime?
   address     String?
@@ -116,11 +117,12 @@ model Student {
 model Class {
   id        String        @id @default(cuid())
   name      String
-  level     String?   
+  grade     String?   
   year      String?   
-  capacity  Int?
-  teacherId String?   
+  teacherId String?
+  monthlyFee Float?
   teacher   User?       @relation("TeacherClasses", fields: [teacherId], references: [id])
+  payments  Payment[]
   students  StudentClass[]
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
@@ -149,16 +151,16 @@ model Payment {
 
   amount      Float
   month       Int      
-  year        Int
   status      PaymentStatus @default(PAID)
   paidAt      DateTime      @default(now())
 
   recordedBy  String
   teacher     User          @relation("RecordedPayments", fields: [recordedBy], references: [id])
-
+  classId     String
+  class       Class         @relation(fields: [classId], references: [id], onDelete: Cascade)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  @@unique([studentId, month, year])
+  @@unique([studentId, month])
   @@map("payments")
 }

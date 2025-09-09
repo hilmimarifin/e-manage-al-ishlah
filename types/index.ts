@@ -38,6 +38,17 @@ export interface Student {
   gender: Gender;
 }
 
+export interface Class {
+  id: string;
+  name: string;
+  monthlyFee: number;
+  grade: string;
+  year: string;
+  teacherId: string;
+  createdAt: string;
+  updatedAt: string;
+  teacherName: string;
+}
 
 export interface Menu {
   id: string

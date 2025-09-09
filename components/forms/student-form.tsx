@@ -110,7 +110,7 @@ export function StudentForm({
         </div>
       </div>
 
-      <div className="grid gap-2">
+      <div className="grid gap-2 mb-4">
         <Label htmlFor="birthDate">Birth Date</Label>
         <Input
           type="date"
@@ -125,7 +125,7 @@ export function StudentForm({
         )}
       </div>
 
-      <div className="grid gap-2">
+      <div className="grid gap-2 mb-4">
         <Label htmlFor="phone">Phone</Label>
         <Input
           type="tel"
@@ -139,6 +139,7 @@ export function StudentForm({
       </div>
 
       <Select
+        className="mb-4"
         label="Gender"
         value={watchedValues.gender}
         onValueChange={(value) =>
@@ -150,7 +151,7 @@ export function StudentForm({
         ]}
         error={errors.gender?.message}
       />
-      <div className="grid gap-2">
+      <div className="grid gap-2 mb-4">
         <Label htmlFor="guardian">Orang Tua / Wali</Label>
         <Input
           type="text"
@@ -166,6 +167,7 @@ export function StudentForm({
       </div>
 
       <Select
+        className="mb-4"
         label="Status"
         value={watchedValues.status}
         onValueChange={(value) =>

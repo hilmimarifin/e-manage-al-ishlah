@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { cn } from "@/lib/utils";
 
 export interface SelectOption {
   value: string;
@@ -66,6 +67,7 @@ export const Select: React.FC<SelectComponentProps> = ({
               key={option.value}
               value={option.value}
               disabled={option.disabled}
+              className={cn("hover:bg-accent hover:text-accent-foreground")}
             >
               {option.label}
             </SelectItem>
