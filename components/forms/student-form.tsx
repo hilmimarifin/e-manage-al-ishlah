@@ -51,6 +51,7 @@ export function StudentForm({
       photo: student?.photo || "",
       status: student?.status || "ACTIVE",
       guardian: student?.guardian || "",
+      entryYear: student?.entryYear || "",
     },
   });
 
@@ -69,6 +70,7 @@ export function StudentForm({
         photo: student.photo || "",
         status: student.status || "ACTIVE",
         guardian: student.guardian || "",
+        entryYear: student.entryYear || "",
       });
     }
   }, [student, reset]);
@@ -121,6 +123,20 @@ export function StudentForm({
         {errors.birthDate && (
           <span className="text-sm text-red-500">
             {errors.birthDate.message}
+          </span>
+        )}
+      </div>
+      <div className="grid gap-2 mb-4">
+        <Label htmlFor="entryYear">Tahun Masuk</Label>
+        <Input
+          type="date"
+          id="entryYear"
+          {...register("entryYear")}
+          className={errors.entryYear ? "border-red-500" : ""}
+        />
+        {errors.entryYear && (
+          <span className="text-sm text-red-500">
+            {errors.entryYear.message}
           </span>
         )}
       </div>

@@ -88,7 +88,8 @@ export const updateStudentSchema = z.object({
   guardian: z.string().optional(),
   gender: GenderEnum.optional(),
   photo: z.string().optional(),
-  status: StudentStatusEnum.optional()
+  status: StudentStatusEnum.optional(),
+  entryYear: z.string().min(1, 'Entry year is required')
 })
 
 // Class validation schemas
@@ -120,11 +121,13 @@ export const updateClassSchema = z.object({
 export const createStudentClassSchema = z.object({
   studentId: z.string().min(1, 'Student ID is required'),
   classId: z.string().min(1, 'Class ID is required'),
-  year: z.string().optional()
+  year: z.string().min(1, 'Year is required')
 })
 
 export const updateStudentClassSchema = z.object({
-  year: z.string().optional()
+  studentId: z.string().min(1, 'Student ID is required'),
+  classId: z.string().min(1, 'Class ID is required'),
+  year: z.string().min(1, 'Year is required').optional()
 })
 
 // Payment validation schemas

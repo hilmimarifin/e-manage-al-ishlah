@@ -97,7 +97,7 @@ export const PUT = withUpdatePermission('/role-menus', async (req: NextRequest) 
     return NextResponse.json(createSuccessResponse(roleMenus, 'Role permissions updated successfully'))
   } catch (error) {
     return NextResponse.json(
-      createErrorResponse('Failed to update role permissions', 'Internal server error'),
+      createErrorResponse(error as string, 'Internal server error'),
       { status: 500 }
     )
   }
