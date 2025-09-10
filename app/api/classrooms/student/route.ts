@@ -7,6 +7,93 @@ import {
 } from "@/lib/auth-middleware";
 import { createSuccessResponse, createErrorResponse } from "@/lib/api-response";
 import { createStudentClassSchema } from "@/lib/validations";
+export const GET = withReadPermission(
+  "/classrooms",
+  async (req: NextRequest) => {
+    try {
+      const { searchParams } = new URL(req.url);
+      const teacherId = searchParams.get("teacherId");
+      const year = searchParams.get("year");
+      const grade = searchParams.get("grade");
+      const unrestricted = ["Super admin", "Admin"];
+      const user = await prisma.user.findUnique({
+        where: {
+          id: teacherId || undefined
+        },
+        include: {
+          role: true,
+        },
+      });
+      const isAdmin = unrestricted.includes(user?.role?.name || "");
+      console.log("isAdmin", isAdmin);
+      const students = await prisma.studentClass.findMany({
+        include: {
+          class: {
+            select: {
+              name: true,
+              grade: true,
+              year: true,
+            },
+          },
+          student: {
+            select: {
+              id: true,
+              fullName: true,
+              address: true,
+              phone: true,
+            },
+          },
+        },
+        where: {
+          class: {
+            AND: [
+              { teacherId: isAdmin ? undefined : teacherId },
+              { year: year || undefined },
+              { grade: grade || undefined },
+            ],
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      const classes = await prisma.class.findFirst({
+        where: {
+          AND: [
+            { teacherId: isAdmin ? undefined : teacherId },
+            { year: year || undefined },
+            { grade: grade || undefined },
+          ],
+        },
+      });
+      const data = {
+        classId: classes?.id,
+        className: classes?.name,
+        year: classes?.year,
+        grade: classes?.grade,
+        students: students.map((student) => ({
+          id: student.id,
+          studentId: student.student.id,
+          name: student.student.fullName,
+          grade: student.class.grade,
+          className: student.class.name,
+          year: student.class.year,
+          address: student.student.address,
+          phone: student.student.phone,
+        })),
+      };
+      return NextResponse.json(
+        createSuccessResponse(data, "Classes fetched successfully")
+      );
+    } catch (error) {
+      return NextResponse.json(
+        createErrorResponse(error as string, "Internal server error"),
+        { status: 500 }
+      );
+    }
+  }
+);
 
 export const POST = withAuth(async (req: NextRequest) => {
   try {
@@ -23,7 +110,10 @@ export const POST = withAuth(async (req: NextRequest) => {
     });
     if (studentClass) {
       return NextResponse.json(
-        createErrorResponse("Gagal menambahkan siswa", "Siswa sudah terdaftar di kelas"),
+        createErrorResponse(
+          "Gagal menambahkan siswa",
+          "Siswa sudah terdaftar di kelas"
+        ),
         { status: 400 }
       );
     }

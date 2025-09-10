@@ -53,6 +53,7 @@ export interface Class {
 
 export interface StudentClass {
   id: string;
+  studentId: string;
   name: string;
   grade: string;
   className: string;

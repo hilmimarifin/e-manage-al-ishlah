@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
-import { withReadPermission, withWritePermission } from '@/lib/auth-middleware'
+import { withAuth, withReadPermission, withWritePermission } from '@/lib/auth-middleware'
 import { createSuccessResponse, createErrorResponse } from '@/lib/api-response'
 
-export const GET = withReadPermission('/users', async (req: NextRequest) => {
+export const GET = withAuth(async (req: NextRequest, user: any) => {
   try {
     const users = await prisma.user.findMany({
       include: {

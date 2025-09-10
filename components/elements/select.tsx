@@ -67,7 +67,7 @@ export const Select: React.FC<SelectComponentProps> = ({
               key={option.value}
               value={option.value}
               disabled={option.disabled}
-              className={cn("hover:bg-accent hover:text-accent-foreground")}
+              className={cn("hover:bg-accent hover:text-accent-foreground text-xs")}
             >
               {option.label}
             </SelectItem>

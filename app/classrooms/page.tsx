@@ -25,15 +25,15 @@ import { useEffect, useState } from "react";
 import TahunAjaran from "@/components/elements/tahun-ajaran-picker";
 import {
   useAddStudentToClass,
-  useClassrooms,
-  useCreateClassroom,
   useDeleteClassroom,
-  useUpdateClassroom,
+  useStudentClassrooms,
 } from "@/hooks/user-classroom";
 import { useAuthStore } from "@/store/auth-store";
 import { Classroom as ClassroomType, StudentClass } from "@/types";
 import { ComboBox } from "@/components/elements/combo-box";
 import { useStudents } from "@/hooks/use-students";
+import Select from "@/components/elements/select";
+import { useUsers } from "@/hooks/use-users";
 
 type Classroom = ClassroomType;
 
@@ -44,10 +44,8 @@ export default function ClassesPage() {
     year: "2025/2026",
     teacherId: useAuthStore.getState().user?.id,
   });
-  const { data: classrooms, isLoading, error } = useClassrooms(filter);
-  const createClass = useCreateClassroom();
-  const updateClass = useUpdateClassroom();
-  const deleteClass = useDeleteClassroom();
+  const { data: classrooms, isLoading, error } = useStudentClassrooms(filter);
+  const deleteClassroom = useDeleteClassroom();
   const [form, setForm] = useState({
     studentId: "",
     classId: "",
@@ -66,15 +64,6 @@ export default function ClassesPage() {
     canUpdate,
     isLoading: permissionsLoading,
   } = usePermissionGuard("/classrooms");
-
-  const handleCreateClass = async (data: any) => {
-    try {
-      await createClass.mutateAsync(data);
-      setDialogOpen(false);
-    } catch (error) {
-      console.error("Failed to create classes:", error);
-    }
-  };
 
   useEffect(() => {
     setForm((prev) => {
@@ -98,7 +87,7 @@ export default function ClassesPage() {
   const handleDeleteClass = async (id: string) => {
     if (confirm("Are you sure you want to delete this classes?")) {
       try {
-        await deleteClass.mutateAsync(id);
+        await deleteClassroom.mutateAsync(id);
       } catch (error) {
         console.error("Failed to delete classes:", error);
       }
@@ -110,10 +99,11 @@ export default function ClassesPage() {
     setDialogOpen(true);
   };
 
-  const openCreateDialog = () => {
-    setSelectedClass(null);
-    setDialogOpen(true);
-  };
+  const { data: teachers = [] } = useUsers();
+  const teacherOptions = teachers.map((teacher) => ({
+    value: teacher.id,
+    label: teacher.username,
+  }));
 
   const columns: ColumnDef<StudentClass>[] = [
     {
@@ -153,7 +143,7 @@ export default function ClassesPage() {
               )}
               {showDeleteButton && (
                 <DropdownMenuItem
-                  onClick={() => handleDeleteClass(classes.grade)}
+                  onClick={() => handleDeleteClass(classes.id)}
                   className="text-destructive"
                 >
                   <Trash className="mr-2 h-4 w-4" />
@@ -171,7 +161,7 @@ export default function ClassesPage() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          {/* {showAddButton && ( */}
+          {showAddButton && (
             <div className="flex flex-row gap-2">
               <ComboBox
                 className="md:w-[250px]"
@@ -181,12 +171,15 @@ export default function ClassesPage() {
                 }
                 options={studentsOptions}
               />
-              <Button onClick={handleAddStudentToClass}>
+              <Button
+                disabled={!form.studentId || addStudentToClass.isPending}
+                onClick={handleAddStudentToClass}
+              >
                 <Plus className="mr-2 h-4 w-4" />
-                Tambah Siswa
+                Tambah
               </Button>
             </div>
-          {/* )} */}
+          )}
         </div>
 
         <Card>
@@ -195,12 +188,23 @@ export default function ClassesPage() {
             <CardDescription>Tahun ajaran {classrooms?.year}</CardDescription>
           </CardHeader>
           <CardContent>
-            <TahunAjaran
-              onValueChange={(value) => {
-                setFilter({ ...filter, year: value });
-              }}
-              value={filter.year}
-            />
+            <div className="grid md:grid-cols-3 grid-cols-1 gap-2">
+              <Select
+                label="Guru"
+                options={teacherOptions}
+                value={filter.teacherId}
+                onValueChange={(value) => {
+                  setFilter({ ...filter, teacherId: value });
+                }}
+              />
+              <TahunAjaran
+                onValueChange={(value) => {
+                  setFilter({ ...filter, year: value });
+                }}
+                value={filter.year}
+              />
+            </div>
+
             <DataTable
               columns={columns}
               data={classrooms?.students || []}

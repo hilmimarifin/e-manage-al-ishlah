@@ -83,7 +83,7 @@ export function StudentForm({
     <form onSubmit={handleSubmit(onFormSubmit)}>
       <div className="grid gap-4 py-4">
         <div className="grid gap-2">
-          <Label htmlFor="fullName">Student Name</Label>
+          <Label htmlFor="fullName">Nama</Label>
           <Input
             id="fullName"
             {...register("fullName")}
@@ -97,10 +97,10 @@ export function StudentForm({
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="address">Address</Label>
+          <Label htmlFor="address">Alamat</Label>
           <Textarea
             id="address"
-            placeholder="Enter student address"
+            placeholder="Alamat"
             {...register("address")}
             className={errors.address ? "border-red-500" : ""}
           />
@@ -113,7 +113,7 @@ export function StudentForm({
       </div>
 
       <div className="grid gap-2 mb-4">
-        <Label htmlFor="birthDate">Birth Date</Label>
+        <Label htmlFor="birthDate">Tanggal Lahir</Label>
         <Input
           type="date"
           id="birthDate"
@@ -142,7 +142,7 @@ export function StudentForm({
       </div>
 
       <div className="grid gap-2 mb-4">
-        <Label htmlFor="phone">Phone</Label>
+        <Label htmlFor="phone">Nomor Telepon</Label>
         <Input
           type="tel"
           id="phone"
@@ -156,7 +156,7 @@ export function StudentForm({
 
       <Select
         className="mb-4"
-        label="Gender"
+        label="Jenis Kelamin"
         value={watchedValues.gender}
         onValueChange={(value) =>
           setValue("gender", value as "MALE" | "FEMALE")

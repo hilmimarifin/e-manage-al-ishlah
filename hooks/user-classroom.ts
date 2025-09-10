@@ -3,10 +3,10 @@ import { showToast } from '@/lib/toast'
 import { Classroom } from '@/types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export function useClassrooms({teacherId, year}: {teacherId?: string, year?: string}) {
+export function useStudentClassrooms({teacherId, year}: {teacherId?: string, year?: string}) {
   return useQuery({
     queryKey:  ['classrooms', teacherId, year].filter(Boolean),
-    queryFn: () => apiClient.get<Classroom>('/classrooms', {params: {teacherId, year}}),
+    queryFn: () => apiClient.get<Classroom>('/classrooms/student', {params: {teacherId, year}}),
   })
 }
 
@@ -38,6 +38,27 @@ export function useAddStudentToClass() {
       }
     })
   }
+
+export function useDeleteStudentFromClass() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+      mutationFn: (id: string) => apiClient.delete(`/classrooms/student/${id}`),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['classrooms'] });
+        showToast.success(
+          "Student deleted successfully",
+          "Student has been removed from the class"
+        );
+      },
+      onError: (error: any) => {
+        showToast.error(
+          "Failed to delete student from class",
+          error.message || "Please try again"
+        );
+      },
+    });
+  }
   
 
 export function useUpdateClassroom() {
@@ -59,7 +80,7 @@ export function useDeleteClassroom() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (id: string) => apiClient.delete(`/classrooms/${id}`),
+    mutationFn: (id: string) => apiClient.delete(`/classrooms/student/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['classrooms'] })
       showToast.success('Class deleted successfully', 'Class has been removed from the system')
