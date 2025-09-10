@@ -71,6 +71,29 @@ export interface Classroom {
   students: StudentClass[];
 }
 
+export interface PaymentClass {
+  studentId: string;
+  name: string;
+  year: string;
+  grade: string;
+  className: string;
+  classId: string;
+  monthlyFee: {
+    jan: number;
+    feb: number;
+    mar: number;
+    apr: number;
+    may: number;
+    jun: number;
+    jul: number;
+    aug: number;
+    sep: number;
+    oct: number;
+    nov: number;
+    dec: number;
+  };
+}
+
 export interface Menu {
   id: string;
   name: string;
