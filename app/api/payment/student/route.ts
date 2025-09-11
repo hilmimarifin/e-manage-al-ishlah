@@ -128,17 +128,18 @@ export const POST = withAuth(async (req: NextRequest, user: any) => {
         (a, b) =>
           convertToAcademicMonthNumber(b.month) -
           convertToAcademicMonthNumber(a.month)
-      )[0]?.month || convertToAcademicMonthNumber(1);
-
+      )[0]?.month || convertToAcademicMonthNumber(0);
+    const month = monthLatestPayment % 12 + 1;
+    console.log(month);
+    
     const existing = await prisma.payment.findFirst({
       where: {
         studentId,
         classId,
-        month: monthLatestPayment,
+        month,
         class: { year: userPayment?.class?.year }, // filter relasi ke Class
       },
     });
-
     if (existing) {
       return NextResponse.json(
         createErrorResponse(
@@ -147,19 +148,20 @@ export const POST = withAuth(async (req: NextRequest, user: any) => {
         { status: 400 }
       );
     }
-    console.log(JSON.stringify({
-        studentId,
-        classId,
-        month: monthLatestPayment,
-        amount: userPayment?.class?.monthlyFee || 0,
-        recordedBy: user.userId,
-      }));
-
+    const invalidMonth = month > 12 || month < 1;
+    if (invalidMonth) {
+      return NextResponse.json(
+        createErrorResponse(
+          "Error","Bulan tidak valid"
+        ),
+        { status: 400 }
+      );
+    }
     const payment = await prisma.payment.create({
       data: {
         studentId,
         classId,
-        month: monthLatestPayment,
+        month,
         amount: userPayment?.class?.monthlyFee || 0,
         recordedBy: user.userId,
       },
