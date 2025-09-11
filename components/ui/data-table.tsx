@@ -29,6 +29,8 @@ import {
   ChevronsRight,
   Search,
 } from "lucide-react";
+import { Card, CardContent } from "./card";
+import { cn } from "@/lib/utils";
 
 interface MergedCell {
   rowIndex: number;
@@ -65,6 +67,8 @@ interface DataTableProps<TData, TValue> {
     colSpan?: number;
     rowSpan?: number;
   }>;
+  headerComponent?: React.ReactNode;
+  headerComponentClassName?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -80,6 +84,8 @@ export function DataTable<TData, TValue>({
   mergedCells = [],
   customHeaderRows = [],
   headerMergedCells = [],
+  headerComponent,
+  headerComponentClassName,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -179,197 +185,210 @@ export function DataTable<TData, TValue>({
   };
 
   return (
-    <div className="space-y-4">
-      {showSearch && (
-        <div className="flex items-center space-x-2">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder={searchPlaceholder}
-              value={globalFilter ?? ""}
-              onChange={(event) => setGlobalFilter(String(event.target.value))}
-              className="pl-8"
-            />
-          </div>
-        </div>
-      )}
-
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {/* Custom header rows */}
-            {customHeaderRows.map((headerRow) => (
-              <TableRow
-                className="h-8 bg-primary text-primary-foreground text-white"
-                key={headerRow.id}
-              >
-                {headerRow.cells.map((cell, index) => (
-                  <TableHead
-                    key={`${headerRow.id}-${cell.columnId}-${index}`}
-                    className={`text-xs h-8 text-white text-center ${
-                      cell.className || ""
-                    }`}
-                    colSpan={cell.colSpan}
-                    rowSpan={cell.rowSpan}
-                  >
-                    {cell.content}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-
-            {/* Main header row */}
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                className="h-8 bg-primary text-primary-foreground rounded-t-md text-white"
-                key={headerGroup.id}
-              >
-                {shouldRenderHeaderCell("rowNumber") && (
-                  <TableHead
-                    className="text-xs h-8 text-white"
-                    {...getHeaderMergedCellProps("rowNumber")}
-                  >
-                    No
-                  </TableHead>
-                )}
-                {headerGroup.headers.map((header) => {
-                  const columnId = header.column.id;
-                  if (!shouldRenderHeaderCell(columnId)) return null;
-
-                  return (
-                    <TableHead
-                      className="text-xs h-8 text-white"
-                      key={header.id}
-                      {...getHeaderMergedCellProps(columnId)}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody className="h-8">
-            {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length + 1}
-                  className="h-8 text-center"
-                >
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  className="h-8"
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {shouldRenderCell(row.index, "rowNumber") && (
-                    <TableCell
-                      className="text-xs w-2 text-center h-8"
-                      {...getMergedCellProps(row.index, "rowNumber")}
-                    >
-                      {row.index + 1}
-                    </TableCell>
-                  )}
-                  {row.getVisibleCells().map((cell) => {
-                    const columnId = cell.column.id;
-                    if (!shouldRenderCell(row.index, columnId)) return null;
-
-                    return (
-                      <TableCell
-                        className="text-xs h-8"
-                        key={cell.id}
-                        {...getMergedCellProps(row.index, columnId)}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow className="h-8">
-                <TableCell
-                  colSpan={columns.length + 1}
-                  className="h-8 text-center"
-                >
-                  {emptyMessage}
-                </TableCell>
-              </TableRow>
+    <Card className="shadow-sm bg-gradient-to-r from-background to-accent/30 border-r-primary border-r-4">
+      <CardContent className="p-6">
+        <div className="space-y-4">
+          <div
+            className={cn(
+              "flex flex-col md:flex-row items-center justify-between gap-4",
+              headerComponentClassName
             )}
-          </TableBody>
-        </Table>
-      </div>
+          >
+            {showSearch && (
+              <div className="flex items-center w-full">
+                <div className="relative flex-1 w-full md:max-w-[200px]">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={searchPlaceholder}
+                    value={globalFilter ?? ""}
+                    onChange={(event) =>
+                      setGlobalFilter(String(event.target.value))
+                    }
+                    className="pl-8"
+                  />
+                </div>
+              </div>
+            )}
+            {headerComponent}
+          </div>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                {/* Custom header rows */}
+                {customHeaderRows.map((headerRow) => (
+                  <TableRow
+                    className="h-8 bg-primary text-primary-foreground text-white"
+                    key={headerRow.id}
+                  >
+                    {headerRow.cells.map((cell, index) => (
+                      <TableHead
+                        key={`${headerRow.id}-${cell.columnId}-${index}`}
+                        className={`text-xs h-8 text-white text-center ${
+                          cell.className || ""
+                        }`}
+                        colSpan={cell.colSpan}
+                        rowSpan={cell.rowSpan}
+                      >
+                        {cell.content}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
 
-      {showPagination && (
-        <div className="flex items-center justify-between space-x-2 py-4">
-          <div className="text-sm text-muted-foreground">
-            Showing{" "}
-            {table.getState().pagination.pageIndex *
-              table.getState().pagination.pageSize +
-              1}{" "}
-            to{" "}
-            {Math.min(
-              (table.getState().pagination.pageIndex + 1) *
-                table.getState().pagination.pageSize,
-              table.getFilteredRowModel().rows.length
-            )}{" "}
-            of {table.getFilteredRowModel().rows.length} results
+                {/* Main header row */}
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow
+                    className="h-8 bg-primary text-primary-foreground rounded-t-md text-white"
+                    key={headerGroup.id}
+                  >
+                    {shouldRenderHeaderCell("rowNumber") && (
+                      <TableHead
+                        className="text-xs h-8 text-white"
+                        {...getHeaderMergedCellProps("rowNumber")}
+                      >
+                        No
+                      </TableHead>
+                    )}
+                    {headerGroup.headers.map((header) => {
+                      const columnId = header.column.id;
+                      if (!shouldRenderHeaderCell(columnId)) return null;
+
+                      return (
+                        <TableHead
+                          className="text-xs h-8 text-white"
+                          key={header.id}
+                          {...getHeaderMergedCellProps(columnId)}
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody className="h-8">
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length + 1}
+                      className="h-8 text-center"
+                    >
+                      Loading...
+                    </TableCell>
+                  </TableRow>
+                ) : table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      className="h-8"
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {shouldRenderCell(row.index, "rowNumber") && (
+                        <TableCell
+                          className="text-xs w-2 text-center h-8"
+                          {...getMergedCellProps(row.index, "rowNumber")}
+                        >
+                          {row.index + 1}
+                        </TableCell>
+                      )}
+                      {row.getVisibleCells().map((cell) => {
+                        const columnId = cell.column.id;
+                        if (!shouldRenderCell(row.index, columnId)) return null;
+
+                        return (
+                          <TableCell
+                            className="text-xs h-8"
+                            key={cell.id}
+                            {...getMergedCellProps(row.index, columnId)}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow className="h-8">
+                    <TableCell
+                      colSpan={columns.length + 1}
+                      className="h-8 text-center"
+                    >
+                      {emptyMessage}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="flex items-center space-x-1">
-              <span className="text-sm">Page</span>
-              <strong className="text-sm">
-                {table.getState().pagination.pageIndex + 1} of{" "}
-                {table.getPageCount()}
-              </strong>
+
+          {showPagination && (
+            <div className="flex items-center justify-between space-x-2 py-4">
+              <div className="text-sm text-muted-foreground">
+                Showing{" "}
+                {table.getState().pagination.pageIndex *
+                  table.getState().pagination.pageSize +
+                  1}{" "}
+                to{" "}
+                {Math.min(
+                  (table.getState().pagination.pageIndex + 1) *
+                    table.getState().pagination.pageSize,
+                  table.getFilteredRowModel().rows.length
+                )}{" "}
+                of {table.getFilteredRowModel().rows.length} results
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.setPageIndex(0)}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <ChevronsLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <div className="flex items-center space-x-1">
+                  <span className="text-sm">Page</span>
+                  <strong className="text-sm">
+                    {table.getState().pagination.pageIndex + 1} of{" "}
+                    {table.getPageCount()}
+                  </strong>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <ChevronsRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
+          )}
         </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 }

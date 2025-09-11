@@ -34,6 +34,10 @@ import { ComboBox } from "@/components/elements/combo-box";
 import { useStudents } from "@/hooks/use-students";
 import Select from "@/components/elements/select";
 import { useUsers } from "@/hooks/use-users";
+import FilterContainer from "@/components/elements/filter-container";
+import Container from "@/components/elements/container";
+import { isAdminClient } from "@/lib/client-utils";
+import HeaderTitle from "@/components/elements/header-title";
 
 type Classroom = ClassroomType;
 
@@ -43,7 +47,9 @@ export default function ClassesPage() {
   const [filter, setFilter] = useState({
     year: "2025/2026",
     teacherId: useAuthStore.getState().user?.id,
+    grade: "",
   });
+  const isAdmin = isAdminClient();
   const { data: classrooms, isLoading, error } = useStudentClassrooms(filter);
   const deleteClassroom = useDeleteClassroom();
   const [form, setForm] = useState({
@@ -64,16 +70,6 @@ export default function ClassesPage() {
     canUpdate,
     isLoading: permissionsLoading,
   } = usePermissionGuard("/classrooms");
-
-  useEffect(() => {
-    setForm((prev) => {
-      return {
-        ...prev,
-        classId: classrooms?.classId || "",
-        year: classrooms?.year || "",
-      };
-    });
-  }, [classrooms]);
 
   const addStudentToClass = useAddStudentToClass();
   const handleAddStudentToClass = async () => {
@@ -105,7 +101,7 @@ export default function ClassesPage() {
     label: teacher.username,
   }));
 
-  const columns: ColumnDef<StudentClass>[] = [
+  const columns: ColumnDef<Classroom>[] = [
     {
       accessorKey: "name",
       header: "Nama",
@@ -157,64 +153,87 @@ export default function ClassesPage() {
     },
   ];
 
+  const addStudentToClassComponent = () => {
+    return showAddButton ? (
+      <div className="flex flex-row gap-2 w-full md:justify-end">
+        <ComboBox
+          className="md:w-[250px]"
+          value={form.studentId}
+          placeholder="Tambahkan siswa"
+          onValueChange={(value) => setForm({ ...form, studentId: value })}
+          options={studentsOptions}
+        />
+        <Button
+          disabled={!form.studentId || addStudentToClass.isPending}
+          onClick={handleAddStudentToClass}
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Tambah
+        </Button>
+      </div>
+    ) : (
+      <></>
+    );
+  };
+
+  useEffect(() => {
+    if (filter.year) {
+      setForm({ ...form, year: filter.year });
+    }
+  }, [filter.year]);
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          {showAddButton && (
-            <div className="flex flex-row gap-2">
-              <ComboBox
-                className="md:w-[250px]"
-                value={form.studentId}
-                onValueChange={(value) =>
-                  setForm({ ...form, studentId: value })
-                }
-                options={studentsOptions}
-              />
-              <Button
-                disabled={!form.studentId || addStudentToClass.isPending}
-                onClick={handleAddStudentToClass}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Tambah
-              </Button>
-            </div>
-          )}
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>{classrooms?.className} </CardTitle>
-            <CardDescription>Tahun ajaran {classrooms?.year}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-3 grid-cols-1 gap-2">
+        <HeaderTitle title="Ruang Kelas" description="Mengelola kelas di sekolah" />
+        <Container>
+          <FilterContainer className="grid grid-cols-1 md:grid-cols-4 gap-2">
+            {isAdmin && (
               <Select
-                label="Guru"
-                options={teacherOptions}
-                value={filter.teacherId}
+                label="Kelas"
+                placeholder="Pilih kelas"
+                options={[
+                  { value: "0", label: "Kelas TK" },
+                  { value: "1", label: "Kelas 1" },
+                  { value: "2", label: "Kelas 2" },
+                  { value: "3", label: "Kelas 3" },
+                  { value: "4", label: "Kelas 4" },
+                  { value: "5", label: "Kelas 5" },
+                  { value: "6", label: "Kelas 6" },
+                ]}
+                value={filter.grade}
                 onValueChange={(value) => {
-                  setFilter({ ...filter, teacherId: value });
+                  setFilter({ ...filter, grade: value });
                 }}
               />
-              <TahunAjaran
-                onValueChange={(value) => {
-                  setFilter({ ...filter, year: value });
-                }}
-                value={filter.year}
-              />
-            </div>
-
-            <DataTable
-              columns={columns}
-              data={classrooms?.students || []}
-              isLoading={isLoading}
-              searchPlaceholder="Cari siswa..."
-              emptyMessage="Tidak ada siswa ditemukan."
-              pageSize={10}
+            )}
+            <TahunAjaran
+              onValueChange={(value) => {
+                setFilter({ ...filter, year: value });
+              }}
+              value={filter.year}
             />
-          </CardContent>
-        </Card>
+            <Select
+              label="Guru"
+              options={teacherOptions}
+              value={filter.teacherId}
+              onValueChange={(value) => {
+                setFilter({ ...filter, teacherId: value });
+              }}
+              disabled={!isAdmin}
+            />
+          </FilterContainer>
+
+          <DataTable
+            columns={columns}
+            data={classrooms || []}
+            isLoading={isLoading}
+            searchPlaceholder="Cari siswa..."
+            emptyMessage="Tidak ada siswa ditemukan."
+            pageSize={10}
+            headerComponent={addStudentToClassComponent()}
+          />
+        </Container>
       </div>
     </DashboardLayout>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useUserMenus } from "@/hooks/use-auth";
+import { useLogout, useUserMenus } from "@/hooks/use-auth";
 import { useAppStore } from "@/store/app-store";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,10 +15,21 @@ import {
   ChevronRight,
   ChevronDown,
   Home,
+  LogOut,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { useAuthStore } from "@/store/auth-store";
 
 const iconMap: Record<string, any> = {
   LayoutDashboard,
@@ -91,6 +102,12 @@ export function Sidebar() {
       }
       return newSet;
     });
+  };
+  const { user } = useAuthStore();
+  const logout = useLogout();
+
+  const handleLogout = () => {
+    logout.mutate();
   };
 
   const renderMenuItem = (menu: any, isChild = false) => {
@@ -187,10 +204,50 @@ export function Sidebar() {
       </div>
 
       <ScrollArea className="flex-1 px-2 py-4">
+        <div className="flex items-center space-x-4 ml-2 mb-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback>
+                      {user?.username.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {user?.username}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user?.role.name}
+                  </p>
+                </div>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
         <nav className="space-y-2">
           {organizedMenus.map((menu) => renderMenuItem(menu))}
         </nav>
       </ScrollArea>
+      <div
+        className="px-4 py-4 border-t-2 flex items-center space-x-2 cursor-pointer hover:bg-red-50 "
+        onClick={handleLogout}
+      >
+        <LogOut color="red" className="h-5 w-5 " />
+        <span className="text-red-500 font-semibold">Log out</span>
+      </div>
     </div>
   );
 }

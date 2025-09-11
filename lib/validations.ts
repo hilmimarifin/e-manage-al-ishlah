@@ -120,8 +120,9 @@ export const updateClassSchema = z.object({
 // StudentClass validation schemas
 export const createStudentClassSchema = z.object({
   studentId: z.string().min(1, 'Student ID is required'),
-  classId: z.string().min(1, 'Class ID is required'),
-  year: z.string().min(1, 'Year is required')
+  classId: z.string().optional(),
+  year: z.string().min(1, 'Year is required'),
+  teacherId: z.string().optional(),
 })
 
 export const updateStudentClassSchema = z.object({

@@ -18,15 +18,23 @@ export const GET = withReadPermission(
       const unrestricted = ["Super admin", "Admin"];
       const user = await prisma.user.findUnique({
         where: {
-          id: teacherId || undefined
+          id: teacherId || undefined,
         },
         include: {
           role: true,
         },
       });
       const isAdmin = unrestricted.includes(user?.role?.name || "");
-      console.log("isAdmin", isAdmin);
       const students = await prisma.studentClass.findMany({
+        where: {
+          class: {
+            AND: [
+              { teacherId: isAdmin ? undefined : teacherId },
+              { year: year || undefined },
+              { grade: grade || undefined },
+            ],
+          },
+        },
         include: {
           class: {
             select: {
@@ -44,45 +52,21 @@ export const GET = withReadPermission(
             },
           },
         },
-        where: {
-          class: {
-            AND: [
-              { teacherId: isAdmin ? undefined : teacherId },
-              { year: year || undefined },
-              { grade: grade || undefined },
-            ],
-          },
-        },
         orderBy: {
           createdAt: "desc",
         },
       });
 
-      const classes = await prisma.class.findFirst({
-        where: {
-          AND: [
-            { teacherId: isAdmin ? undefined : teacherId },
-            { year: year || undefined },
-            { grade: grade || undefined },
-          ],
-        },
-      });
-      const data = {
-        classId: classes?.id,
-        className: classes?.name,
-        year: classes?.year,
-        grade: classes?.grade,
-        students: students.map((student) => ({
-          id: student.id,
-          studentId: student.student.id,
-          name: student.student.fullName,
-          grade: student.class.grade,
-          className: student.class.name,
-          year: student.class.year,
-          address: student.student.address,
-          phone: student.student.phone,
-        })),
-      };
+      const data = students.map((student) => ({
+        id: student.id,
+        name: student.student.fullName,
+        grade: student.class.grade,
+        className: student.class.name,
+        year: student.class.year,
+        address: student.student.address,
+        phone: student.student.phone,
+      }));
+
       return NextResponse.json(
         createSuccessResponse(data, "Classes fetched successfully")
       );
@@ -102,7 +86,7 @@ export const POST = withAuth(async (req: NextRequest) => {
     const studentClass = await prisma.studentClass.findUnique({
       where: {
         studentId_classId_year: {
-          studentId: body.studentId,
+          studentId: body.studentId ,
           classId: body.classId,
           year: body.year,
         },
@@ -134,9 +118,9 @@ export const POST = withAuth(async (req: NextRequest) => {
 
     const classRoom = await prisma.studentClass.create({
       data: {
-        studentId,
-        classId,
-        year,
+        studentId: studentId || "",
+        classId: classId || "",
+        year: year || "",
       },
     });
 

@@ -64,11 +64,13 @@ export interface StudentClass {
   updatedAt: string;
 }
 export interface Classroom {
-  classId: string;
-  className: string;
+  id: string;
+  name: string;
   grade: string;
+  className: string;
   year: string;
-  students: StudentClass[];
+  address: string;
+  phone: string;
 }
 
 export interface PaymentClass {

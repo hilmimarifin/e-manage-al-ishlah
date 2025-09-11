@@ -1,0 +1,22 @@
+import { Card } from "../ui/card";
+import { cn } from "@/lib/utils";
+
+interface FilterContainerProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+const FilterContainer = ({ children, className }: FilterContainerProps) => {
+  return (
+    <Card
+      className={cn(
+        "p-6 mb-6 shadow-sm  bg-gradient-to-r from-background to-accent/30 border-r-primary border-r-4",
+        className
+      )}
+    >
+      {children}
+    </Card>
+  );
+};
+
+export default FilterContainer;

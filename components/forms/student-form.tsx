@@ -16,6 +16,7 @@ import {
 } from "@/lib/validations";
 import { ComboBox } from "../elements/combo-box";
 import Select from "../elements/select";
+import TahunAjaran from "../elements/tahun-ajaran-picker";
 
 interface StudentFormProps {
   student?: Student;
@@ -127,12 +128,13 @@ export function StudentForm({
         )}
       </div>
       <div className="grid gap-2 mb-4">
-        <Label htmlFor="entryYear">Tahun Masuk</Label>
-        <Input
-          type="date"
-          id="entryYear"
+        <TahunAjaran
           {...register("entryYear")}
-          className={errors.entryYear ? "border-red-500" : ""}
+          label="Tahun Masuk"
+          value={watchedValues.entryYear}
+          onValueChange={(value) =>
+            setValue("entryYear", value)
+          }
         />
         {errors.entryYear && (
           <span className="text-sm text-red-500">

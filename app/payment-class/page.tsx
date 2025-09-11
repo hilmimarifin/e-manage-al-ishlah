@@ -18,6 +18,9 @@ import TrueHeaderRowMergingExamples from "./example";
 import { Check, Plus } from "lucide-react";
 import { ComboBox } from "@/components/elements/combo-box";
 import { Button } from "@/components/ui/button";
+import FilterContainer from "@/components/elements/filter-container";
+import Container from "@/components/elements/container";
+import HeaderTitle from "@/components/elements/header-title";
 
 type PaymentClass = PaymentClassType;
 
@@ -46,7 +49,6 @@ export default function ClassesPage() {
     canUpdate,
     isLoading: permissionsLoading,
   } = usePermissionGuard("/paymentClass");
-
 
   const handleCreatePayment = async () => {
     try {
@@ -79,117 +81,145 @@ export default function ClassesPage() {
     {
       accessorKey: "monthlyFee.jul",
       header: "Jul",
-      cell: ({ row }) => <>{row.original.monthlyFee.jul ? <Check color="green" /> : <></>}</>,
+      cell: ({ row }) => (
+        <>{row.original.monthlyFee.jul ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+      ),
     },
     {
       accessorKey: "monthlyFee.aug",
       header: "Aug",
-      cell: ({ row }) => <>{row.original.monthlyFee.aug ? <Check color="green" /> : <></>}</>,
+      cell: ({ row }) => (
+        <>{row.original.monthlyFee.aug ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+      ),
     },
     {
       accessorKey: "monthlyFee.sep",
       header: "Sep",
-      cell: ({ row }) => <>{row.original.monthlyFee.sep ? <Check color="green" /> : <></>}</>,
+      cell: ({ row }) => (
+        <>{row.original.monthlyFee.sep ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+      ),
     },
     {
       accessorKey: "monthlyFee.oct",
       header: "Oct",
-      cell: ({ row }) => <>{row.original.monthlyFee.oct ? <Check color="green" /> : <></>}</>,
+      cell: ({ row }) => (
+        <>{row.original.monthlyFee.oct ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+      ),
     },
     {
       accessorKey: "monthlyFee.nov",
       header: "Nov",
-      cell: ({ row }) => <>{row.original.monthlyFee.nov ? <Check color="green" /> : <></>}</>,
+      cell: ({ row }) => (
+        <>{row.original.monthlyFee.nov ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+      ),
     },
     {
       accessorKey: "monthlyFee.dec",
       header: "Dec",
-      cell: ({ row }) => <>{row.original.monthlyFee.dec ? <Check color="green" /> : <></>}</>,
+      cell: ({ row }) => (
+        <>{row.original.monthlyFee.dec ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+      ),
     },
     {
       accessorKey: "monthlyFee.jan",
       header: "Jan",
-      cell: ({ row }) => <>{row.original.monthlyFee.jan ? <Check color="green" /> : <></>}</>,
+      cell: ({ row }) => (
+        <>{row.original.monthlyFee.jan ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+      ),
     },
     {
       accessorKey: "monthlyFee.feb",
       header: "Feb",
-      cell: ({ row }) => <>{row.original.monthlyFee.feb ? <Check color="green" /> : <></>}</>,
+      cell: ({ row }) => (
+        <>{row.original.monthlyFee.feb ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+      ),
     },
     {
       accessorKey: "monthlyFee.mar",
       header: "Mar",
-      cell: ({ row }) => <>{row.original.monthlyFee.mar ? <Check color="green" /> : <></>}</>,
+      cell: ({ row }) => (
+        <>{row.original.monthlyFee.mar ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+      ),
     },
     {
       accessorKey: "monthlyFee.apr",
       header: "Apr",
-      cell: ({ row }) => <>{row.original.monthlyFee.apr ? <Check color="green" /> : <></>}</>,
+      cell: ({ row }) => (
+        <>{row.original.monthlyFee.apr ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+      ),
     },
     {
       accessorKey: "monthlyFee.may",
       header: "May",
-      cell: ({ row }) => <>{row.original.monthlyFee.may ? <Check color="green" /> : <></>}</>,
+      cell: ({ row }) => (
+        <>{row.original.monthlyFee.may ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+      ),
     },
     {
       accessorKey: "monthlyFee.jun",
       header: "Jun",
-      cell: ({ row }) => <>{row.original.monthlyFee.jun ? <Check color="green" /> : <></>}</>,
+      cell: ({ row }) => (
+        <>{row.original.monthlyFee.jun ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+      ),
     },
   ];
 
+  const addPaymentComponent = () => {
+    return (
+      <div className="flex items-center justify-between">
+        <div className="flex flex-row gap-2">
+          <ComboBox
+            className="md:w-[250px]"
+            value={form.studentId}
+            onValueChange={(value) => setForm({ ...form, studentId: value })}
+            options={studentsOptions || []}
+          />
+          <Button
+            disabled={!form.studentId || createPayment.isPending}
+            onClick={handleCreatePayment}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Tambah
+          </Button>
+        </div>
+      </div>
+    );
+  };
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-            <div className="flex flex-row gap-2">
-              <ComboBox
-                className="md:w-[250px]"
-                value={form.studentId}
-                onValueChange={(value) =>
-                  setForm({ ...form, studentId: value })
-                }
-                options={studentsOptions || []}
-              />
-              <Button
-                disabled={!form.studentId || createPayment.isPending}
-                onClick={handleCreatePayment}
-              >
-                <Plus  className="mr-2 h-4 w-4" />
-                Tambah
-              </Button>
-            </div>
-        </div>
-
-        <Card>
-          <CardContent>
-            <div className="grid md:grid-cols-3 grid-cols-1 gap-2">
-              <Select
-                label="Guru"
-                options={teacherOptions}
-                value={filter.teacherId}
-                onValueChange={(value) => {
-                  setFilter({ ...filter, teacherId: value });
-                }}
-              />
-              <TahunAjaran
-                onValueChange={(value) => {
-                  setFilter({ ...filter, year: value });
-                }}
-                value={filter.year}
-              />
-            </div>
-
-            <DataTable
-              columns={columns}
-              data={paymentClass?.studentData || []}
-              isLoading={isLoading}
-              searchPlaceholder="Cari siswa..."
-              emptyMessage="Tidak ada siswa ditemukan."
-              pageSize={10}
+        <HeaderTitle
+          title="Pembayaran Kelas"
+          description="Mengelola pembayaran kelas di sekolah"
+        />
+        <Container>
+          <FilterContainer className="grid md:grid-cols-3 grid-cols-1 gap-2">
+            <Select
+              label="Guru"
+              options={teacherOptions}
+              value={filter.teacherId}
+              onValueChange={(value) => {
+                setFilter({ ...filter, teacherId: value });
+              }}
             />
-          </CardContent>
-        </Card>
+            <TahunAjaran
+              onValueChange={(value) => {
+                setFilter({ ...filter, year: value });
+              }}
+              value={filter.year}
+            />
+          </FilterContainer>
+
+          <DataTable
+            columns={columns}
+            data={paymentClass?.studentData || []}
+            isLoading={isLoading}
+            searchPlaceholder="Cari siswa..."
+            emptyMessage="Tidak ada siswa ditemukan."
+            pageSize={10}
+            headerComponent={addPaymentComponent()}
+          />
+        </Container>
       </div>
     </DashboardLayout>
   );
