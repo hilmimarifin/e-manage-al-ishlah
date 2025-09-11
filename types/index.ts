@@ -72,26 +72,37 @@ export interface Classroom {
 }
 
 export interface PaymentClass {
-  studentId: string;
-  name: string;
+  classId: string;
+  className: string;
   year: string;
   grade: string;
-  className: string;
+  studentData: {
+    id: string;
+    name: string;
+    year: string;
+    grade: string;
+    className: string;
+    classId: string;
+    monthlyFee: {
+      jan: number;
+      feb: number;
+      mar: number;
+      apr: number;
+      may: number;
+      jun: number;
+      jul: number;
+      aug: number;
+      sep: number;
+      oct: number;
+      nov: number;
+      dec: number;
+    };
+  }[];
+}
+
+export interface CreatePaymentClass {
+  studentId: string;
   classId: string;
-  monthlyFee: {
-    jan: number;
-    feb: number;
-    mar: number;
-    apr: number;
-    may: number;
-    jun: number;
-    jul: number;
-    aug: number;
-    sep: number;
-    oct: number;
-    nov: number;
-    dec: number;
-  };
 }
 
 export interface Menu {

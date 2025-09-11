@@ -5,17 +5,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
 import { usePermissionGuard } from "@/hooks/use-permissions";
 import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Select from "@/components/elements/select";
 import TahunAjaran from "@/components/elements/tahun-ajaran-picker";
 import { usePaymentClass } from "@/hooks/use-payment-class";
-import { useStudents } from "@/hooks/use-students";
+import { useCreatePayment } from "@/hooks/use-payment-class";
 import { useUsers } from "@/hooks/use-users";
 import { useAuthStore } from "@/store/auth-store";
-import { PaymentClass as PaymentClassType } from "@/types";
+import { CreatePaymentClass, PaymentClass as PaymentClassType } from "@/types";
 import TrueHeaderRowMergingExamples from "./example";
-import { Check } from "lucide-react";
+import { Check, Plus } from "lucide-react";
+import { ComboBox } from "@/components/elements/combo-box";
+import { Button } from "@/components/ui/button";
 
 type PaymentClass = PaymentClassType;
 
@@ -26,16 +28,15 @@ export default function ClassesPage() {
     year: "2025/2026",
     teacherId: useAuthStore.getState().user?.id,
   });
-  const { data: paymentClass = [], isLoading, error } = usePaymentClass(filter);
-  const [form, setForm] = useState({
+  const { data: paymentClass, isLoading, error } = usePaymentClass(filter);
+  const [form, setForm] = useState<CreatePaymentClass>({
     studentId: "",
     classId: "",
-    year: "",
   });
-  const { data: students = [] } = useStudents();
-  const studentsOptions = students.map((student) => ({
+  const createPayment = useCreatePayment();
+  const studentsOptions = paymentClass?.studentData.map((student) => ({
     value: student.id,
-    label: student.fullName,
+    label: student.name,
   }));
   // Permission checks for /roles path
   const {
@@ -46,23 +47,14 @@ export default function ClassesPage() {
     isLoading: permissionsLoading,
   } = usePermissionGuard("/paymentClass");
 
-  // useEffect(() => {
-  //   setForm((prev) => {
-  //     return {
-  //       ...prev,
-  //       classId: paymentClass?.classId || "",
-  //       year: paymentClass?.year || "",
-  //     };
-  //   });
-  // }, [paymentClass]);
 
-  // const handleAddStudentToClass = async () => {
-  //   try {
-  //     await addStudentToClass.mutateAsync(form);
-  //   } catch (error) {
-  //     console.error("Failed to add student to class:", error);
-  //   }
-  // };
+  const handleCreatePayment = async () => {
+    try {
+      await createPayment.mutateAsync(form);
+    } catch (error) {
+      console.error("Failed to add student to class:", error);
+    }
+  };
 
   const { data: teachers = [] } = useUsers();
   const teacherOptions = teachers.map((teacher) => ({
@@ -70,35 +62,16 @@ export default function ClassesPage() {
     label: teacher.username,
   }));
 
-  const customHeaderRows = [
-    {
-      id: "name",
-      cells: [
-        // Employee info spans 2 rows
-        {
-          columnId: "No",
-          content: "No",
-          rowSpan: 2,
-          className: "bg-primary",
-        },
+  useEffect(() => {
+    setForm((prev) => {
+      return {
+        ...prev,
+        classId: paymentClass?.classId || "",
+      };
+    });
+  }, [paymentClass]);
 
-        {
-          columnId: "name",
-          content: "Nama",
-          rowSpan: 2,
-          className: "bg-primary",
-        },
-        // Salary components span 1 row, 3 columns
-        {
-          columnId: "monthlyFee",
-          content: "Monthly Fee",
-          colSpan: 12,
-          className: "bg-primary",
-        },
-      ],
-    },
-  ];
-  const columns: ColumnDef<PaymentClass>[] = [
+  const columns: ColumnDef<PaymentClass["studentData"][number]>[] = [
     {
       accessorKey: "name",
       header: "Nama",
@@ -168,8 +141,7 @@ export default function ClassesPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        {/* <div className="flex items-center justify-between">
-          {showAddButton && (
+        <div className="flex items-center justify-between">
             <div className="flex flex-row gap-2">
               <ComboBox
                 className="md:w-[250px]"
@@ -177,18 +149,17 @@ export default function ClassesPage() {
                 onValueChange={(value) =>
                   setForm({ ...form, studentId: value })
                 }
-                options={studentsOptions}
+                options={studentsOptions || []}
               />
               <Button
-                disabled={!form.studentId || addStudentToClass.isPending}
-                onClick={handleAddStudentToClass}
+                disabled={!form.studentId || createPayment.isPending}
+                onClick={handleCreatePayment}
               >
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus  className="mr-2 h-4 w-4" />
                 Tambah
               </Button>
             </div>
-          )}
-        </div> */}
+        </div>
 
         <Card>
           <CardContent>
@@ -211,9 +182,8 @@ export default function ClassesPage() {
 
             <DataTable
               columns={columns}
-              data={paymentClass || []}
+              data={paymentClass?.studentData || []}
               isLoading={isLoading}
-              customHeaderRows={customHeaderRows}
               searchPlaceholder="Cari siswa..."
               emptyMessage="Tidak ada siswa ditemukan."
               pageSize={10}

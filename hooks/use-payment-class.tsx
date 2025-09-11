@@ -1,6 +1,7 @@
 import { apiClient } from "@/lib/api";
-import { PaymentClass } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { showToast } from "@/lib/toast";
+import { CreatePaymentClass, PaymentClass } from "@/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function usePaymentClass({
   teacherId,
@@ -12,8 +13,29 @@ export function usePaymentClass({
   return useQuery({
     queryKey: ["payment-class", teacherId, year].filter(Boolean),
     queryFn: () =>
-      apiClient.get<PaymentClass[]>("/payment/student", {
+      apiClient.get<PaymentClass>("/payment/student", {
         params: { teacherId, year },
       }),
+  });
+}
+
+export function useCreatePayment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreatePaymentClass) =>
+      apiClient.post<PaymentClass>("/payment/student", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payment-class"] });
+      showToast.success(
+        "Payment created successfully",
+        "Payment information has been updated"
+      );
+    },
+    onError: () => {
+      showToast.error(
+        "Gagal menambahkan pembayaran",
+        "Silahkan coba lagi"
+      );
+    },
   });
 }

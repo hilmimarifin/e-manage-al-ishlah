@@ -161,6 +161,6 @@ model Payment {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  @@unique([studentId, month])
+  @@unique([studentId, month, classId])
   @@map("payments")
 }
