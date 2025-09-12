@@ -66,9 +66,9 @@ export function Sidebar() {
 
   // Auto-expand parent menus if their children are active
   useEffect(() => {
-    const activeMenu = menus.find((menu: Menu) => menu.path === pathname);
+    const activeMenu = menus.find((menu: { path: string }) => menu.path === pathname);
     if (activeMenu?.parentId) {
-      setExpandedMenus((prev) => new Set(prev).add(activeMenu.parentId));
+      setExpandedMenus((prev) => new Set(prev).add(activeMenu?.parentId || ""));
     }
   }, [pathname, menus]);
 
@@ -90,7 +90,7 @@ export function Sidebar() {
     });
   };
 
-  const organizedMenus = organizeMenus(menus);
+  const organizedMenus = organizeMenus(menus as Menu[]);
 
   const toggleExpanded = (menuId: string) => {
     setExpandedMenus((prev) => {
@@ -180,7 +180,7 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col border-r bg-card transition-all duration-300",
+        "relative flex h-full flex-col border-r  transition-all duration-300 text-primary-foreground bg-primary",
         sidebarOpen ? "w-64" : "w-16"
       )}
     >
@@ -203,7 +203,7 @@ export function Sidebar() {
         </Button>
       </div>
 
-      <ScrollArea className="flex-1 px-2 py-4">
+      <ScrollArea className="flex-1 px-2 py-4 bg-primary text-primary-foreground bg-gradient-to-l from-primary to-primary/80">
         <div className="flex items-center space-x-4 ml-2 mb-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -222,7 +222,7 @@ export function Sidebar() {
                   <p className="text-sm font-medium leading-none">
                     {user?.username}
                   </p>
-                  <p className="text-xs leading-none text-muted-foreground">
+                  <p className="text-xs leading-none text-primary-foreground">
                     {user?.role.name}
                   </p>
                 </div>

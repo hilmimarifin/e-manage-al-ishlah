@@ -217,7 +217,7 @@ export function DataTable<TData, TValue>({
                 {/* Custom header rows */}
                 {customHeaderRows.map((headerRow) => (
                   <TableRow
-                    className="h-8 bg-primary text-primary-foreground text-white"
+                    className="h-8 text-primary-foreground bg-gradient-to-l from-primary to-secondary/5"
                     key={headerRow.id}
                   >
                     {headerRow.cells.map((cell, index) => (
@@ -238,7 +238,7 @@ export function DataTable<TData, TValue>({
                 {/* Main header row */}
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow
-                    className="h-8 bg-primary text-primary-foreground rounded-t-md text-white "
+                    className="h-8 text-primary-foreground bg-gradient-to-l from-primary to-primary/80"
                     key={headerGroup.id}
                   >
                     {shouldRenderHeaderCell("rowNumber") && (
