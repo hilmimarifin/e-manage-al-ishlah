@@ -69,7 +69,7 @@ export function ClassForm({
     onSubmit(data);
   };
 
-  const teacherOptions = useUsers().data?.map((user) => ({
+  const teacherOptions = useUsers({}).data?.map((user) => ({
     value: user.id,
     label: user.username,
   })) || [];

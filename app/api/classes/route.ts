@@ -1,12 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { withReadPermission, withWritePermission } from "@/lib/auth-middleware";
+import {
+  withAuth,
+  withReadPermission,
+  withWritePermission,
+} from "@/lib/auth-middleware";
 import { createSuccessResponse, createErrorResponse } from "@/lib/api-response";
 import { createClassSchema } from "@/lib/validations";
 
-export const GET = withReadPermission("/classes", async (req: NextRequest) => {
+export const GET = withAuth(async (req: NextRequest) => {
   try {
+    const { searchParams } = new URL(req.url);
+    const year = searchParams.get("year");
+    const teacherId = searchParams.get("teacherId");
     const classes = await prisma.class.findMany({
+      where: {
+        AND: [
+          { year: year || undefined },
+          { teacherId: teacherId || undefined },
+        ],
+      },
       include: {
         teacher: { select: { username: true } },
       },
@@ -15,10 +28,7 @@ export const GET = withReadPermission("/classes", async (req: NextRequest) => {
       },
     });
     const flattenedData = classes.map((item) => {
-      const {
-        teacher,
-        ...rest
-      } = item;
+      const { teacher, ...rest } = item;
       return {
         ...rest,
         teacherName: teacher?.username || null,

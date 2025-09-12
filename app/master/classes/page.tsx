@@ -21,7 +21,7 @@ export default function ClassesPage() {
   const [selectedClass, setSelectedClass] = useState<Class | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const { data: classes = [], isLoading, error } = useClasses()
+  const { data: classes = [], isLoading, error } = useClasses({})
   const createClass = useCreateClass()
   const updateClass = useUpdateClass()
   const deleteClass = useDeleteClass()

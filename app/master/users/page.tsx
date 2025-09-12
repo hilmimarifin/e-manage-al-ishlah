@@ -38,7 +38,7 @@ export default function UsersPage() {
   const { user } = useAuthStore();
   const router = useRouter();
 
-  const { data: users = [], isLoading } = useUsers();
+  const { data: users = [], isLoading } = useUsers({});
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
   const deleteUser = useDeleteUser();

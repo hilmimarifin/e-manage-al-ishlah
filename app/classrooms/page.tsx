@@ -38,17 +38,21 @@ import FilterContainer from "@/components/elements/filter-container";
 import Container from "@/components/elements/container";
 import { isAdminClient } from "@/lib/client-utils";
 import HeaderTitle from "@/components/elements/header-title";
+import { useClasses } from "@/hooks/use-classes";
 
 type Classroom = ClassroomType;
 
 export default function ClassesPage() {
-  const [selectedClass, setSelectedClass] = useState<Classroom | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [filter, setFilter] = useState({
     year: "2025/2026",
     teacherId: useAuthStore.getState().user?.id,
-    grade: "",
+    classId: "",
   });
+
+  const [selectedClass, setSelectedClass] = useState<Classroom | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { data: classes = [] } = useClasses({ year: filter.year });
+
   const isAdmin = isAdminClient();
   const { data: classrooms, isLoading, error } = useStudentClassrooms(filter);
   const deleteClassroom = useDeleteClassroom();
@@ -95,11 +99,25 @@ export default function ClassesPage() {
     setDialogOpen(true);
   };
 
-  const { data: teachers = [] } = useUsers();
+  const { data: teachers = [] } = useUsers({
+    year: filter.year,
+    classId: filter.classId,
+  });
   const teacherOptions = teachers.map((teacher) => ({
     value: teacher.id,
     label: teacher.username,
   }));
+  const classOptions = classes.map((cls) => ({
+    value: cls.id,
+    label: cls.name,
+  }));
+
+  useEffect(() => {
+    setFilter((prev) => ({
+      ...prev,
+      classId: classes.find((cls) => cls.teacherId === prev.teacherId)?.id || "",
+    }));
+  }, [classes]);
 
   const columns: ColumnDef<Classroom>[] = [
     {
@@ -107,7 +125,7 @@ export default function ClassesPage() {
       header: "Nama",
     },
     {
-      accessorKey: "grade",
+      accessorKey: "className",
       header: "Kelas",
     },
     {
@@ -185,33 +203,27 @@ export default function ClassesPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <HeaderTitle title="Ruang Kelas" description="Mengelola kelas di sekolah" />
+        <HeaderTitle
+          title="Ruang Kelas"
+          description="Mengelola kelas di sekolah"
+        />
         <Container>
           <FilterContainer className="grid grid-cols-1 md:grid-cols-4 gap-2">
-            {isAdmin && (
-              <Select
-                label="Kelas"
-                placeholder="Pilih kelas"
-                options={[
-                  { value: "0", label: "Kelas TK" },
-                  { value: "1", label: "Kelas 1" },
-                  { value: "2", label: "Kelas 2" },
-                  { value: "3", label: "Kelas 3" },
-                  { value: "4", label: "Kelas 4" },
-                  { value: "5", label: "Kelas 5" },
-                  { value: "6", label: "Kelas 6" },
-                ]}
-                value={filter.grade}
-                onValueChange={(value) => {
-                  setFilter({ ...filter, grade: value });
-                }}
-              />
-            )}
             <TahunAjaran
               onValueChange={(value) => {
                 setFilter({ ...filter, year: value });
               }}
               value={filter.year}
+            />
+
+            <Select
+              label="Kelas"
+              placeholder="Pilih kelas"
+              options={classOptions}
+              value={filter.classId}
+              onValueChange={(value) => {
+                setFilter({ ...filter, classId: value });
+              }}
             />
             <Select
               label="Guru"

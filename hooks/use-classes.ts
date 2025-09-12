@@ -3,10 +3,10 @@ import { showToast } from '@/lib/toast'
 import { Class } from '@/types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export function useClasses() {
+export function useClasses({ year }: { year?: string }) {
   return useQuery({
-    queryKey: ['classes'],
-    queryFn: () => apiClient.get<Class[]>('/classes'),
+    queryKey: ['classes', year],
+    queryFn: () => apiClient.get<Class[]>('/classes', { params: { year } }),
   })
 }
 

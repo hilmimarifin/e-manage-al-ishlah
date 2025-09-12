@@ -58,7 +58,7 @@ export default function ClassesPage() {
     }
   };
 
-  const { data: teachers = [] } = useUsers();
+  const { data: teachers = [] } = useUsers({});
   const teacherOptions = teachers.map((teacher) => ({
     value: teacher.id,
     label: teacher.username,
