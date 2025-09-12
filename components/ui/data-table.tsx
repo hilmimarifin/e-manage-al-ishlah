@@ -238,7 +238,7 @@ export function DataTable<TData, TValue>({
                 {/* Main header row */}
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow
-                    className="h-8 bg-primary text-primary-foreground rounded-t-md text-white"
+                    className="h-8 bg-primary text-primary-foreground rounded-t-md text-white "
                     key={headerGroup.id}
                   >
                     {shouldRenderHeaderCell("rowNumber") && (
