@@ -83,20 +83,19 @@ export const POST = withAuth(async (req: NextRequest) => {
   try {
     const body = await req.json();
     //validate is user is exist in class
-    const studentClass = await prisma.studentClass.findUnique({
+    const studentClass = await prisma.studentClass.findFirst({
       where: {
-        studentId_classId_year: {
-          studentId: body.studentId ,
-          classId: body.classId,
-          year: body.year,
-        },
+        AND: [
+          { studentId: body.studentId },
+          { year: body.year },
+        ]
       },
     });
     if (studentClass) {
       return NextResponse.json(
         createErrorResponse(
           "Gagal menambahkan siswa",
-          "Siswa sudah terdaftar di kelas"
+          "Siswa sudah terdaftar di kelas lain"
         ),
         { status: 400 }
       );

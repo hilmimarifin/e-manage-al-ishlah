@@ -1,19 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+import { createErrorResponse, createSuccessResponse } from "@/lib/api-response";
 import {
   withAuth,
-  withReadPermission,
-  withWritePermission,
+  withWritePermission
 } from "@/lib/auth-middleware";
-import { createSuccessResponse, createErrorResponse } from "@/lib/api-response";
+import { prisma } from "@/lib/prisma";
+import { User } from "@/types/api";
+import bcrypt from "bcryptjs";
+import { NextRequest, NextResponse } from "next/server";
 
-export const GET = withAuth(async (req: NextRequest, user: any) => {
+export const GET = withAuth(async (req: NextRequest, user: User) => {
   try {
     const { searchParams } = new URL(req.url);
     const classId = searchParams.get("classId");
     const year = searchParams.get("year");
-
     if (!classId || !year) {
       const users = await prisma.user.findMany({
         include: {

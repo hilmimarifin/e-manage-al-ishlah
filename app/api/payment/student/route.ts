@@ -8,15 +8,17 @@ import {
 import { createSuccessResponse, createErrorResponse } from "@/lib/api-response";
 import { createStudentClassSchema } from "@/lib/validations";
 import { convertToAcademicMonthNumber } from "@/lib/utils";
+import { isAdmin } from "@/lib/utils";
 export const GET = withAuth(async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
     const teacherId = searchParams.get("teacherId") || undefined;
     const year = searchParams.get("year") || undefined;
+    const admin = await isAdmin(teacherId || "");
     const studentofClass = await prisma.studentClass.findMany({
       where: {
         class: {
-          AND: [{ year }, { teacherId }],
+          AND: [{ year }, { teacherId: admin ? undefined : teacherId }],
         },
       },
       include: {

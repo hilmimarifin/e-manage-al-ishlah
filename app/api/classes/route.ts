@@ -7,17 +7,19 @@ import {
 } from "@/lib/auth-middleware";
 import { createSuccessResponse, createErrorResponse } from "@/lib/api-response";
 import { createClassSchema } from "@/lib/validations";
+import { isAdmin } from "@/lib/utils";
 
 export const GET = withAuth(async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
     const year = searchParams.get("year");
     const teacherId = searchParams.get("teacherId");
+    const admin = await isAdmin(teacherId || "");
     const classes = await prisma.class.findMany({
       where: {
         AND: [
           { year: year || undefined },
-          { teacherId: teacherId || undefined },
+          { teacherId: admin ? undefined : teacherId || undefined },
         ],
       },
       include: {
