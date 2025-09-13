@@ -39,22 +39,27 @@ import Container from "@/components/elements/container";
 import { isAdminClient } from "@/lib/client-utils";
 import HeaderTitle from "@/components/elements/header-title";
 import { useClasses } from "@/hooks/use-classes";
+import moment from "moment";
 
 type Classroom = ClassroomType;
 
 export default function ClassesPage() {
-  const [filter, setFilter] = useState({
-    year: "2025/2026",
+  const initFilter = {
+    year: moment().format("YYYY") + "/" + moment().add(1, "year").format("YYYY"),
     teacherId: useAuthStore.getState().user?.id,
     classId: "",
-  });
+  };
+  const [filter, setFilter] = useState(initFilter);
+  const { data: classrooms, isLoading, error } = useStudentClassrooms(filter);
+  const { data: classes = [] } = useClasses(filter);
 
+  useEffect(() => {
+    setFilter((prev) => ({ ...prev, classId: classes?.[0]?.id || "" }));
+  }, [classes]);
   const [selectedClass, setSelectedClass] = useState<Classroom | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { data: classes = [] } = useClasses({ year: filter.year });
 
   const isAdmin = isAdminClient();
-  const { data: classrooms, isLoading, error } = useStudentClassrooms(filter);
   const deleteClassroom = useDeleteClassroom();
   const [form, setForm] = useState({
     studentId: "",
@@ -111,13 +116,6 @@ export default function ClassesPage() {
     value: cls.id,
     label: cls.name,
   }));
-
-  useEffect(() => {
-    setFilter((prev) => ({
-      ...prev,
-      classId: classes.find((cls) => cls.teacherId === prev.teacherId)?.id || "",
-    }));
-  }, [classes]);
 
   const columns: ColumnDef<Classroom>[] = [
     {
