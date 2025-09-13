@@ -53,12 +53,6 @@ export default function ClassesPage() {
   const { data: classrooms, isLoading, error } = useStudentClassrooms(filter);
   const { data: classes = [] } = useClasses(filter);
 
-  useEffect(() => {
-    setFilter((prev) => ({ ...prev, classId: classes?.[0]?.id || "" }));
-  }, [classes]);
-  const [selectedClass, setSelectedClass] = useState<Classroom | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-
   const isAdmin = isAdminClient();
   const deleteClassroom = useDeleteClassroom();
   const [form, setForm] = useState({
@@ -80,6 +74,9 @@ export default function ClassesPage() {
     isLoading: permissionsLoading,
   } = usePermissionGuard("/classrooms");
 
+  useEffect(() => {
+    setForm((prev) => ({ ...prev, classId: filter.classId }));
+  }, [filter.classId]);
   const addStudentToClass = useAddStudentToClass();
   const handleAddStudentToClass = async () => {
     try {
@@ -97,11 +94,6 @@ export default function ClassesPage() {
         console.error("Failed to delete classes:", error);
       }
     }
-  };
-
-  const openEditDialog = (classes: any) => {
-    setSelectedClass(classes);
-    setDialogOpen(true);
   };
 
   const { data: teachers = [] } = useUsers({
@@ -147,12 +139,6 @@ export default function ClassesPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {showEditButton && (
-                <DropdownMenuItem onClick={() => openEditDialog(classes)}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit
-                </DropdownMenuItem>
-              )}
               {showDeleteButton && (
                 <DropdownMenuItem
                   onClick={() => handleDeleteClass(classes.id)}
