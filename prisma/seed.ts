@@ -47,7 +47,7 @@ async function main() {
   });
 
   const usersMenu = await prisma.menu.upsert({
-    where: { path: "/users" },
+    where: { path: "/master/users" },
     update: {},
     create: {
       name: "Users",
@@ -58,7 +58,7 @@ async function main() {
   });
 
   const rolesMenu = await prisma.menu.upsert({
-    where: { path: "/roles" },
+    where: { path: "/master/roles" },
     update: {},
     create: {
       name: "Roles",
@@ -69,7 +69,7 @@ async function main() {
   });
 
   const menusMenu = await prisma.menu.upsert({
-    where: { path: "/menus" },
+    where: { path: "/master/menus" },
     update: {},
     create: {
       name: "Menus",
