@@ -1,17 +1,5 @@
 "use client";
 
-import React from "react";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  SortingState,
-  ColumnFiltersState,
-  useReactTable,
-} from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,15 +10,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  Search,
+  Loader2,
+  Search
 } from "lucide-react";
+import React from "react";
 import { Card, CardContent } from "./card";
-import { cn } from "@/lib/utils";
 
 interface MergedCell {
   rowIndex: number;
@@ -276,9 +277,9 @@ export function DataTable<TData, TValue>({
                   <TableRow>
                     <TableCell
                       colSpan={columns.length + 1}
-                      className="h-8 text-center"
+                      className="h-10 text-center"
                     >
-                      Loading...
+                      <Loader2 className="animate-spin mx-auto" />
                     </TableCell>
                   </TableRow>
                 ) : table.getRowModel().rows?.length ? (

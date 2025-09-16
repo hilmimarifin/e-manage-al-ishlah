@@ -27,6 +27,7 @@ import { useState } from "react";
 import { StudentForm } from "@/components/forms/student-form";
 import { Student as StudentType } from "@/types";
 import { Gender } from "@prisma/client";
+import moment from "moment";
 
 type Student = StudentType;
 
@@ -103,7 +104,7 @@ export default function StudentsPage() {
       accessorKey: "birthDate",
       header: "Tanggal Lahir",
       cell: ({ row }) => (
-        <div>{new Date(row.getValue("birthDate")).toLocaleDateString()}</div>
+        <div>{moment(row.getValue("birthDate")).format("DD MMMM YYYY")}</div>
       ),
     },
     {
@@ -162,9 +163,9 @@ export default function StudentsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Student Management
+              Master Siswa
             </h1>
-            <p className="text-muted-foreground">Create and manage students.</p>
+            <p className="text-muted-foreground">Mengatur, menambah, mengedit, dan menghapus data siswa.</p>
           </div>
 
           {showAddButton && (

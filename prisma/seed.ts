@@ -1,4 +1,9 @@
-import { PrismaClient, StudentStatus, PaymentStatus, Gender } from "@prisma/client";
+import {
+  PrismaClient,
+  StudentStatus,
+  PaymentStatus,
+  Gender,
+} from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -68,19 +73,72 @@ async function main() {
     },
   });
 
-  const menusMenu = await prisma.menu.upsert({
+  const masterMenu = await prisma.menu.upsert({
     where: { path: "/master/menus" },
     update: {},
     create: {
-      name: "Menus",
+      name: "Master Menu",
       path: "/master/menus",
       icon: "MenuIcon",
       orderIndex: 4,
     },
   });
 
+  const masterClass = await prisma.menu.upsert({
+    where: { path: "/master/classes" },
+    update: {},
+    create: {
+      name: "Master Kelas",
+      path: "/master/classes",
+      icon: "MenuIcon",
+      orderIndex: 4,
+    },
+  });
+
+  const studentsMenu = await prisma.menu.upsert({
+    where: { path: "/master/students" },
+    update: {},
+    create: {
+      name: "Master Siswa",
+      path: "/master/students",
+      icon: "MenuIcon",
+      orderIndex: 4,
+    },
+  });
+
+  const classRoomMenu = await prisma.menu.upsert({
+    where: { path: "/classrooms" },
+    update: {},
+    create: {
+      name: "Kelas",
+      path: "/classrooms",
+      icon: "MenuIcon",
+      orderIndex: 4,
+    },
+  });
+
+  const paymentMenu = await prisma.menu.upsert({
+    where: { path: "/payment-class" },
+    update: {},
+    create: {
+      name: "Pembayaran",
+      path: "/payment-class",
+      icon: "MenuIcon",
+      orderIndex: 4,
+    },
+  });
+
   // RoleMenu - full access for admin
-  for (const menu of [dashboardMenu, usersMenu, rolesMenu, menusMenu]) {
+  for (const menu of [
+    dashboardMenu,
+    usersMenu,
+    rolesMenu,
+    masterMenu,
+    masterClass,
+    studentsMenu,
+    classRoomMenu,
+    paymentMenu,
+  ]) {
     await prisma.roleMenu.upsert({
       where: {
         roleId_menuId: { roleId: adminRole.id, menuId: menu.id },

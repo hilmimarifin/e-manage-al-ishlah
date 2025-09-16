@@ -173,22 +173,14 @@ export default function UsersPage() {
               </Button>
             )}
           </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Users</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DataTable
-                columns={columns}
-                data={users}
-                isLoading={isLoading}
-                searchPlaceholder="Search users..."
-                emptyMessage="No users found."
-                pageSize={10}
-              />
-            </CardContent>
-          </Card>
+          <DataTable
+            columns={columns}
+            data={users}
+            isLoading={isLoading}
+            searchPlaceholder="Search users..."
+            emptyMessage="No users found."
+            pageSize={10}
+          />
         </div>
         <Modal
           isOpen={dialogOpen}
