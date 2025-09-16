@@ -66,7 +66,9 @@ export function Sidebar() {
 
   // Auto-expand parent menus if their children are active
   useEffect(() => {
-    const activeMenu = menus.find((menu: { path: string }) => menu.path === pathname);
+    const activeMenu = menus.find(
+      (menu: { path: string }) => menu.path === pathname
+    );
     if (activeMenu?.parentId) {
       setExpandedMenus((prev) => new Set(prev).add(activeMenu?.parentId || ""));
     }
@@ -205,49 +207,48 @@ export function Sidebar() {
 
       <ScrollArea className="flex-1 px-2 py-4 bg-primary text-primary-foreground bg-gradient-to-l from-primary to-primary/80">
         <div className="flex items-center space-x-4 ml-2 mb-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
-                >
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>
-                      {user?.username.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    {user?.username}
-                  </p>
-                  <p className="text-xs leading-none text-primary-foreground">
-                    {user?.role.name}
-                  </p>
-                </div>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="secondary"
+              className="relative h-8 w-8 rounded-full"
+            >
+              <Avatar className="h-8 w-8">
+                <AvatarFallback>
+                  {user?.username.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">
+                {user?.username}
+              </p>
+              <p className="text-xs leading-none text-primary-foreground">
+                {user?.role.name}
+              </p>
+            </div>
+          </div>
         </div>
 
         <nav className="space-y-2">
           {organizedMenus.map((menu) => renderMenuItem(menu))}
         </nav>
       </ScrollArea>
-      <div
-        className="px-4 py-4 border-t-2 flex items-center space-x-2 cursor-pointer hover:bg-red-50 "
+      <Separator />
+      <Button
         onClick={handleLogout}
+        variant="ghost"
+        className={cn(
+          "w-full justify-start transition-colors py-8",
+          !sidebarOpen && "justify-center px-2"
+        )}
       >
         <LogOut color="red" className="h-5 w-5 " />
-        <span className="text-red-500 font-semibold">Log out</span>
-      </div>
+        {sidebarOpen && (
+          <>
+            <span className="text-red-500 font-semibold ml-3">Log out</span>
+          </>
+        )}
+      </Button>
     </div>
   );
 }

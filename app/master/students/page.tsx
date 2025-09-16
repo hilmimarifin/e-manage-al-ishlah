@@ -1,78 +1,93 @@
-'use client'
+"use client";
 
-import { PermissionModal } from '@/components/forms/permission-modal'
-import { DashboardLayout } from '@/components/layout/dashboard-layout'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { DataTable } from '@/components/ui/data-table'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Modal } from '@/components/ui/modal'
-import { usePermissionGuard } from '@/hooks/use-permissions'
-import { useCreateStudent, useDeleteStudent, useStudents, useUpdateStudent } from '@/hooks/use-students'
-import { ColumnDef } from '@tanstack/react-table'
-import { Edit, MoreHorizontal, Plus, Shield, Trash } from 'lucide-react'
-import { useState } from 'react'
+import { PermissionModal } from "@/components/forms/permission-modal";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTable } from "@/components/ui/data-table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Modal } from "@/components/ui/modal";
+import { usePermissionGuard } from "@/hooks/use-permissions";
+import {
+  useCreateStudent,
+  useDeleteStudent,
+  useStudents,
+  useUpdateStudent,
+} from "@/hooks/use-students";
+import { ColumnDef } from "@tanstack/react-table";
+import { Edit, MoreHorizontal, Plus, Shield, Trash } from "lucide-react";
+import { useState } from "react";
 
-import { StudentForm } from '@/components/forms/student-form'
-import { Student as StudentType } from '@/types'
-import { Gender } from '@prisma/client'
+import { StudentForm } from "@/components/forms/student-form";
+import { Student as StudentType } from "@/types";
+import { Gender } from "@prisma/client";
 
-type Student = StudentType
+type Student = StudentType;
 
 export default function StudentsPage() {
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  const { data: students = [], isLoading, error } = useStudents()
-  const createStudent = useCreateStudent()
-  const updateStudent = useUpdateStudent()
-  const deleteStudent = useDeleteStudent()
-  
+  const { data: students = [], isLoading, error } = useStudents();
+  const createStudent = useCreateStudent();
+  const updateStudent = useUpdateStudent();
+  const deleteStudent = useDeleteStudent();
+
   // Permission checks for /roles path
-  const { showAddButton, showEditButton, showDeleteButton, canUpdate, isLoading: permissionsLoading } = usePermissionGuard('/roles')
-
+  const {
+    showAddButton,
+    showEditButton,
+    showDeleteButton,
+    canUpdate,
+    isLoading: permissionsLoading,
+  } = usePermissionGuard("/roles");
 
   const handleCreateStudent = async (data: any) => {
     try {
-      await createStudent.mutateAsync(data)
-      setDialogOpen(false)
+      await createStudent.mutateAsync(data);
+      setDialogOpen(false);
     } catch (error) {
-      console.error('Failed to create student:', error)
+      console.error("Failed to create student:", error);
     }
-  }
+  };
 
   const handleUpdateStudent = async (data: any) => {
     try {
       if (selectedStudent) {
-        await updateStudent.mutateAsync({ id: selectedStudent.id, ...data })
-        setDialogOpen(false)
-        setSelectedStudent(null)
+        await updateStudent.mutateAsync({ id: selectedStudent.id, ...data });
+        setDialogOpen(false);
+        setSelectedStudent(null);
       }
     } catch (error) {
-      console.error('Failed to update student:', error)
+      console.error("Failed to update student:", error);
     }
-  }
+  };
 
   const handleDeleteStudent = async (id: string) => {
-    if (confirm('Are you sure you want to delete this student?')) {
+    if (confirm("Are you sure you want to delete this student?")) {
       try {
-        await deleteStudent.mutateAsync(id)
+        await deleteStudent.mutateAsync(id);
       } catch (error) {
-        console.error('Failed to delete student:', error)
+        console.error("Failed to delete student:", error);
       }
     }
-  }
+  };
 
   const openEditDialog = (student: any) => {
-    setSelectedStudent(student)
-    setDialogOpen(true)
-  }
+    setSelectedStudent(student);
+    setDialogOpen(true);
+  };
 
   const openCreateDialog = () => {
-    setSelectedStudent(null)
-    setDialogOpen(true)
-  }
+    setSelectedStudent(null);
+    setDialogOpen(true);
+  };
 
   const columns: ColumnDef<Student>[] = [
     {
@@ -99,7 +114,11 @@ export default function StudentsPage() {
     {
       accessorKey: "gender",
       header: "Jenis Kelamin",
-      cell: ({ row }) => <div>{row.getValue("gender") === Gender.MALE ? "Laki-laki" : "Perempuan"}</div>,
+      cell: ({ row }) => (
+        <div>
+          {row.getValue("gender") === Gender.MALE ? "Laki-laki" : "Perempuan"}
+        </div>
+      ),
     },
 
     {
@@ -137,7 +156,6 @@ export default function StudentsPage() {
     },
   ];
 
-
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -146,17 +164,19 @@ export default function StudentsPage() {
             <h1 className="text-3xl font-bold tracking-tight">
               Student Management
             </h1>
-            <p className="text-muted-foreground">
-              Create and manage students.
-            </p>
+            <p className="text-muted-foreground">Create and manage students.</p>
           </div>
 
           {showAddButton && (
             <Modal
               isOpen={dialogOpen}
               onOpenChange={setDialogOpen}
-              title={selectedStudent ? 'Edit Student' : 'Create Student'}
-              description={selectedStudent ? 'Make changes to the student here.' : 'Add a new student to the system.'}
+              title={selectedStudent ? "Edit Student" : "Create Student"}
+              description={
+                selectedStudent
+                  ? "Make changes to the student here."
+                  : "Add a new student to the system."
+              }
               trigger={
                 <Button onClick={openCreateDialog}>
                   <Plus className="mr-2 h-4 w-4" />
@@ -166,30 +186,24 @@ export default function StudentsPage() {
             >
               <StudentForm
                 student={selectedStudent || undefined}
-                onSubmit={selectedStudent ? handleUpdateStudent : handleCreateStudent}
+                onSubmit={
+                  selectedStudent ? handleUpdateStudent : handleCreateStudent
+                }
                 isLoading={createStudent.isPending || updateStudent.isPending}
               />
             </Modal>
           )}
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Daftar Siswa</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DataTable
-              columns={columns}
-              data={students}
-              isLoading={isLoading}
-              searchPlaceholder="Cari siswa..."
-              emptyMessage="Tidak ada siswa ditemukan."
-              pageSize={10}
-            />
-          </CardContent>
-        </Card>
+        <DataTable
+          columns={columns}
+          data={students}
+          isLoading={isLoading}
+          searchPlaceholder="Cari siswa..."
+          emptyMessage="Tidak ada siswa ditemukan."
+          pageSize={10}
+        />
       </div>
-
     </DashboardLayout>
   );
 }

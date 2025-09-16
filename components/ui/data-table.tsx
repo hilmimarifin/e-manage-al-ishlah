@@ -330,8 +330,8 @@ export function DataTable<TData, TValue>({
           </div>
 
           {showPagination && (
-            <div className="flex items-center justify-between space-x-2 py-4">
-              <div className="text-sm text-muted-foreground">
+            <div className="flex md:flex-row flex-col items-end justify-between space-x-2 text-xs">
+              <div className="text-xs text-muted-foreground">
                 Showing{" "}
                 {table.getState().pagination.pageIndex *
                   table.getState().pagination.pageSize +
@@ -361,9 +361,9 @@ export function DataTable<TData, TValue>({
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <div className="flex items-center space-x-1">
-                  <span className="text-sm">Page</span>
-                  <strong className="text-sm">
+                <div className="flex items-center space-x-1 text-xs">
+                  <span className="text-xs">Page</span>
+                  <strong className="text-xs">
                     {table.getState().pagination.pageIndex + 1} of{" "}
                     {table.getPageCount()}
                   </strong>
