@@ -27,9 +27,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuthStore } from "@/store/auth-store";
+import Tooltip from "@/components/elements/tooltip";
 
 const iconMap: Record<string, any> = {
   LayoutDashboard,
@@ -163,17 +164,31 @@ export function Sidebar() {
     return (
       <div key={menu.id}>
         <Link href={menu.path}>
-          <Button
-            variant={isActive ? "secondary" : "ghost"}
-            className={cn(
-              "w-full justify-start transition-colors",
-              !sidebarOpen && "justify-center px-2",
-              isChild && "ml-4 w-[calc(100%-1rem)]"
-            )}
-          >
-            <Icon className="h-4 w-4" />
-            {sidebarOpen && <span className="ml-3">{menu.name}</span>}
-          </Button>
+          {sidebarOpen ? (
+            <Button
+              variant={isActive ? "secondary" : "ghost"}
+              className={cn(
+                "w-full justify-start transition-colors",
+                isChild && "ml-4 w-[calc(100%-1rem)]"
+              )}
+            >
+              <Icon className="h-4 w-4" />
+              <span className="ml-3">{menu.name}</span>
+            </Button>
+          ) : (
+            <Tooltip content={menu.name} side="right" sideOffset={15}>
+              <Button
+                variant={isActive ? "secondary" : "ghost"}
+                className={cn(
+                  "w-full justify-start transition-colors",
+                  "justify-center px-2",
+                  isChild && "ml-4 w-[calc(100%-1rem)]"
+                )}
+              >
+                <Icon className="h-4 w-4" />
+              </Button>
+            </Tooltip>
+          )}
         </Link>
       </div>
     );

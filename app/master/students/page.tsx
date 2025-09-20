@@ -21,10 +21,11 @@ import {
   useUpdateStudent,
 } from "@/hooks/use-students";
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit, MoreHorizontal, Plus, Shield, Trash } from "lucide-react";
+import { Edit, MoreHorizontal, Plus, Shield, Trash, Upload } from "lucide-react";
 import { useState } from "react";
 
 import { StudentForm } from "@/components/forms/student-form";
+import { BatchUploadForm } from "@/components/forms/batch-upload-form";
 import { Student as StudentType } from "@/types";
 import { Gender } from "@prisma/client";
 import moment from "moment";
@@ -34,6 +35,7 @@ type Student = StudentType;
 export default function StudentsPage() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [batchUploadOpen, setBatchUploadOpen] = useState(false);
 
   const { data: students = [], isLoading, error } = useStudents();
   const createStudent = useCreateStudent();
@@ -169,30 +171,47 @@ export default function StudentsPage() {
           </div>
 
           {showAddButton && (
-            <Modal
-              isOpen={dialogOpen}
-              onOpenChange={setDialogOpen}
-              title={selectedStudent ? "Edit Student" : "Create Student"}
-              description={
-                selectedStudent
-                  ? "Make changes to the student here."
-                  : "Add a new student to the system."
-              }
-              trigger={
-                <Button onClick={openCreateDialog}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Student
-                </Button>
-              }
-            >
-              <StudentForm
-                student={selectedStudent || undefined}
-                onSubmit={
-                  selectedStudent ? handleUpdateStudent : handleCreateStudent
+            <div className="flex gap-2">
+              <Modal
+                isOpen={dialogOpen}
+                onOpenChange={setDialogOpen}
+                title={selectedStudent ? "Edit Student" : "Create Student"}
+                description={
+                  selectedStudent
+                    ? "Make changes to the student here."
+                    : "Add a new student to the system."
                 }
-                isLoading={createStudent.isPending || updateStudent.isPending}
-              />
-            </Modal>
+                trigger={
+                  <Button onClick={openCreateDialog}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Student
+                  </Button>
+                }
+              >
+                <StudentForm
+                  student={selectedStudent || undefined}
+                  onSubmit={
+                    selectedStudent ? handleUpdateStudent : handleCreateStudent
+                  }
+                  isLoading={createStudent.isPending || updateStudent.isPending}
+                />
+              </Modal>
+
+              <Modal
+                isOpen={batchUploadOpen}
+                onOpenChange={setBatchUploadOpen}
+                title="Upload Data Siswa"
+                description="Upload file Excel atau CSV untuk menambahkan siswa secara batch"
+                trigger={
+                  <Button variant="outline" onClick={() => setBatchUploadOpen(true)}>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Batch Upload
+                  </Button>
+                }
+              >
+                <BatchUploadForm onClose={() => setBatchUploadOpen(false)} />
+              </Modal>
+            </div>
           )}
         </div>
 
