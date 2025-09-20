@@ -45,7 +45,8 @@ type Classroom = ClassroomType;
 
 export default function ClassesPage() {
   const initFilter = {
-    year: moment().format("YYYY") + "/" + moment().add(1, "year").format("YYYY"),
+    year:
+      moment().format("YYYY") + "/" + moment().add(1, "year").format("YYYY"),
     teacherId: useAuthStore.getState().user?.id,
     classId: "",
   };
@@ -96,10 +97,7 @@ export default function ClassesPage() {
     }
   };
 
-  const { data: teachers = [] } = useUsers({
-    year: filter.year,
-    classId: filter.classId,
-  });
+  const { data: teachers = [] } = useUsers({});
   const teacherOptions = teachers.map((teacher) => ({
     value: teacher.id,
     label: teacher.username,
@@ -193,6 +191,16 @@ export default function ClassesPage() {
         />
         <Container>
           <FilterContainer className="grid grid-cols-1 md:grid-cols-4 gap-2">
+            <Select
+              label="Guru"
+              options={teacherOptions}
+              value={filter.teacherId}
+              onValueChange={(value) => {
+                setFilter({ ...filter, teacherId: value });
+              }}
+              disabled={!isAdmin}
+            />
+
             <TahunAjaran
               onValueChange={(value) => {
                 setFilter({ ...filter, year: value });
@@ -208,15 +216,6 @@ export default function ClassesPage() {
               onValueChange={(value) => {
                 setFilter({ ...filter, classId: value });
               }}
-            />
-            <Select
-              label="Guru"
-              options={teacherOptions}
-              value={filter.teacherId}
-              onValueChange={(value) => {
-                setFilter({ ...filter, teacherId: value });
-              }}
-              disabled={!isAdmin}
             />
           </FilterContainer>
 
