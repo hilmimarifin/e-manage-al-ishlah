@@ -6,13 +6,36 @@ import { createSuccessResponse, createErrorResponse } from '@/lib/api-response'
 
 export const PUT = withUpdatePermission('/users', async (req: NextRequest, user: any, { params }: { params: { id: string } }) => {
   try {
-    const { email, username, password, roleId } = await req.json()
+    const { 
+      email, 
+      username, 
+      password, 
+      roleId, 
+      nik, 
+      name, 
+      gender, 
+      birthDate, 
+      birthPlace, 
+      education, 
+      phone, 
+      address, 
+      photo 
+    } = await req.json()
     const { id } = params
 
     const updateData: any = {
       email,
       username,
-      roleId
+      roleId,
+      nik,
+      name,
+      gender,
+      birthDate: birthDate ? new Date(birthDate) : null,
+      birthPlace,
+      education,
+      phone,
+      address,
+      photo
     }
 
     if (password) {

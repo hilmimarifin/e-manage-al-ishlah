@@ -5,6 +5,15 @@ export interface User {
   email: string;
   username: string;
   password?: string;
+  nik: string;
+  name: string;
+  gender: Gender;
+  birthDate?: string | null;
+  birthPlace?: string | null;
+  education?: string | null;
+  phone: string;
+  address?: string | null;
+  photo?: string | null;
   roleId: string;
   role: Role;
   createdAt: string;
@@ -26,12 +35,14 @@ export interface Role {
 
 export interface Student {
   id: string;
+  nik: string;
   fullName: string;
-  birthDate: string;
-  address: string;
-  phone: string;
-  guardian: string;
-  photo: string;
+  birthDate?: string | null;
+  birthPlace?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  guardian?: string | null;
+  photo?: string | null;
   status: StudentStatus;
   createdAt: string;
   updatedAt: string;

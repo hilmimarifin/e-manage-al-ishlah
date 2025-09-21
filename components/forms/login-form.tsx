@@ -37,9 +37,9 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">DTA AL-ISHLAH</CardTitle>
         <CardDescription className="text-center">
-          Enter your credentials to access your account
+          Masuk ke akun Anda
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -57,7 +57,7 @@ export function LoginForm() {
             <Input
               id="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="Masukkan email Anda"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -69,7 +69,7 @@ export function LoginForm() {
             <Input
               id="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="Masukkan password Anda"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -81,13 +81,13 @@ export function LoginForm() {
             className="w-full" 
             disabled={login.isPending}
           >
-            {login.isPending ? 'Signing in...' : 'Sign In'}
+            {login.isPending ? 'Masuk...' : 'Masuk'}
           </Button>
           
           <div className="text-center text-sm">
-            Don&apos;t have an account?{' '}
+            Belum punya akun?{' '}
             <Link href="/register" className="text-primary hover:underline">
-              Sign up
+              Daftar
             </Link>
           </div>
         </form>

@@ -45,7 +45,11 @@ export async function POST(request: NextRequest) {
         email,
         username,
         password: hashedPassword,
-        roleId: userRole.id
+        roleId: userRole.id,
+        nik: "", // Will be filled later by user
+        name: username, // Use username as default name
+        gender: "MALE", // Default gender
+        phone: "" // Will be filled later by user
       },
       include: {
         role: true

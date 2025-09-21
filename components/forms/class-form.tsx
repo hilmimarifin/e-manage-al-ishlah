@@ -78,7 +78,7 @@ export function ClassForm({
     <form onSubmit={handleSubmit(onFormSubmit)}>
       <div className="grid gap-4 py-4">
         <div className="grid gap-2">
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor="name">Nama Kelas</Label>
           <Input
             id="name"
             {...register("name")}
@@ -92,8 +92,9 @@ export function ClassForm({
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="grade">Kelas</Label>
+          <Label htmlFor="grade">Jenjang Kelas</Label>
           <Input
+            type="number"
             id="grade"
             {...register("grade")}
             className={errors.grade ? "border-red-500" : ""}

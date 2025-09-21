@@ -46,8 +46,10 @@ export const POST = withWritePermission(
       }
 
       const {
+        nik,
         fullName,
         birthDate,
+        birthPlace,
         address,
         phone,
         guardian,
@@ -59,8 +61,10 @@ export const POST = withWritePermission(
 
       const student = await prisma.student.create({
         data: {
+          nik,
           fullName,
           birthDate: birthDate ? new Date(birthDate) : null,
+          birthPlace,
           address,
           phone,
           guardian,

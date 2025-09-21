@@ -92,22 +92,26 @@ export function BatchUploadForm({ onClose }: BatchUploadFormProps) {
     // Create a sample Excel template
     const templateData = [
       {
+        NIK: "123456789012345678",
         "Nama Lengkap": "Ahmad Fadli",
         "Tanggal Lahir": "2010-05-15",
+        "Tempat Lahir": "Bandar Lampung",
         Alamat: "Jl. Merdeka No. 123",
         "No. Telepon": "081234567890",
         Wali: "Budi Santoso",
-        "Jenis Kelamin": "MALE",
-        "Tahun Masuk": "2024",
+        "Jenis Kelamin": "L",
+        "Tahun Masuk": "2024/2025",
       },
       {
+        NIK: "123456789012345678",
         "Nama Lengkap": "Siti Nurhaliza",
         "Tanggal Lahir": "2011-08-22",
+        "Tempat Lahir": "Bandar Lampung",
         Alamat: "Jl. Sudirman No. 456",
         "No. Telepon": "081234567891",
         Wali: "Dewi Sartika",
-        "Jenis Kelamin": "FEMALE",
-        "Tahun Masuk": "2024",
+        "Jenis Kelamin": "P",
+        "Tahun Masuk": "2024/2025",
       },
     ];
 

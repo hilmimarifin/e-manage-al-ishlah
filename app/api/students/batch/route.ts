@@ -7,7 +7,9 @@ import * as XLSX from 'xlsx';
 
 interface StudentRow {
   fullName: string;
+  nik?: string;
   birthDate?: string;
+  birthPlace?: string;
   address?: string;
   phone?: string;
   guardian?: string;
@@ -42,7 +44,6 @@ function validateExcelRow(row: any, rowIndex: number): { isValid: boolean; error
     });
   }
 
-  console.log("Tahun Masuk >>>>>>>>>>.",typeof row['Tahun Masuk']);
   if (!row['Tahun Masuk'] || typeof row['Tahun Masuk'] !== 'string' || row['Tahun Masuk'].trim() === '') {
     errors.push({
       row: rowIndex,
@@ -88,7 +89,9 @@ function validateExcelRow(row: any, rowIndex: number): { isValid: boolean; error
 
   const studentData: StudentRow = {
     fullName: row['Nama Lengkap'].trim(),
+    nik: row['NIK']?.toString().trim() || undefined,
     birthDate: row['Tanggal Lahir'] ? new Date(row['Tanggal Lahir']).toISOString() : undefined,
+    birthPlace: row['Tempat Lahir']?.toString().trim() || undefined,
     address: row['Alamat']?.toString().trim() || undefined,
     phone: row['No. Telepon']?.toString().trim() || undefined,
     guardian: row['Wali']?.toString().trim() || undefined,
@@ -133,7 +136,9 @@ async function processStudentsBatch(students: StudentRow[]): Promise<ProcessResu
     // Final validation with Zod schema
     const validationResult = createStudentSchema.safeParse({
       fullName: student.fullName,
+      nik: student.nik,
       birthDate: student.birthDate,
+      birthPlace: student.birthPlace,
       address: student.address,
       phone: student.phone,
       guardian: student.guardian,
@@ -163,7 +168,9 @@ async function processStudentsBatch(students: StudentRow[]): Promise<ProcessResu
     try {
       const createData = validStudents.map(student => ({
         fullName: student.fullName,
+        nik: student.nik || "", // Default empty if not provided
         birthDate: student.birthDate ? new Date(student.birthDate) : null,
+        birthPlace: student.birthPlace || "", // Default empty if not provided
         address: student.address,
         phone: student.phone,
         guardian: student.guardian,

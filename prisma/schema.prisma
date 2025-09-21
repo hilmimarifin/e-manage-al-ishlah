@@ -37,7 +37,15 @@ model User {
   email     String   @unique
   username  String   @unique
   password  String
+  nik       String   @unique
+  name      String
+  gender    Gender
+  birthDate DateTime?
+  birthPlace String?
+  education String?
   photo     String?  
+  phone     String
+  address   String?
   roleId    String
   role      Role     @relation(fields: [roleId], references: [id])
   classes   Class[]  @relation("TeacherClasses")
@@ -97,6 +105,7 @@ model RoleMenu {
 
 model Student {
   id          String        @id @default(cuid())
+  nik         String        @unique
   entryYear   String
   fullName    String
   birthDate   DateTime?
@@ -104,7 +113,8 @@ model Student {
   phone       String?
   guardian    String?  
   gender      Gender
-  photo       String?     
+  photo       String?
+  birthPlace  String?
   classes     StudentClass[]
   payments    Payment[]
   status      StudentStatus @default(ACTIVE)

@@ -19,13 +19,15 @@ export const PUT = withUpdatePermission('/students', async (req: NextRequest, us
       )
     }
 
-    const { fullName, birthDate, address, phone, gender, guardian, photo, status } = validationResult.data
+    const { nik, fullName, birthDate, birthPlace, address, phone, gender, guardian, photo, status } = validationResult.data
 
     const student = await prisma.student.update({
       where: { id },
       data: {
+        ...(nik !== undefined && { nik }),
         ...(fullName !== undefined && { fullName }),
         ...(birthDate !== undefined && { birthDate: birthDate ? new Date(birthDate) : null }),
+        ...(birthPlace !== undefined && { birthPlace }),
         ...(address !== undefined && { address }),
         ...(phone !== undefined && { phone }),
         ...(gender !== undefined && { gender }),

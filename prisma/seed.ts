@@ -164,7 +164,15 @@ async function main() {
       email: "admin@example.com",
       username: "admin",
       password: adminPassword,
+      nik: "3201010101010001",
+      name: "Administrator",
+      gender: Gender.MALE,
+      birthDate: new Date("1990-01-01"),
+      birthPlace: "Jakarta",
+      education: "S1 Sistem Informasi",
       photo: "https://placehold.co/100x100",
+      phone: "08123456789",
+      address: "Jl. Admin No. 1, Jakarta",
       roleId: adminRole.id,
     },
   });
@@ -177,7 +185,15 @@ async function main() {
       email: "teacher@example.com",
       username: "teacher",
       password: teacherPassword,
+      nik: "3201010101010002",
+      name: "Guru Utama",
+      gender: Gender.FEMALE,
+      birthDate: new Date("1985-05-15"),
+      birthPlace: "Bandung",
+      education: "S1 Pendidikan",
       photo: "https://placehold.co/100x100",
+      phone: "08234567890",
+      address: "Jl. Guru No. 2, Bandung",
       roleId: teacherRole.id,
     },
   });
@@ -206,8 +222,10 @@ async function main() {
   // Students
   const student1 = await prisma.student.create({
     data: {
+      nik: "3201010101010003",
       fullName: "Ahmad Fauzi",
       birthDate: new Date("2015-01-10"),
+      birthPlace: "Jakarta",
       address: "Jl. Merdeka No. 1",
       phone: "08123456789",
       entryYear: "2025/2026",
@@ -220,8 +238,10 @@ async function main() {
 
   const student2 = await prisma.student.create({
     data: {
+      nik: "3201010101010004",
       fullName: "Siti Aminah",
       birthDate: new Date("2014-06-20"),
+      birthPlace: "Bandung",
       address: "Jl. Mawar No. 2",
       phone: "08234567890",
       entryYear: "2025/2026",

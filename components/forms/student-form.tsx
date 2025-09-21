@@ -43,10 +43,12 @@ export function StudentForm({
     resolver: zodResolver(schema),
     defaultValues: {
       fullName: student?.fullName || "",
+      nik: student?.nik || "",
       address: student?.address || "",
       birthDate: student?.birthDate
         ? new Date(student.birthDate).toISOString().split("T")[0]
         : "",
+      birthPlace: student?.birthPlace || "",
       phone: student?.phone || "",
       gender: student?.gender || "MALE",
       photo: student?.photo || "",
@@ -62,10 +64,12 @@ export function StudentForm({
     if (student) {
       reset({
         fullName: student.fullName || "",
+        nik: student.nik || "",
         address: student.address || "",
         birthDate: student.birthDate
           ? new Date(student.birthDate).toISOString().split("T")[0]
           : "",
+        birthPlace: student.birthPlace || "",
         phone: student.phone || "",
         gender: student.gender || "MALE",
         photo: student.photo || "",
@@ -98,6 +102,21 @@ export function StudentForm({
         </div>
 
         <div className="grid gap-2">
+          <Label htmlFor="nik">NIK</Label>
+          <Input
+            id="nik"
+            placeholder="16 digit NIK"
+            {...register("nik")}
+            className={errors.nik ? "border-red-500" : ""}
+          />
+          {errors.nik && (
+            <span className="text-sm text-red-500">
+              {errors.nik.message}
+            </span>
+          )}
+        </div>
+
+        <div className="grid gap-2">
           <Label htmlFor="address">Alamat</Label>
           <Textarea
             id="address"
@@ -124,6 +143,21 @@ export function StudentForm({
         {errors.birthDate && (
           <span className="text-sm text-red-500">
             {errors.birthDate.message}
+          </span>
+        )}
+      </div>
+
+      <div className="grid gap-2 mb-4">
+        <Label htmlFor="birthPlace">Tempat Lahir</Label>
+        <Input
+          id="birthPlace"
+          placeholder="Tempat lahir"
+          {...register("birthPlace")}
+          className={errors.birthPlace ? "border-red-500" : ""}
+        />
+        {errors.birthPlace && (
+          <span className="text-sm text-red-500">
+            {errors.birthPlace.message}
           </span>
         )}
       </div>

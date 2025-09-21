@@ -10,6 +10,14 @@ export const createUserSchema = z.object({
   email: z.string().email('Invalid email format'),
   username: z.string().min(3, 'Username must be at least 3 characters'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
+  nik: z.string().min(16, 'NIK must be 16 characters').max(16, 'NIK must be 16 characters'),
+  name: z.string().min(1, 'Name is required'),
+  gender: GenderEnum,
+  birthDate: z.string().optional(),
+  birthPlace: z.string().optional(),
+  education: z.string().optional(),
+  phone: z.string().min(1, 'Phone is required'),
+  address: z.string().optional(),
   photo: z.string().optional(),
   roleId: z.string().min(1, 'Role is required')
 })
@@ -18,6 +26,14 @@ export const updateUserSchema = z.object({
   email: z.string().email('Invalid email format').optional(),
   username: z.string().min(3, 'Username must be at least 3 characters').optional(),
   password: z.string().min(6, 'Password must be at least 6 characters').optional(),
+  nik: z.string().min(16, 'NIK must be 16 characters').max(16, 'NIK must be 16 characters').optional(),
+  name: z.string().min(1, 'Name is required').optional(),
+  gender: GenderEnum.optional(),
+  birthDate: z.string().optional(),
+  birthPlace: z.string().optional(),
+  education: z.string().optional(),
+  phone: z.string().optional(),
+  address: z.string().optional(),
   photo: z.string().optional(),
   roleId: z.string().min(1, 'Role is required').optional()
 })
@@ -69,8 +85,10 @@ export const updateRoleMenuSchema = z.object({
 
 // Student validation schemas
 export const createStudentSchema = z.object({
+  nik: z.string().min(16, 'NIK must be 16 characters').max(16, 'NIK must be 16 characters'),
   fullName: z.string().min(1, 'Full name is required'),
   birthDate: z.string().min(1, 'Birth date is required').optional(),
+  birthPlace: z.string().optional(),
   address: z.string().optional(),
   phone: z.string().optional(),
   guardian: z.string().optional(),
@@ -81,8 +99,10 @@ export const createStudentSchema = z.object({
 })
 
 export const updateStudentSchema = z.object({
+  nik: z.string().min(16, 'NIK must be 16 characters').max(16, 'NIK must be 16 characters').optional(),
   fullName: z.string().min(1, 'Full name is required').optional(),
   birthDate: z.string().min(1, 'Birth date is required').optional(),
+  birthPlace: z.string().optional(),
   address: z.string().optional(),
   phone: z.string().optional(),
   guardian: z.string().optional(),
