@@ -1,5 +1,5 @@
 import './globals.css'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { ReactQueryProvider } from '@/lib/react-query'
 import { Toaster } from '@/components/ui/toaster'
@@ -21,14 +21,6 @@ export const metadata: Metadata = {
     telephone: false,
   },
   manifest: '/manifest.json',
-  themeColor: '#000000',
-  colorScheme: 'light dark',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -36,6 +28,15 @@ export const metadata: Metadata = {
   },
   applicationName: 'E-Manage Al-Ishlah',
   category: 'education',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#000000',
+  colorScheme: 'light dark',
 }
 
 export default function RootLayout({
