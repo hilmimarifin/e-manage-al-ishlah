@@ -1,24 +1,23 @@
-import { NextRequest, NextResponse } from "next/server";
+import { createErrorResponse, createSuccessResponse } from "@/lib/api-response";
+import { withAuth } from "@/lib/auth-middleware";
 import { prisma } from "@/lib/prisma";
-import {
-  withAuth,
-  withReadPermission,
-  withWritePermission,
-} from "@/lib/auth-middleware";
-import { createSuccessResponse, createErrorResponse } from "@/lib/api-response";
-import { createStudentClassSchema } from "@/lib/validations";
-import { convertToAcademicMonthNumber } from "@/lib/utils";
-import { isAdmin } from "@/lib/utils";
+import { convertToAcademicMonthNumber, isAdmin } from "@/lib/utils";
+import { NextRequest, NextResponse } from "next/server";
 export const GET = withAuth(async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
     const teacherId = searchParams.get("teacherId") || undefined;
     const year = searchParams.get("year") || undefined;
+    const classId = searchParams.get("classId") || undefined;
     const admin = await isAdmin(teacherId || "");
     const studentofClass = await prisma.studentClass.findMany({
       where: {
         class: {
-          AND: [{ year }, { teacherId: admin ? undefined : teacherId }],
+          AND: [
+            { year: year || undefined },
+            { teacherId: admin ? undefined : teacherId },
+            { id: classId || undefined },
+          ],
         },
       },
       include: {
@@ -33,60 +32,53 @@ export const GET = withAuth(async (req: NextRequest) => {
       },
     });
 
-    const classInfo = await prisma.class.findFirst({
-      where: {
-        AND: [{ year }, { teacherId }],
+    const data = studentofClass.map((student) => ({
+      id: student.student.id,
+      name: student.student.fullName,
+      classId: student.class.id,
+      className: student.class.name,
+      year: student.class.year,
+      grade: student.class.grade,
+      monthlyFeeAmount: student.class.monthlyFee,
+      monthlyFee: {
+        jan:
+          student.student.payments.find((payment) => payment.month === 1)
+            ?.amount || 0,
+        feb:
+          student.student.payments.find((payment) => payment.month === 2)
+            ?.amount || 0,
+        mar:
+          student.student.payments.find((payment) => payment.month === 3)
+            ?.amount || 0,
+        apr:
+          student.student.payments.find((payment) => payment.month === 4)
+            ?.amount || 0,
+        may:
+          student.student.payments.find((payment) => payment.month === 5)
+            ?.amount || 0,
+        jun:
+          student.student.payments.find((payment) => payment.month === 6)
+            ?.amount || 0,
+        jul:
+          student.student.payments.find((payment) => payment.month === 7)
+            ?.amount || 0,
+        aug:
+          student.student.payments.find((payment) => payment.month === 8)
+            ?.amount || 0,
+        sep:
+          student.student.payments.find((payment) => payment.month === 9)
+            ?.amount || 0,
+        oct:
+          student.student.payments.find((payment) => payment.month === 10)
+            ?.amount || 0,
+        nov:
+          student.student.payments.find((payment) => payment.month === 11)
+            ?.amount || 0,
+        dec:
+          student.student.payments.find((payment) => payment.month === 12)
+            ?.amount || 0,
       },
-    });
-
-    const data = {
-      classId: classInfo?.id,
-      className: classInfo?.name,
-      year: classInfo?.year,
-      grade: classInfo?.grade,
-      studentData: studentofClass.map((student) => ({
-        id: student.student.id,
-        name: student.student.fullName,
-        monthlyFee: {
-          jan:
-            student.student.payments.find((payment) => payment.month === 1)
-              ?.amount || 0,
-          feb:
-            student.student.payments.find((payment) => payment.month === 2)
-              ?.amount || 0,
-          mar:
-            student.student.payments.find((payment) => payment.month === 3)
-              ?.amount || 0,
-          apr:
-            student.student.payments.find((payment) => payment.month === 4)
-              ?.amount || 0,
-          may:
-            student.student.payments.find((payment) => payment.month === 5)
-              ?.amount || 0,
-          jun:
-            student.student.payments.find((payment) => payment.month === 6)
-              ?.amount || 0,
-          jul:
-            student.student.payments.find((payment) => payment.month === 7)
-              ?.amount || 0,
-          aug:
-            student.student.payments.find((payment) => payment.month === 8)
-              ?.amount || 0,
-          sep:
-            student.student.payments.find((payment) => payment.month === 9)
-              ?.amount || 0,
-          oct:
-            student.student.payments.find((payment) => payment.month === 10)
-              ?.amount || 0,
-          nov:
-            student.student.payments.find((payment) => payment.month === 11)
-              ?.amount || 0,
-          dec:
-            student.student.payments.find((payment) => payment.month === 12)
-              ?.amount || 0,
-        },
-      })),
-    };
+    }));
     return NextResponse.json(
       createSuccessResponse(data, "Classes fetched successfully")
     );
@@ -131,9 +123,9 @@ export const POST = withAuth(async (req: NextRequest, user: any) => {
           convertToAcademicMonthNumber(b.month) -
           convertToAcademicMonthNumber(a.month)
       )[0]?.month || convertToAcademicMonthNumber(0);
-    const month = monthLatestPayment % 12 + 1;
+    const month = (monthLatestPayment % 12) + 1;
     console.log(month);
-    
+
     const existing = await prisma.payment.findFirst({
       where: {
         studentId,
@@ -153,9 +145,7 @@ export const POST = withAuth(async (req: NextRequest, user: any) => {
     const invalidMonth = month > 12 || month < 1;
     if (invalidMonth) {
       return NextResponse.json(
-        createErrorResponse(
-          "Error","Bulan tidak valid"
-        ),
+        createErrorResponse("Error", "Bulan tidak valid"),
         { status: 400 }
       );
     }

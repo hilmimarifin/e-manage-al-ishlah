@@ -74,17 +74,13 @@ export interface Classroom {
 }
 
 export interface PaymentClass {
-  classId: string;
-  className: string;
-  year: string;
-  grade: string;
-  studentData: {
     id: string;
     name: string;
     year: string;
     grade: string;
-    className: string;
     classId: string;
+    className: string;
+    monthlyFeeAmount: number;
     monthlyFee: {
       jan: number;
       feb: number;
@@ -99,7 +95,6 @@ export interface PaymentClass {
       nov: number;
       dec: number;
     };
-  }[];
 }
 
 export interface CreatePaymentClass {

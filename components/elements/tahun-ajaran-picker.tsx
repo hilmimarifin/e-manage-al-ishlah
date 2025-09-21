@@ -15,6 +15,7 @@ export interface TahunAjaranProps {
   startYear?: number;
   endYear?: number;
   yearsCount?: number;
+  rootClassName?: string;
 }
 
 // Generate academic year options
@@ -58,6 +59,7 @@ export const TahunAjaran: React.FC<TahunAjaranProps> = ({
   startYear,
   endYear,
   yearsCount,
+  rootClassName,
 }) => {
   const options = generateTahunAjaranOptions(startYear, endYear, yearsCount);
 
@@ -65,6 +67,7 @@ export const TahunAjaran: React.FC<TahunAjaranProps> = ({
     <Select
       value={value}
       onValueChange={onValueChange}
+      rootClassName={rootClassName}
       options={options}
       error={error}
       label={label}

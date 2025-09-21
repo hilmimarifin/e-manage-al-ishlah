@@ -7,6 +7,7 @@ import {
 } from "@/lib/auth-middleware";
 import { createSuccessResponse, createErrorResponse } from "@/lib/api-response";
 import { createStudentClassSchema } from "@/lib/validations";
+import { isAdmin } from "@/lib/utils";
 export const GET = withReadPermission(
   "/classrooms",
   async (req: NextRequest) => {
@@ -14,24 +15,15 @@ export const GET = withReadPermission(
       const { searchParams } = new URL(req.url);
       const teacherId = searchParams.get("teacherId");
       const year = searchParams.get("year");
-      const grade = searchParams.get("grade");
-      const unrestricted = ["Super admin", "Admin"];
-      const user = await prisma.user.findUnique({
-        where: {
-          id: teacherId || undefined,
-        },
-        include: {
-          role: true,
-        },
-      });
-      const isAdmin = unrestricted.includes(user?.role?.name || "");
+      const classId = searchParams.get("classId");
+      const admin = await isAdmin(teacherId || "");
       const students = await prisma.studentClass.findMany({
         where: {
           class: {
             AND: [
-              { teacherId: isAdmin ? undefined : teacherId },
+              { teacherId: admin ? undefined : teacherId },
               { year: year || undefined },
-              { grade: grade || undefined },
+              { id: classId || undefined },
             ],
           },
         },

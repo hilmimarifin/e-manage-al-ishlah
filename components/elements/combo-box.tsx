@@ -30,6 +30,7 @@ export interface ComboBoxProps {
   error?: string;
   disabled?: boolean;
   className?: string;
+  rootClassName?: string;
   required?: boolean;
   id?: string;
 }
@@ -45,6 +46,7 @@ export function ComboBox({
   error,
   disabled = false,
   className,
+  rootClassName,
   required = false,
   id,
 }: ComboBoxProps) {
@@ -82,7 +84,7 @@ export function ComboBox({
         </Label>
       )}
       <Popover  open={open} onOpenChange={setOpen}>
-        <PopoverTrigger className="h-8 text-xs" asChild>
+        <PopoverTrigger className={cn("h-8 text-xs", rootClassName)} asChild>
           <Button
             id={id}
             variant="outline"
@@ -92,7 +94,8 @@ export function ComboBox({
               "justify-between",
               !selectedOption && "text-muted-foreground",
               error && "border-red-500",
-              disabled && "cursor-not-allowed opacity-50"
+              disabled && "cursor-not-allowed opacity-50",
+              rootClassName
             )}
             disabled={disabled}
           >

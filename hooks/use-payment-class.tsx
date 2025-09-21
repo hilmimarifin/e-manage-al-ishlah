@@ -6,15 +6,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export function usePaymentClass({
   teacherId,
   year,
+  classId,
 }: {
   teacherId?: string;
   year?: string;
+  classId?: string;
 }) {
   return useQuery({
-    queryKey: ["payment-class", teacherId, year].filter(Boolean),
+    queryKey: ["payment-class", teacherId, year, classId].filter(Boolean),
     queryFn: () =>
-      apiClient.get<PaymentClass>("/payment/student", {
-        params: { teacherId, year },
+      apiClient.get<PaymentClass[]>("/payment/student", {
+        params: { teacherId, year, classId },
       }),
   });
 }

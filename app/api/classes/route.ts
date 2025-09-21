@@ -14,12 +14,13 @@ export const GET = withAuth(async (req: NextRequest, user: User) => {
   try {
     const { searchParams } = new URL(req.url);
     const year = searchParams.get("year");
-    const admin = await isAdmin(user.userId);
+    const teacherId = searchParams.get("teacherId");
+    const admin = await isAdmin(teacherId || user.userId);
     const classes = await prisma.class.findMany({
       where: {
         AND: [
           { year: year || undefined },
-          { teacherId: admin ? undefined : user.userId },
+          { teacherId: admin ? undefined : teacherId },
         ],
       },
       include: {

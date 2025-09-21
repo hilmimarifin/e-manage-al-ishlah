@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import FilterContainer from "@/components/elements/filter-container";
 import Container from "@/components/elements/container";
 import HeaderTitle from "@/components/elements/header-title";
+import { useClasses } from "@/hooks/use-classes";
 
 type PaymentClass = PaymentClassType;
 
@@ -30,6 +31,7 @@ export default function ClassesPage() {
   const [filter, setFilter] = useState({
     year: "2025/2026",
     teacherId: useAuthStore.getState().user?.id,
+    classId: "",
   });
   const { data: paymentClass, isLoading, error } = usePaymentClass(filter);
   const [form, setForm] = useState<CreatePaymentClass>({
@@ -37,7 +39,7 @@ export default function ClassesPage() {
     classId: "",
   });
   const createPayment = useCreatePayment();
-  const studentsOptions = paymentClass?.studentData.map((student) => ({
+  const studentsOptions = paymentClass?.map((student) => ({
     value: student.id,
     label: student.name,
   }));
@@ -64,127 +66,179 @@ export default function ClassesPage() {
     label: teacher.username,
   }));
 
-  useEffect(() => {
-    setForm((prev) => {
-      return {
-        ...prev,
-        classId: paymentClass?.classId || "",
-      };
-    });
-  }, [paymentClass]);
-
-  const columns: ColumnDef<PaymentClass["studentData"][number]>[] = [
+  const columns: ColumnDef<PaymentClass>[] = [
     {
       accessorKey: "name",
       header: "Nama",
     },
     {
+      accessorKey: "className",
+      header: "Kelas",
+    },
+    {
       accessorKey: "monthlyFee.jul",
       header: "Jul",
       cell: ({ row }) => (
-        <>{row.original.monthlyFee.jul ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+        <>
+          {row.original.monthlyFee.jul ? (
+            <Check className="w-4 h-4" color="green" />
+          ) : (
+            <></>
+          )}
+        </>
       ),
     },
     {
       accessorKey: "monthlyFee.aug",
       header: "Aug",
       cell: ({ row }) => (
-        <>{row.original.monthlyFee.aug ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+        <>
+          {row.original.monthlyFee.aug ? (
+            <Check className="w-4 h-4" color="green" />
+          ) : (
+            <></>
+          )}
+        </>
       ),
     },
     {
       accessorKey: "monthlyFee.sep",
       header: "Sep",
       cell: ({ row }) => (
-        <>{row.original.monthlyFee.sep ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+        <>
+          {row.original.monthlyFee.sep ? (
+            <Check className="w-4 h-4" color="green" />
+          ) : (
+            <></>
+          )}
+        </>
       ),
     },
     {
       accessorKey: "monthlyFee.oct",
       header: "Oct",
       cell: ({ row }) => (
-        <>{row.original.monthlyFee.oct ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+        <>
+          {row.original.monthlyFee.oct ? (
+            <Check className="w-4 h-4" color="green" />
+          ) : (
+            <></>
+          )}
+        </>
       ),
     },
     {
       accessorKey: "monthlyFee.nov",
       header: "Nov",
       cell: ({ row }) => (
-        <>{row.original.monthlyFee.nov ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+        <>
+          {row.original.monthlyFee.nov ? (
+            <Check className="w-4 h-4" color="green" />
+          ) : (
+            <></>
+          )}
+        </>
       ),
     },
     {
       accessorKey: "monthlyFee.dec",
       header: "Dec",
       cell: ({ row }) => (
-        <>{row.original.monthlyFee.dec ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+        <>
+          {row.original.monthlyFee.dec ? (
+            <Check className="w-4 h-4" color="green" />
+          ) : (
+            <></>
+          )}
+        </>
       ),
     },
     {
       accessorKey: "monthlyFee.jan",
       header: "Jan",
       cell: ({ row }) => (
-        <>{row.original.monthlyFee.jan ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+        <>
+          {row.original.monthlyFee.jan ? (
+            <Check className="w-4 h-4" color="green" />
+          ) : (
+            <></>
+          )}
+        </>
       ),
     },
     {
       accessorKey: "monthlyFee.feb",
       header: "Feb",
       cell: ({ row }) => (
-        <>{row.original.monthlyFee.feb ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+        <>
+          {row.original.monthlyFee.feb ? (
+            <Check className="w-4 h-4" color="green" />
+          ) : (
+            <></>
+          )}
+        </>
       ),
     },
     {
       accessorKey: "monthlyFee.mar",
       header: "Mar",
       cell: ({ row }) => (
-        <>{row.original.monthlyFee.mar ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+        <>
+          {row.original.monthlyFee.mar ? (
+            <Check className="w-4 h-4" color="green" />
+          ) : (
+            <></>
+          )}
+        </>
       ),
     },
     {
       accessorKey: "monthlyFee.apr",
       header: "Apr",
       cell: ({ row }) => (
-        <>{row.original.monthlyFee.apr ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+        <>
+          {row.original.monthlyFee.apr ? (
+            <Check className="w-4 h-4" color="green" />
+          ) : (
+            <></>
+          )}
+        </>
       ),
     },
     {
       accessorKey: "monthlyFee.may",
       header: "May",
       cell: ({ row }) => (
-        <>{row.original.monthlyFee.may ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+        <>
+          {row.original.monthlyFee.may ? (
+            <Check className="w-4 h-4" color="green" />
+          ) : (
+            <></>
+          )}
+        </>
       ),
     },
     {
       accessorKey: "monthlyFee.jun",
       header: "Jun",
       cell: ({ row }) => (
-        <>{row.original.monthlyFee.jun ? <Check className="w-4 h-4" color="green" /> : <></>}</>
+        <>
+          {row.original.monthlyFee.jun ? (
+            <Check className="w-4 h-4" color="green" />
+          ) : (
+            <></>
+          )}
+        </>
       ),
     },
   ];
+  const { data: classes = [] } = useClasses(filter);
 
-  const addPaymentComponent = () => {
-    return (
-      <div className="flex items-center justify-between">
-        <div className="flex flex-row gap-2">
-          <ComboBox
-            className="md:w-[250px]"
-            value={form.studentId}
-            onValueChange={(value) => setForm({ ...form, studentId: value })}
-            options={studentsOptions || []}
-          />
-          <Button
-            disabled={!form.studentId || createPayment.isPending}
-            onClick={handleCreatePayment}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Tambah
-          </Button>
-        </div>
-      </div>
-    );
-  };
+  const classOptions = classes.map((cls) => ({
+    value: cls.id,
+    label: cls.name,
+  }));
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -192,34 +246,40 @@ export default function ClassesPage() {
           title="Pembayaran Kelas"
           description="Mengelola pembayaran kelas di sekolah"
         />
-        <Container>
-          <FilterContainer className="grid md:grid-cols-3 grid-cols-1 gap-2">
-            <Select
-              label="Guru"
-              options={teacherOptions}
-              value={filter.teacherId}
-              onValueChange={(value) => {
-                setFilter({ ...filter, teacherId: value });
-              }}
-            />
-            <TahunAjaran
-              onValueChange={(value) => {
-                setFilter({ ...filter, year: value });
-              }}
-              value={filter.year}
-            />
-          </FilterContainer>
-
-          <DataTable
-            columns={columns}
-            data={paymentClass?.studentData || []}
-            isLoading={isLoading}
-            searchPlaceholder="Cari siswa..."
-            emptyMessage="Tidak ada siswa ditemukan."
-            pageSize={10}
-            headerComponent={addPaymentComponent()}
+        <FilterContainer className="grid md:grid-cols-3 grid-cols-1 gap-2">
+          <Select
+            label="Guru"
+            options={teacherOptions}
+            value={filter.teacherId}
+            onValueChange={(value) => {
+              setFilter({ ...filter, teacherId: value });
+            }}
           />
-        </Container>
+          <TahunAjaran
+            onValueChange={(value) => {
+              setFilter({ ...filter, year: value });
+            }}
+            value={filter.year}
+          />
+          <Select
+            label="Kelas"
+            placeholder="Pilih kelas"
+            options={classOptions}
+            value={filter.classId}
+            onValueChange={(value) => {
+              setFilter({ ...filter, classId: value });
+            }}
+          />
+        </FilterContainer>
+
+        <DataTable
+          columns={columns}
+          data={paymentClass || []}
+          isLoading={isLoading}
+          searchPlaceholder="Cari siswa..."
+          emptyMessage="Tidak ada siswa ditemukan."
+          pageSize={10}
+        />
       </div>
     </DashboardLayout>
   );
