@@ -10,6 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import { ScrollArea } from "./scroll-area";
 
 interface ModalProps {
   isOpen: boolean;
@@ -23,7 +25,7 @@ interface ModalProps {
 }
 
 const sizeClasses = {
-  sm: "sm:max-w-[425px]",
+  sm: "sm:max-w-[400px]",
   md: "sm:max-w-[500px]",
   lg: "sm:max-w-[600px]",
   xl: "sm:max-w-[800px]",
@@ -42,7 +44,7 @@ export function Modal({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className={sizeClasses[size]}>
+      <DialogContent className={cn(sizeClasses[size], "h-[calc(100vh-10rem)]")}>
         <DialogHeader className="bg-gradient-to-r from-primary to-primary/90 text-primary-foreground p-4">
           <DialogTitle>{title}</DialogTitle>
           {description && (
@@ -51,7 +53,7 @@ export function Modal({
             </DialogDescription>
           )}
         </DialogHeader>
-        <div className="px-4 pb-4">{children}</div>
+        <div className="px-4 pb-4 overflow-y-auto">{children}</div>
         {footer && <DialogFooter>{footer}</DialogFooter>}
       </DialogContent>
     </Dialog>
