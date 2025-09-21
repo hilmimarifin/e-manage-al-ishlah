@@ -112,15 +112,8 @@ export default function UsersPage() {
       ),
     },
     {
-      accessorKey: "createdAt",
-      header: "Created",
-      cell: ({ row }) => (
-        <div>{new Date(row.getValue("createdAt")).toLocaleDateString()}</div>
-      ),
-    },
-    {
       id: "actions",
-      header: "Actions",
+      header: "Aksi",
       cell: ({ row }) => {
         const user = row.original;
         return (
@@ -143,7 +136,7 @@ export default function UsersPage() {
                   className="text-destructive"
                 >
                   <Trash className="mr-2 h-4 w-4" />
-                  Delete
+                  Hapus
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -163,13 +156,13 @@ export default function UsersPage() {
                 User Management
               </h1>
               <p className="text-muted-foreground">
-                Manage system users and their roles.
+                Mengelola informasi pengguna/tenaga pendidik.
               </p>
             </div>
             {showAddButton && (
               <Button onClick={openCreateDialog}>
                 <Plus className="mr-2 h-4 w-4" />
-                Add User
+                Tambah User
               </Button>
             )}
           </div>
@@ -188,8 +181,8 @@ export default function UsersPage() {
           title={selectedUser ? "Edit User" : "Create User"}
           description={
             selectedUser
-              ? "Make changes to the user account here."
-              : "Add a new user to the system."
+              ? "Ubah data pengguna ini."
+              : "Tambah pengguna baru ke dalam sistem."
           }
         >
           <ErrorBoundary>

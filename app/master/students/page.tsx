@@ -175,16 +175,16 @@ export default function StudentsPage() {
               <Modal
                 isOpen={dialogOpen}
                 onOpenChange={setDialogOpen}
-                title={selectedStudent ? "Edit Student" : "Create Student"}
+                title={selectedStudent ? "Edit Siswa" : "Tambah Siswa"}
                 description={
                   selectedStudent
-                    ? "Make changes to the student here."
-                    : "Add a new student to the system."
+                    ? "Ubah data siswa ini."
+                    : "Tambah siswa baru ke dalam sistem."
                 }
                 trigger={
                   <Button onClick={openCreateDialog}>
                     <Plus className="mr-2 h-4 w-4" />
-                    Add Student
+                    Tambah Siswa
                   </Button>
                 }
               >

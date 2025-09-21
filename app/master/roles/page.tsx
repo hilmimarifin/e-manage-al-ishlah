@@ -99,33 +99,21 @@ export default function RolesPage() {
   const columns: ColumnDef<Role>[] = [
     {
       accessorKey: "name",
-      header: "Name",
+      header: "Nama",
       cell: ({ row }) => (
         <Badge variant="outline">{row.getValue("name")}</Badge>
       ),
     },
     {
       accessorKey: "description",
-      header: "Description",
+      header: "Deskripsi",
       cell: ({ row }) => (
         <div>{row.getValue("description") || "No description"}</div>
       ),
     },
     {
-      accessorKey: "_count.users",
-      header: "Users",
-      cell: ({ row }) => row.original._count?.users || 0,
-    },
-    {
-      accessorKey: "createdAt",
-      header: "Created",
-      cell: ({ row }) => (
-        <div>{new Date(row.getValue("createdAt")).toLocaleDateString()}</div>
-      ),
-    },
-    {
       id: "actions",
-      header: "Actions",
+      header: "Aksi",
       cell: ({ row }) => {
         const role = row.original;
         return (
@@ -145,7 +133,7 @@ export default function RolesPage() {
               {canUpdate && (
                 <DropdownMenuItem onClick={() => openPermissionModal(role)}>
                   <Shield className="mr-2 h-4 w-4" />
-                  Permissions
+                  Hak Akses
                 </DropdownMenuItem>
               )}
               {showDeleteButton && (
@@ -155,7 +143,7 @@ export default function RolesPage() {
                   disabled={(role._count?.users || 0) > 0}
                 >
                   <Trash className="mr-2 h-4 w-4" />
-                  Delete
+                  Hapus
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -171,10 +159,10 @@ export default function RolesPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Role Management
+              Role dan Hak Akses
             </h1>
             <p className="text-muted-foreground">
-              Create and manage system roles and permissions.
+              Membuat dan Mengatur Role dan Hak Akses
             </p>
           </div>
 
@@ -182,16 +170,16 @@ export default function RolesPage() {
             <Modal
               isOpen={dialogOpen}
               onOpenChange={setDialogOpen}
-              title={selectedRole ? "Edit Role" : "Create Role"}
+              title={selectedRole ? "Ubah Role" : "Tambah Role"}
               description={
                 selectedRole
-                  ? "Make changes to the role here."
-                  : "Add a new role to the system."
+                  ? "Ubah informasi role"
+                  : "Menambahkan role baru pada sistem."
               }
               trigger={
                 <Button onClick={openCreateDialog}>
                   <Plus className="mr-2 h-4 w-4" />
-                  Add Role
+                  Tambah Role
                 </Button>
               }
             >
@@ -208,8 +196,8 @@ export default function RolesPage() {
           columns={columns}
           data={roles}
           isLoading={isLoading}
-          searchPlaceholder="Search roles..."
-          emptyMessage="No roles found."
+          searchPlaceholder="cari..."
+          emptyMessage="Tidak ada role ditemukan."
           pageSize={10}
         />
       </div>

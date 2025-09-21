@@ -121,7 +121,7 @@ export default function MenusPage() {
     },
     {
       id: "actions",
-      header: "Actions",
+      header: "Aksi",
       cell: ({ row }) => {
         const menu = row.original;
         return (
@@ -144,7 +144,7 @@ export default function MenusPage() {
                   className="text-destructive"
                 >
                   <Trash className="mr-2 h-4 w-4" />
-                  Delete
+                  Hapus
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -160,10 +160,10 @@ export default function MenusPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Menu Management
+              Menu dan Sub Menu
             </h1>
             <p className="text-muted-foreground">
-              Manage navigation menus and their hierarchy.
+              Mengelola menu navigasi dan hierarkinya.
             </p>
           </div>
 
@@ -180,7 +180,7 @@ export default function MenusPage() {
               trigger={
                 <Button onClick={openCreateDialog}>
                   <Plus className="mr-2 h-4 w-4" />
-                  Add Menu
+                  Tambah Menu
                 </Button>
               }
             >
@@ -196,8 +196,8 @@ export default function MenusPage() {
           columns={columns}
           data={menus}
           isLoading={isLoading}
-          searchPlaceholder="Search menus..."
-          emptyMessage="No menus found."
+          searchPlaceholder="Cari..."
+          emptyMessage="Tidak ada menu ditemukan."
           pageSize={10}
         />
       </div>

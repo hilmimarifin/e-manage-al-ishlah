@@ -116,7 +116,7 @@ export default function ClassesPage() {
 
     {
       id: "actions",
-      header: "Actions",
+      header: "Aksi",
       cell: ({ row }) => {
         const classes = row.original;
         return (
@@ -139,7 +139,7 @@ export default function ClassesPage() {
                   className="text-destructive"
                 >
                   <Trash className="mr-2 h-4 w-4" />
-                  Delete
+                  Hapus
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -189,8 +189,8 @@ export default function ClassesPage() {
           columns={columns}
           data={classes}
           isLoading={isLoading}
-          searchPlaceholder="Cari siswa..."
-          emptyMessage="Tidak ada siswa ditemukan."
+          searchPlaceholder="Cari..."
+          emptyMessage="Tidak ada kelas ditemukan."
           pageSize={10}
         />
       </div>
