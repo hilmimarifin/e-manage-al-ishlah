@@ -3,7 +3,8 @@
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTable } from "@/components/ui/data-table";
+import { ResponsiveDataDisplay } from "@/components/ui/responsive-data-display";
+import { MobileListItem } from "@/components/ui/mobile-list-view";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -149,49 +150,75 @@ export default function ClassesPage() {
     },
   ];
 
+  const mobileItemMapper = (classItem: Class): MobileListItem => ({
+    id: classItem.id,
+    title: classItem.name,
+    subtitle: `Kelas ${classItem.grade} - ${classItem.year}`,
+    badge: { text: classItem.grade, variant: "default" },
+    details: [
+      { label: "Kelas", value: classItem.grade },
+      { label: "Tahun Ajaran", value: classItem.year },
+      { label: "Wali Kelas", value: classItem.teacherName || "No teacher" },
+      { label: "Biaya SPP", value: classItem.monthlyFee || "No monthly fee" },
+    ],
+    actions: [
+      ...(showEditButton ? [{
+        label: "Edit",
+        icon: <Edit className="mr-2 h-4 w-4" />,
+        onClick: () => openEditDialog(classItem),
+      }] : []),
+      ...(showDeleteButton ? [{
+        label: "Hapus",
+        icon: <Trash className="mr-2 h-4 w-4" />,
+        onClick: () => handleDeleteClass(classItem.id),
+        variant: "destructive" as const,
+      }] : []),
+    ],
+  });
+
+  const renderHeader = () => {
+    return (
+      <div className="flex items-center justify-between">
+        {showAddButton && (
+          <Modal
+            isOpen={dialogOpen}
+            onOpenChange={setDialogOpen}
+            title={selectedClass ? "Edit Class" : "Create Class"}
+            description={
+              selectedClass
+                ? "Make changes to the classes here."
+                : "Add a new classes to the system."
+            }
+            trigger={
+              <Button onClick={openCreateDialog}>
+                <Plus className="mr-2 h-4 w-4" />
+                Tambah Kelas
+              </Button>
+            }
+          >
+            <ClassForm
+              classes={selectedClass || undefined}
+              onSubmit={selectedClass ? handleUpdateClass : handleCreateClass}
+              isLoading={createClass.isPending || updateClass.isPending}
+            />
+          </Modal>
+        )}
+      </div>
+    );
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Master Kelas</h1>
-            <p className="text-muted-foreground">
-              Mengatur kelas dan wali kelas
-            </p>
-          </div>
-
-          {showAddButton && (
-            <Modal
-              isOpen={dialogOpen}
-              onOpenChange={setDialogOpen}
-              title={selectedClass ? "Edit Class" : "Create Class"}
-              description={
-                selectedClass
-                  ? "Make changes to the classes here."
-                  : "Add a new classes to the system."
-              }
-              trigger={
-                <Button onClick={openCreateDialog}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Tambah Kelas
-                </Button>
-              }
-            >
-              <ClassForm
-                classes={selectedClass || undefined}
-                onSubmit={selectedClass ? handleUpdateClass : handleCreateClass}
-                isLoading={createClass.isPending || updateClass.isPending}
-              />
-            </Modal>
-          )}
-        </div>
-        <DataTable
+        <ResponsiveDataDisplay
           columns={columns}
           data={classes}
           isLoading={isLoading}
           searchPlaceholder="Cari..."
           emptyMessage="Tidak ada kelas ditemukan."
           pageSize={10}
+          mobileItemMapper={mobileItemMapper}
+          headerComponent={renderHeader()}
         />
       </div>
     </DashboardLayout>

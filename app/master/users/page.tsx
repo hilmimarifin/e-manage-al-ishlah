@@ -13,7 +13,8 @@ import { UserForm } from "@/components/forms/user-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
-import { DataTable } from "@/components/ui/data-table";
+import { ResponsiveDataDisplay } from "@/components/ui/responsive-data-display";
+import { MobileListItem } from "@/components/ui/mobile-list-view";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -146,33 +147,67 @@ export default function UsersPage() {
     },
   ];
 
+  const mobileItemMapper = (user: User): MobileListItem => ({
+    id: user.id,
+    title: user.username,
+    subtitle: user.email,
+    badge: { text: user.role.name, variant: "secondary" },
+    details: [
+      { label: "Email", value: user.email },
+      {
+        label: "Role",
+        value: <Badge variant="secondary">{user.role.name}</Badge>,
+      },
+    ],
+    actions: [
+      ...(showEditButton
+        ? [
+            {
+              label: "Edit",
+              icon: <Edit className="mr-2 h-4 w-4" />,
+              onClick: () => openEditDialog(user),
+            },
+          ]
+        : []),
+      ...(showDeleteButton
+        ? [
+            {
+              label: "Hapus",
+              icon: <Trash className="mr-2 h-4 w-4" />,
+              onClick: () => handleDeleteUser(user.id),
+              variant: "destructive" as const,
+            },
+          ]
+        : []),
+    ],
+  });
+
+  const renderHeader = () => {
+    return (
+      <div className="flex items-center justify-between">
+        {showAddButton && (
+          <Button onClick={openCreateDialog}>
+            <Plus className="mr-2 h-4 w-4" />
+            Tambah User
+          </Button>
+        )}
+      </div>
+    );
+  };
+
   return (
     <DashboardLayout>
       <ErrorBoundary>
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                User Management
-              </h1>
-              <p className="text-muted-foreground">
-                Mengelola informasi pengguna/tenaga pendidik.
-              </p>
-            </div>
-            {showAddButton && (
-              <Button onClick={openCreateDialog}>
-                <Plus className="mr-2 h-4 w-4" />
-                Tambah User
-              </Button>
-            )}
-          </div>
-          <DataTable
+          <ResponsiveDataDisplay
             columns={columns}
             data={users}
             isLoading={isLoading}
             searchPlaceholder="Search users..."
             emptyMessage="No users found."
             pageSize={10}
+            mobileItemMapper={mobileItemMapper}
+            headerComponent={renderHeader()}
           />
         </div>
         <Modal

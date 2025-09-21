@@ -15,6 +15,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
   const [isHydrated, setIsHydrated] = useState(false)
+  const [headerTitle, setHeaderTitle] = useState('')
 
   useEffect(() => {
     setIsHydrated(true)
@@ -45,8 +46,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar />
+      <Sidebar setHeaderTitle={setHeaderTitle}/>
       <div className="flex flex-1 flex-col overflow-hidden">
+        <Header title={headerTitle}/>
         <main className="flex-1 overflow-auto p-6">
           {children}
         </main>

@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
-import { DataTable } from "@/components/ui/data-table";
+import { ResponsiveDataDisplay } from "@/components/ui/responsive-data-display";
+import { MobileListItem } from "@/components/ui/mobile-list-view";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -153,52 +154,92 @@ export default function RolesPage() {
     },
   ];
 
+  const mobileItemMapper = (role: Role): MobileListItem => ({
+    id: role.id,
+    title: role.name,
+    subtitle: role.description || "No description",
+    badge: { text: role.name, variant: "outline" },
+    details: [
+      { label: "Deskripsi", value: role.description || "No description" },
+      { label: "Users", value: role._count?.users || 0 },
+    ],
+    actions: [
+      ...(showEditButton
+        ? [
+            {
+              label: "Edit",
+              icon: <Edit className="mr-2 h-4 w-4" />,
+              onClick: () => openEditDialog(role),
+            },
+          ]
+        : []),
+      ...(canUpdate
+        ? [
+            {
+              label: "Hak Akses",
+              icon: <Shield className="mr-2 h-4 w-4" />,
+              onClick: () => openPermissionModal(role),
+            },
+          ]
+        : []),
+      ...(showDeleteButton
+        ? [
+            {
+              label: "Hapus",
+              icon: <Trash className="mr-2 h-4 w-4" />,
+              onClick: () => handleDeleteRole(role.id),
+              variant: "destructive" as const,
+            },
+          ]
+        : []),
+    ].filter(
+      (action) => !(action.label === "Hapus" && (role._count?.users || 0) > 0)
+    ),
+  });
+
+  const renderHeader = () => {
+    return (
+      <div className="flex items-center justify-between">
+        {showAddButton && (
+          <Modal
+            isOpen={dialogOpen}
+            onOpenChange={setDialogOpen}
+            title={selectedRole ? "Ubah Role" : "Tambah Role"}
+            description={
+              selectedRole
+                ? "Ubah informasi role"
+                : "Menambahkan role baru pada sistem."
+            }
+            trigger={
+              <Button onClick={openCreateDialog}>
+                <Plus className="mr-2 h-4 w-4" />
+                Tambah Role
+              </Button>
+            }
+          >
+            <RoleForm
+              role={selectedRole}
+              onSubmit={selectedRole ? handleUpdateRole : handleCreateRole}
+              isLoading={createRole.isPending || updateRole.isPending}
+            />
+          </Modal>
+        )}
+      </div>
+    );
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Role dan Hak Akses
-            </h1>
-            <p className="text-muted-foreground">
-              Membuat dan Mengatur Role dan Hak Akses
-            </p>
-          </div>
-
-          {showAddButton && (
-            <Modal
-              isOpen={dialogOpen}
-              onOpenChange={setDialogOpen}
-              title={selectedRole ? "Ubah Role" : "Tambah Role"}
-              description={
-                selectedRole
-                  ? "Ubah informasi role"
-                  : "Menambahkan role baru pada sistem."
-              }
-              trigger={
-                <Button onClick={openCreateDialog}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Tambah Role
-                </Button>
-              }
-            >
-              <RoleForm
-                role={selectedRole}
-                onSubmit={selectedRole ? handleUpdateRole : handleCreateRole}
-                isLoading={createRole.isPending || updateRole.isPending}
-              />
-            </Modal>
-          )}
-        </div>
-
-        <DataTable
+        <ResponsiveDataDisplay
           columns={columns}
           data={roles}
           isLoading={isLoading}
           searchPlaceholder="cari..."
           emptyMessage="Tidak ada role ditemukan."
           pageSize={10}
+          mobileItemMapper={mobileItemMapper}
+          headerComponent={renderHeader()}
         />
       </div>
 

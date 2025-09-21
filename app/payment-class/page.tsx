@@ -2,7 +2,8 @@
 
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Card, CardContent } from "@/components/ui/card";
-import { DataTable } from "@/components/ui/data-table";
+import { ResponsiveDataDisplay } from "@/components/ui/responsive-data-display";
+import { MobileListItem } from "@/components/ui/mobile-list-view";
 import { usePermissionGuard } from "@/hooks/use-permissions";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
@@ -232,6 +233,40 @@ export default function ClassesPage() {
       ),
     },
   ];
+
+  const mobileItemMapper = (payment: PaymentClass): MobileListItem => {
+    const paidMonths: string[] = [];
+    const unpaidMonths: string[] = [];
+    
+    const months = [
+      { key: 'jul', name: 'Jul' }, { key: 'aug', name: 'Aug' }, { key: 'sep', name: 'Sep' },
+      { key: 'oct', name: 'Oct' }, { key: 'nov', name: 'Nov' }, { key: 'dec', name: 'Dec' },
+      { key: 'jan', name: 'Jan' }, { key: 'feb', name: 'Feb' }, { key: 'mar', name: 'Mar' },
+      { key: 'apr', name: 'Apr' }, { key: 'may', name: 'May' }, { key: 'jun', name: 'Jun' }
+    ];
+
+    months.forEach(month => {
+      if (payment.monthlyFee[month.key as keyof typeof payment.monthlyFee]) {
+        paidMonths.push(month.name);
+      } else {
+        unpaidMonths.push(month.name);
+      }
+    });
+
+    return {
+      id: payment.id,
+      title: payment.name,
+      subtitle: payment.className,
+      badge: { text: payment.className, variant: "default" },
+      details: [
+        { label: "Kelas", value: payment.className },
+        { label: "Lunas", value: paidMonths.length > 0 ? paidMonths.join(', ') : 'Belum ada' },
+        { label: "Belum Lunas", value: unpaidMonths.length > 0 ? unpaidMonths.join(', ') : 'Semua lunas' },
+        { label: "Total Lunas", value: `${paidMonths.length}/12 bulan` },
+      ],
+      actions: [],
+    };
+  };
   const { data: classes = [] } = useClasses(filter);
 
   const classOptions = classes.map((cls) => ({
@@ -242,10 +277,6 @@ export default function ClassesPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <HeaderTitle
-          title="Pembayaran Kelas"
-          description="Mengelola pembayaran kelas di sekolah"
-        />
         <FilterContainer className="grid md:grid-cols-3 grid-cols-1 gap-2">
           <Select
             label="Guru"
@@ -272,13 +303,14 @@ export default function ClassesPage() {
           />
         </FilterContainer>
 
-        <DataTable
+        <ResponsiveDataDisplay
           columns={columns}
           data={paymentClass || []}
           isLoading={isLoading}
           searchPlaceholder="Cari siswa..."
           emptyMessage="Tidak ada siswa ditemukan."
           pageSize={10}
+          mobileItemMapper={mobileItemMapper}
         />
       </div>
     </DashboardLayout>

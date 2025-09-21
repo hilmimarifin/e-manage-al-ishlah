@@ -5,7 +5,8 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTable } from "@/components/ui/data-table";
+import { ResponsiveDataDisplay } from "@/components/ui/responsive-data-display";
+import { MobileListItem } from "@/components/ui/mobile-list-view";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +22,14 @@ import {
   useUpdateStudent,
 } from "@/hooks/use-students";
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit, MoreHorizontal, Plus, Shield, Trash, Upload } from "lucide-react";
+import {
+  Edit,
+  MoreHorizontal,
+  Plus,
+  Shield,
+  Trash,
+  Upload,
+} from "lucide-react";
 import { useState } from "react";
 
 import { StudentForm } from "@/components/forms/student-form";
@@ -159,69 +167,114 @@ export default function StudentsPage() {
     },
   ];
 
+  const mobileItemMapper = (student: Student): MobileListItem => ({
+    id: student.id,
+    title: student.fullName,
+    subtitle: student.address || "No address",
+    badge: {
+      text: student.gender === Gender.MALE ? "Laki-laki" : "Perempuan",
+      variant: student.gender === Gender.MALE ? "default" : "secondary",
+    },
+    details: [
+      { label: "Alamat", value: student.address || "No address" },
+      {
+        label: "Tanggal Lahir",
+        value: moment(student.birthDate).format("DD MMMM YYYY"),
+      },
+      { label: "No. Telp", value: student.phone || "No phone" },
+      {
+        label: "Jenis Kelamin",
+        value: student.gender === Gender.MALE ? "Laki-laki" : "Perempuan",
+      },
+    ],
+    actions: [
+      ...(showEditButton
+        ? [
+            {
+              label: "Edit",
+              icon: <Edit className="mr-2 h-4 w-4" />,
+              onClick: () => openEditDialog(student),
+            },
+          ]
+        : []),
+      ...(showDeleteButton
+        ? [
+            {
+              label: "Delete",
+              icon: <Trash className="mr-2 h-4 w-4" />,
+              onClick: () => handleDeleteStudent(student.id),
+              variant: "destructive" as const,
+            },
+          ]
+        : []),
+    ],
+  });
+
+  const renderHeader = () => {
+    return (
+      <div className="flex items-center justify-between">
+        {showAddButton && (
+          <div className="flex flex-col md:flex-row gap-2">
+            <Modal
+              isOpen={dialogOpen}
+              onOpenChange={setDialogOpen}
+              title={selectedStudent ? "Edit Siswa" : "Tambah Siswa"}
+              description={
+                selectedStudent
+                  ? "Ubah data siswa ini."
+                  : "Tambah siswa baru ke dalam sistem."
+              }
+              trigger={
+                <Button onClick={openCreateDialog}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Tambah Siswa
+                </Button>
+              }
+            >
+              <StudentForm
+                student={selectedStudent || undefined}
+                onSubmit={
+                  selectedStudent ? handleUpdateStudent : handleCreateStudent
+                }
+                isLoading={createStudent.isPending || updateStudent.isPending}
+              />
+            </Modal>
+
+            <Modal
+              isOpen={batchUploadOpen}
+              onOpenChange={setBatchUploadOpen}
+              title="Upload Data Siswa"
+              description="Upload file Excel atau CSV untuk menambahkan siswa secara batch"
+              trigger={
+                <Button
+                  variant="outline"
+                  onClick={() => setBatchUploadOpen(true)}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Batch Upload
+                </Button>
+              }
+            >
+              <BatchUploadForm onClose={() => setBatchUploadOpen(false)} />
+            </Modal>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Master Siswa
-            </h1>
-            <p className="text-muted-foreground">Mengatur, menambah, mengedit, dan menghapus data siswa.</p>
-          </div>
-
-          {showAddButton && (
-            <div className="flex gap-2">
-              <Modal
-                isOpen={dialogOpen}
-                onOpenChange={setDialogOpen}
-                title={selectedStudent ? "Edit Siswa" : "Tambah Siswa"}
-                description={
-                  selectedStudent
-                    ? "Ubah data siswa ini."
-                    : "Tambah siswa baru ke dalam sistem."
-                }
-                trigger={
-                  <Button onClick={openCreateDialog}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Tambah Siswa
-                  </Button>
-                }
-              >
-                <StudentForm
-                  student={selectedStudent || undefined}
-                  onSubmit={
-                    selectedStudent ? handleUpdateStudent : handleCreateStudent
-                  }
-                  isLoading={createStudent.isPending || updateStudent.isPending}
-                />
-              </Modal>
-
-              <Modal
-                isOpen={batchUploadOpen}
-                onOpenChange={setBatchUploadOpen}
-                title="Upload Data Siswa"
-                description="Upload file Excel atau CSV untuk menambahkan siswa secara batch"
-                trigger={
-                  <Button variant="outline" onClick={() => setBatchUploadOpen(true)}>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Batch Upload
-                  </Button>
-                }
-              >
-                <BatchUploadForm onClose={() => setBatchUploadOpen(false)} />
-              </Modal>
-            </div>
-          )}
-        </div>
-
-        <DataTable
+        <ResponsiveDataDisplay
           columns={columns}
           data={students}
           isLoading={isLoading}
           searchPlaceholder="Cari siswa..."
           emptyMessage="Tidak ada siswa ditemukan."
           pageSize={10}
+          mobileItemMapper={mobileItemMapper}
+          headerComponent={renderHeader()}
         />
       </div>
     </DashboardLayout>

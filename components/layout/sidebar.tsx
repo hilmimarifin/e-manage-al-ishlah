@@ -1,36 +1,26 @@
 "use client";
 
-import { useLogout, useUserMenus } from "@/hooks/use-auth";
-import { useAppStore } from "@/store/app-store";
+import Tooltip from "@/components/elements/tooltip";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { useLogout, useUserMenus } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { useAppStore } from "@/store/app-store";
+import { useAuthStore } from "@/store/auth-store";
 import {
-  LayoutDashboard,
-  Users,
-  UserCheck,
-  Menu as MenuIcon,
-  ChevronLeft,
-  ChevronRight,
   ChevronDown,
+  ChevronLeft,
   Home,
+  LayoutDashboard,
   LogOut,
+  Menu as MenuIcon,
+  UserCheck,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useAuthStore } from "@/store/auth-store";
-import Tooltip from "@/components/elements/tooltip";
 
 const iconMap: Record<string, any> = {
   LayoutDashboard,
@@ -51,7 +41,11 @@ interface Menu {
   updatedAt: string;
 }
 
-export function Sidebar() {
+interface SidebarProps {
+  setHeaderTitle: (title: string) => void;
+}
+
+export function Sidebar({ setHeaderTitle }: SidebarProps) {
   const { sidebarOpen, toggleSidebar, setSidebarOpen } = useAppStore();
   const { data: menus = [] } = useUserMenus();
   const pathname = usePathname();
@@ -65,15 +59,21 @@ export function Sidebar() {
     }
   }, [setSidebarOpen]); // Only run on mount
 
-  // Auto-expand parent menus if their children are active
+  // Auto-expand parent menus if their children are active and set header title
   useEffect(() => {
     const activeMenu = menus.find(
       (menu: { path: string }) => menu.path === pathname
     );
-    if (activeMenu?.parentId) {
-      setExpandedMenus((prev) => new Set(prev).add(activeMenu?.parentId || ""));
+    if (activeMenu) {
+      // Set the header title based on the active menu
+      setHeaderTitle(activeMenu.name);
+      
+      // Expand parent menu if this is a child menu
+      if (activeMenu.parentId) {
+        setExpandedMenus((prev) => new Set(prev).add(activeMenu.parentId || ""));
+      }
     }
-  }, [pathname, menus]);
+  }, [pathname, menus, setHeaderTitle]);
 
   // Organize menus into parent-child structure
   const organizeMenus = (menus: Menu[]) => {
@@ -106,7 +106,6 @@ export function Sidebar() {
       return newSet;
     });
   };
-  const { user } = useAuthStore();
   const logout = useLogout();
 
   const handleLogout = () => {
@@ -125,34 +124,52 @@ export function Sidebar() {
     if (isParentOnly && hasChildren) {
       return (
         <div key={menu.id}>
-          <Button
-            variant={isActive ? "secondary" : "ghost"}
-            className={cn(
-              "w-full justify-start transition-colors",
-              !sidebarOpen && "justify-center px-2",
-              isChild && "ml-4 w-[calc(100%-1rem)]"
-            )}
-            onClick={() => sidebarOpen && toggleExpanded(menu.id)}
-          >
-            <Icon className="h-4 w-4" />
-            {sidebarOpen && (
+          {sidebarOpen ? (
+            <Button
+              variant={isActive ? "secondary" : "ghost"}
+              className={cn(
+                "w-full justify-start transition-all duration-200 ease-in-out hover:bg-primary-foreground/10",
+                !sidebarOpen && "justify-center px-2",
+                isChild && "ml-4 w-[calc(100%-1rem)]"
+              )}
+              onClick={() => {
+                sidebarOpen && toggleExpanded(menu.id);
+              }}
+            >
+              <Icon className="h-4 w-4" />
               <>
                 <span className="ml-3 flex-1 text-left">{menu.name}</span>
                 {hasChildren && (
                   <ChevronDown
                     className={cn(
-                      "h-4 w-4 transition-transform",
+                      "h-4 w-4 transition-transform duration-300 ease-in-out",
                       isExpanded && "rotate-180"
                     )}
                   />
                 )}
               </>
-            )}
-          </Button>
+            </Button>
+          ) : (
+            <Tooltip content={menu.name} side="right" sideOffset={15}>
+              <Button
+                variant={isActive ? "secondary" : "ghost"}
+                className={cn(
+                  "w-full justify-start transition-all duration-200 ease-in-out hover:bg-primary-foreground/10",
+                  !sidebarOpen && "justify-center px-2",
+                  isChild && "ml-4 w-[calc(100%-1rem)]"
+                )}
+                onClick={() => {
+                  sidebarOpen && toggleExpanded(menu.id);
+                }}
+              >
+                <Icon className="h-4 w-4" />
+              </Button>
+            </Tooltip>
+          )}
 
-          {/* Render children */}
+          {/* Render children with smooth animation */}
           {sidebarOpen && isExpanded && hasChildren && (
-            <div className="mt-1 space-y-1">
+            <div className="mt-1 space-y-1 animate-in slide-in-from-top-2 duration-300 ease-in-out">
               {menu.children.map((child: Menu) => renderMenuItem(child, true))}
             </div>
           )}
@@ -168,7 +185,7 @@ export function Sidebar() {
             <Button
               variant={isActive ? "secondary" : "ghost"}
               className={cn(
-                "w-full justify-start transition-colors",
+                "w-full justify-start transition-all duration-200 ease-in-out ",
                 isChild && "ml-4 w-[calc(100%-1rem)]"
               )}
             >
@@ -180,7 +197,7 @@ export function Sidebar() {
               <Button
                 variant={isActive ? "secondary" : "ghost"}
                 className={cn(
-                  "w-full justify-start transition-colors",
+                  "w-full justify-start transition-all duration-200 ease-in-out ",
                   "justify-center px-2",
                   isChild && "ml-4 w-[calc(100%-1rem)]"
                 )}
@@ -195,75 +212,80 @@ export function Sidebar() {
   };
 
   return (
-    <div
-      className={cn(
-        "relative flex h-full flex-col border-r  transition-all duration-300 text-primary-foreground bg-primary",
-        sidebarOpen ? "w-64" : "w-16"
+    <>
+      {/* Mobile backdrop with smooth fade */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300 ease-in-out"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
-    >
-      <div className="flex h-16 items-center justify-between border-b px-4">
-        {sidebarOpen && (
-          <h2 className="text-lg font-semibold">SISTEM INFORMASI</h2>
-        )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleSidebar}
-          className="h-8 w-8"
-        >
-          <ChevronLeft
-            className={cn(
-              "h-4 w-4 transition-transform",
-              !sidebarOpen && "rotate-180"
-            )}
-          />
-        </Button>
-      </div>
 
-      <ScrollArea className="flex-1 px-2 py-4 bg-primary text-primary-foreground bg-gradient-to-l from-primary to-primary/80">
-        <div className="flex items-center space-x-4 ml-2 mb-4">
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="secondary"
-              className="relative h-8 w-8 rounded-full"
-            >
-              <Avatar className="h-8 w-8">
-                <AvatarFallback>
-                  {user?.username.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {user?.username}
-              </p>
-              <p className="text-xs leading-none text-primary-foreground">
-                {user?.role.name}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <nav className="space-y-2">
-          {organizedMenus.map((menu) => renderMenuItem(menu))}
-        </nav>
-      </ScrollArea>
-      <Separator />
-      <Button
-        onClick={handleLogout}
-        variant="ghost"
+      <div
         className={cn(
-          "w-full justify-start transition-colors py-8",
-          !sidebarOpen && "justify-center px-2"
+          "relative flex h-full flex-col border-r text-primary-foreground bg-primary",
+          // Smooth transitions with easing
+          "transition-all duration-300 ease-in-out transform",
+          // Desktop behavior
+          "md:relative md:z-auto md:translate-x-0",
+          sidebarOpen ? "md:w-64" : "md:w-16",
+          // Mobile behavior - overlay with slide animation
+          "fixed top-0 left-0 z-50 md:static",
+          sidebarOpen
+            ? "w-64 translate-x-0"
+            : "w-64 -translate-x-full md:w-16 md:translate-x-0",
+          // Hide on mobile when closed
+          !sidebarOpen && "md:flex"
         )}
       >
-        <LogOut color="red" className="h-5 w-5 " />
-        {sidebarOpen && (
-          <>
-            <span className="text-red-500 font-semibold ml-3">Log out</span>
-          </>
-        )}
-      </Button>
-    </div>
+        <div className="flex h-16 items-center justify-between border-b px-4">
+          {sidebarOpen && (
+            <h2 className="text-lg font-semibold">DTA Al-Ishlah</h2>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSidebar}
+            className="h-8 w-8"
+          >
+            <ChevronLeft
+              className={cn(
+                "h-4 w-4 transition-transform",
+                !sidebarOpen && "rotate-180"
+              )}
+            />
+          </Button>
+        </div>
+
+        <ScrollArea className="flex-1 px-2 py-4 bg-primary text-primary-foreground bg-gradient-to-l from-primary to-primary/80">
+          <nav
+            className={cn(
+              "space-y-2 transition-all duration-300 ease-in-out",
+              sidebarOpen
+                ? "opacity-100 translate-x-0"
+                : "opacity-90 translate-x-1"
+            )}
+          >
+            {organizedMenus.map((menu) => renderMenuItem(menu))}
+          </nav>
+        </ScrollArea>
+        <Separator />
+        <Button
+          onClick={handleLogout}
+          variant="ghost"
+          className={cn(
+            "w-full justify-start transition-colors py-8",
+            !sidebarOpen && "justify-center px-2"
+          )}
+        >
+          <LogOut color="red" className="h-5 w-5 " />
+          {sidebarOpen && (
+            <>
+              <span className="text-red-500 font-semibold ml-3">Log out</span>
+            </>
+          )}
+        </Button>
+      </div>
+    </>
   );
 }

@@ -59,14 +59,7 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 mb-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Selamat Datang, {user?.username}!
-          </h1>
-        </div>
-      </div>
-      <section className="md:w-1/3 flex flex-col gap-8 border p-4 rounded-xl">
+      <section className="md:w-1/3 flex flex-col gap-8 border p-4 rounded-xl mx-auto">
         <div className="flex flex-col items-center gap-2 text-primary">
           <Handshake className="h-12 w-12" />
           <h2 className="text-xl font-semibold">Tambah Pembayaran SPP</h2>

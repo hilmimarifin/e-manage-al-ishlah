@@ -13,7 +13,8 @@ import { MenuForm } from "@/components/forms/menu-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
-import { DataTable } from "@/components/ui/data-table";
+import { ResponsiveDataDisplay } from "@/components/ui/responsive-data-display";
+import { MobileListItem } from "@/components/ui/mobile-list-view";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -154,20 +155,36 @@ export default function MenusPage() {
     },
   ];
 
-  return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Menu dan Sub Menu
-            </h1>
-            <p className="text-muted-foreground">
-              Mengelola menu navigasi dan hierarkinya.
-            </p>
-          </div>
+  const mobileItemMapper = (menu: Menu): MobileListItem => ({
+    id: menu.id,
+    title: menu.name,
+    subtitle: menu.path,
+    badge: menu.parent ? { text: menu.parent.name, variant: "outline" } : undefined,
+    details: [
+      { label: "Path", value: <Badge variant="secondary">{menu.path}</Badge> },
+      { label: "Icon", value: menu.icon || "None" },
+      { label: "Parent", value: menu.parent?.name || "Root" },
+      { label: "Order", value: menu.orderIndex },
+    ],
+    actions: [
+      ...(showEditButton ? [{
+        label: "Edit",
+        icon: <Edit className="mr-2 h-4 w-4" />,
+        onClick: () => openEditDialog(menu),
+      }] : []),
+      ...(showDeleteButton ? [{
+        label: "Hapus",
+        icon: <Trash className="mr-2 h-4 w-4" />,
+        onClick: () => handleDeleteMenu(menu.id),
+        variant: "destructive" as const,
+      }] : []),
+    ],
+  });
 
-          {showAddButton && (
+  const renderHeader = () => {
+    return (
+      <div className="flex items-center justify-between">
+        {showAddButton && (
             <Modal
               isOpen={dialogOpen}
               onOpenChange={setDialogOpen}
@@ -192,13 +209,21 @@ export default function MenusPage() {
             </Modal>
           )}
         </div>
-        <DataTable
+      );
+    };
+
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <ResponsiveDataDisplay
           columns={columns}
           data={menus}
           isLoading={isLoading}
           searchPlaceholder="Cari..."
           emptyMessage="Tidak ada menu ditemukan."
           pageSize={10}
+          mobileItemMapper={mobileItemMapper}
+          headerComponent={renderHeader()}
         />
       </div>
     </DashboardLayout>

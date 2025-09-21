@@ -9,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DataTable } from "@/components/ui/data-table";
+import { ResponsiveDataDisplay } from "@/components/ui/responsive-data-display";
+import { MobileListItem } from "@/components/ui/mobile-list-view";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -153,17 +154,43 @@ export default function ClassesPage() {
     },
   ];
 
+  const mobileItemMapper = (classroom: Classroom): MobileListItem => ({
+    id: classroom.id,
+    title: classroom.name,
+    subtitle: classroom.className,
+    badge: { text: classroom.className, variant: "default" },
+    details: [
+      { label: "Kelas", value: classroom.className },
+      { label: "Alamat", value: classroom.address || "No address" },
+      { label: "No Telp", value: classroom.phone || "No phone" },
+    ],
+    actions: [
+      ...(showDeleteButton
+        ? [
+            {
+              label: "Delete",
+              icon: <Trash className="mr-2 h-4 w-4" />,
+              onClick: () => handleDeleteClass(classroom.id),
+              variant: "destructive" as const,
+            },
+          ]
+        : []),
+    ],
+  });
+
   const addStudentToClassComponent = () => {
     return showAddButton ? (
       <div className="flex flex-row gap-2 w-full md:justify-end">
         <ComboBox
-          className="md:w-[250px]"
+          className="md:w-[250px] w-full"
+          rootClassName="h-12 md:h-[30px]"
           value={form.studentId}
           placeholder="Tambahkan siswa"
           onValueChange={(value) => setForm({ ...form, studentId: value })}
           options={studentsOptions}
         />
         <Button
+          className="h-12 md:h-[30px]"
           disabled={!form.studentId || addStudentToClass.isPending}
           onClick={handleAddStudentToClass}
         >
@@ -185,50 +212,45 @@ export default function ClassesPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <HeaderTitle
-          title="Ruang Kelas"
-          description="Mengelola kelas di sekolah"
-        />
-        <Container>
-          <FilterContainer className="grid grid-cols-1 md:grid-cols-4 gap-2">
-            <Select
-              label="Guru"
-              options={teacherOptions}
-              value={filter.teacherId}
-              onValueChange={(value) => {
-                setFilter({ ...filter, teacherId: value });
-              }}
-              disabled={!isAdmin}
-            />
-
-            <TahunAjaran
-              onValueChange={(value) => {
-                setFilter({ ...filter, year: value });
-              }}
-              value={filter.year}
-            />
-
-            <Select
-              label="Kelas"
-              placeholder="Pilih kelas"
-              options={classOptions}
-              value={filter.classId}
-              onValueChange={(value) => {
-                setFilter({ ...filter, classId: value });
-              }}
-            />
-          </FilterContainer>
-
-          <DataTable
-            columns={columns}
-            data={classrooms || []}
-            isLoading={isLoading}
-            searchPlaceholder="Cari siswa..."
-            emptyMessage="Tidak ada siswa ditemukan."
-            pageSize={10}
-            headerComponent={addStudentToClassComponent()}
+        <FilterContainer className="grid grid-cols-1 md:grid-cols-4 gap-2">
+          <Select
+            label="Guru"
+            options={teacherOptions}
+            value={filter.teacherId}
+            onValueChange={(value) => {
+              setFilter({ ...filter, teacherId: value });
+            }}
+            disabled={!isAdmin}
           />
-        </Container>
+
+          <TahunAjaran
+            onValueChange={(value) => {
+              setFilter({ ...filter, year: value });
+            }}
+            value={filter.year}
+          />
+
+          <Select
+            label="Kelas"
+            placeholder="Pilih kelas"
+            options={classOptions}
+            value={filter.classId}
+            onValueChange={(value) => {
+              setFilter({ ...filter, classId: value });
+            }}
+          />
+        </FilterContainer>
+
+        <ResponsiveDataDisplay
+          columns={columns}
+          data={classrooms || []}
+          isLoading={isLoading}
+          searchPlaceholder="Cari siswa..."
+          emptyMessage="Tidak ada siswa ditemukan."
+          pageSize={10}
+          mobileItemMapper={mobileItemMapper}
+          headerComponent={addStudentToClassComponent()}
+        />
       </div>
     </DashboardLayout>
   );

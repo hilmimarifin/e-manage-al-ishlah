@@ -12,11 +12,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, User, Menu } from 'lucide-react'
+import { useAppStore } from '@/store/app-store'
 
-export function Header() {
+export function Header({ title }: { title: string }) {
   const { user } = useAuthStore()
   const logout = useLogout()
+  const { toggleSidebar } = useAppStore()
 
   const handleLogout = () => {
     logout.mutate()
@@ -25,7 +27,15 @@ export function Header() {
   return (
     <header className="flex h-16 items-center justify-between border-b bg-card px-6">
       <div className="flex items-center space-x-4">
-        <h1 className="text-xl font-semibold">Admin Dashboard</h1>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleSidebar}
+          className="md:hidden h-8 w-8"
+        >
+          <Menu className="h-4 w-4" />
+        </Button>
+        <h1 className="text-xl font-semibold">{title}</h1>
       </div>
 
       <div className="flex items-center space-x-4">
