@@ -10,7 +10,7 @@ const FilterContainer = ({ children, className }: FilterContainerProps) => {
   return (
     <Card
       className={cn(
-        "p-6 mb-6 shadow-sm  bg-gradient-to-r from-background to-accent/30 border-r-primary border-r-4",
+        "p-6 mb-6 shadow-md bg-gradient-to-r from-background to-accent/30 border-t-primary border-t-4",
         className
       )}
     >

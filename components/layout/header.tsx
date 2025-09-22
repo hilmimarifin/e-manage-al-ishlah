@@ -41,7 +41,7 @@ export function Header({ title }: { title: string }) {
       <div className="flex items-center space-x-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+            <Button variant="ghost" className="relative h-8 w-8 text-black rounded-full">
               <Avatar className="h-8 w-8">
                 <AvatarFallback>
                   {user?.username.charAt(0).toUpperCase()}

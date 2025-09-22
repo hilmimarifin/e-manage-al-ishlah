@@ -154,7 +154,7 @@ export default function DashboardPage() {
         <Button
           disabled={!form.studentId || createPayment.isPending}
           onClick={handleCreatePayment}
-          className="h-12 rounded-xl"
+          className="h-12 rounded-xl shadow-md shadow-primary/50"
         >
           {createPayment.isPending ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

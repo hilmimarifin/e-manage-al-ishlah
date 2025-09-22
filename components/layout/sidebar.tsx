@@ -257,7 +257,7 @@ export function Sidebar({ setHeaderTitle }: SidebarProps) {
           </Button>
         </div>
 
-        <ScrollArea className="flex-1 px-2 py-4 bg-primary text-primary-foreground bg-gradient-to-l from-primary to-primary/80">
+        <ScrollArea className="flex-1 px-2 py-4 text-primary-foreground bg-gradient-to-b from-primary to-primary/10">
           <nav
             className={cn(
               "space-y-2 transition-all duration-300 ease-in-out",

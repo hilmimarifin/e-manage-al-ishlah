@@ -103,7 +103,7 @@ export function MobileListView({
         </Card>
       ) : (
         filteredItems.map((item) => (
-          <Card key={item.id} className="hover:shadow-md transition-shadow">
+          <Card key={item.id} className="shadow-md transition-shadow">
             <CardContent className="p-4 border-r-4 border-r-primary rounded-r-lg">
               <div className="space-y-3">
                 {/* Header with title, subtitle, and actions */}

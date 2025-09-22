@@ -62,7 +62,7 @@ export const Select: React.FC<SelectComponentProps> = ({
         disabled={disabled}
         name={name}
       >
-        <SelectTrigger isLoading={isLoading} id={selectId} className={cn(error ? "border-red-500" : "", rootClassName)}>
+        <SelectTrigger isLoading={isLoading} id={selectId} className={cn("shadow-md", error ? "border-red-500" : "", rootClassName)}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>

@@ -112,7 +112,7 @@ export function ComboBox({
         </Label>
       )}
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger className={cn("h-8 text-xs", rootClassName)} asChild>
+        <PopoverTrigger className={cn("h-8 text-xs shadow-md", rootClassName)} asChild>
           <Button
             id={id}
             variant="outline"
