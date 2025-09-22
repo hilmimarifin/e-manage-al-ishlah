@@ -3,12 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown, Search } from "lucide-react";
+import { Check, ChevronsUpDown, Loader, Loader2, Search } from "lucide-react";
 import * as React from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Input } from "../ui/input";
@@ -33,6 +33,7 @@ export interface ComboBoxProps {
   rootClassName?: string;
   required?: boolean;
   id?: string;
+  isLoading?: boolean;
 }
 
 export function ComboBox({
@@ -48,6 +49,7 @@ export function ComboBox({
   className,
   rootClassName,
   required = false,
+  isLoading = false,
   id,
 }: ComboBoxProps) {
   const [open, setOpen] = React.useState(false);
@@ -61,7 +63,7 @@ export function ComboBox({
 
   // Debounced search term to improve performance
   const [debouncedSearchTerm, setDebouncedSearchTerm] = React.useState("");
-  
+
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -73,21 +75,29 @@ export function ComboBox({
     if (!debouncedSearchTerm) return options;
     return options.filter(
       (option) =>
-        option.label.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        option.label
+          .toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase()) ||
         option.value.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
     );
   }, [options, debouncedSearchTerm]);
 
-  const handleSelect = React.useCallback((optionValue: string) => {
-    const newValue = optionValue === value ? "" : optionValue;
-    onValueChange?.(newValue);
-    setOpen(false);
-    setSearchTerm("");
-  }, [value, onValueChange]);
+  const handleSelect = React.useCallback(
+    (optionValue: string) => {
+      const newValue = optionValue === value ? "" : optionValue;
+      onValueChange?.(newValue);
+      setOpen(false);
+      setSearchTerm("");
+    },
+    [value, onValueChange]
+  );
 
-  const handleSearchChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  }, []);
+  const handleSearchChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchTerm(e.target.value);
+    },
+    []
+  );
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -101,7 +111,7 @@ export function ComboBox({
           {label}
         </Label>
       )}
-      <Popover  open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger className={cn("h-8 text-xs", rootClassName)} asChild>
           <Button
             id={id}
@@ -118,11 +128,15 @@ export function ComboBox({
             disabled={disabled}
           >
             {selectedOption ? selectedOption.label : placeholder}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            {isLoading ? (
+              <Loader2 className="ml-2 h-4 w-4 shrink-0 opacity-50 animate-spin" />
+            ) : (
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent 
-          className="w-full p-0" 
+        <PopoverContent
+          className="w-full p-0"
           align="start"
           side="bottom"
           sideOffset={4}

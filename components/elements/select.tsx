@@ -28,6 +28,7 @@ export interface SelectComponentProps {
   id?: string;
   name?: string;
   rootClassName?: string;
+  isLoading?: boolean;
   }
 
 export const Select: React.FC<SelectComponentProps> = ({
@@ -43,6 +44,7 @@ export const Select: React.FC<SelectComponentProps> = ({
   id,
   name,
   rootClassName,
+  isLoading = false,
 }) => {
   const selectId = id || name || "select";
 
@@ -60,7 +62,7 @@ export const Select: React.FC<SelectComponentProps> = ({
         disabled={disabled}
         name={name}
       >
-        <SelectTrigger id={selectId} className={cn(error ? "border-red-500" : "", rootClassName)}>
+        <SelectTrigger isLoading={isLoading} id={selectId} className={cn(error ? "border-red-500" : "", rootClassName)}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>

@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useMenus } from '@/hooks/use-menus'
 import { useRoleMenus, useUpdateRolePermissions, RoleMenuPermission } from '@/hooks/use-role-menus'
-import { ChevronDown, ChevronRight, Shield } from 'lucide-react'
+import { ChevronDown, ChevronRight, Loader2, Plus, Shield } from 'lucide-react'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 interface PermissionModalProps {
@@ -266,6 +266,11 @@ export function PermissionModal({ isOpen, onOpenChange, role }: PermissionModalP
             onClick={handleSave}
             disabled={updatePermissions.isPending}
           >
+            {updatePermissions.isPending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="mr-2 h-4 w-4" />
+            )}
             {updatePermissions.isPending ? 'Saving...' : 'Save Permissions'}
           </Button>
         </div>

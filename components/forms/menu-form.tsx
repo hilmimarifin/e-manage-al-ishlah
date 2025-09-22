@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createMenuSchema, updateMenuSchema, CreateMenuInput, UpdateMenuInput } from '@/lib/validations'
+import { Loader2, Plus } from "lucide-react";
 
 const iconOptions = [
   { value: "LayoutDashboard", label: "Dashboard" },
@@ -162,6 +163,11 @@ export function MenuForm({ menu, onSubmit, isLoading }: MenuFormProps) {
 
       <div className="flex justify-end">
         <Button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="mr-2 h-4 w-4" />
+          )}
           {isLoading ? "Saving..." : menu ? "Update Menu" : "Create Menu"}
         </Button>
       </div>

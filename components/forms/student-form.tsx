@@ -17,6 +17,7 @@ import {
 import { ComboBox } from "../elements/combo-box";
 import Select from "../elements/select";
 import TahunAjaran from "../elements/tahun-ajaran-picker";
+import { Loader2, Plus } from "lucide-react";
 
 interface StudentFormProps {
   student?: Student;
@@ -110,9 +111,7 @@ export function StudentForm({
             className={errors.nik ? "border-red-500" : ""}
           />
           {errors.nik && (
-            <span className="text-sm text-red-500">
-              {errors.nik.message}
-            </span>
+            <span className="text-sm text-red-500">{errors.nik.message}</span>
           )}
         </div>
 
@@ -166,9 +165,7 @@ export function StudentForm({
           {...register("entryYear")}
           label="Tahun Masuk"
           value={watchedValues.entryYear}
-          onValueChange={(value) =>
-            setValue("entryYear", value)
-          }
+          onValueChange={(value) => setValue("entryYear", value)}
         />
         {errors.entryYear && (
           <span className="text-sm text-red-500">
@@ -234,6 +231,11 @@ export function StudentForm({
       />
       <div className="flex justify-end mt-4">
         <Button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="mr-2 h-4 w-4" />
+          )}
           {isLoading
             ? "Saving..."
             : student

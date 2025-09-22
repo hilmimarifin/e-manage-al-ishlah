@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { User } from '@/types'
+import { Loader2, Plus } from 'lucide-react'
 
 interface UserFormProps {
   user?: User
@@ -207,6 +208,11 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
       
       <div className="flex justify-end">
         <Button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="mr-2 h-4 w-4" />
+          )}
           {isLoading ? 'Saving...' : user ? 'Update User' : 'Create User'}
         </Button>
       </div>

@@ -20,7 +20,7 @@ import {
 import { Modal } from "@/components/ui/modal";
 import { usePermissionGuard } from "@/hooks/use-permissions";
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit, MoreHorizontal, Plus, Trash } from "lucide-react";
+import { Edit, Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import TahunAjaran from "@/components/elements/tahun-ajaran-picker";
@@ -193,7 +193,11 @@ export default function ClassesPage() {
           disabled={!form.studentId || addStudentToClass.isPending}
           onClick={handleAddStudentToClass}
         >
-          <Plus className="mr-2 h-4 w-4" />
+          {addStudentToClass.isPending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="mr-2 h-4 w-4" />
+          )}
           Tambah
         </Button>
       </div>

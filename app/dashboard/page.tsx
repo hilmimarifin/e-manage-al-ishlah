@@ -13,7 +13,7 @@ import { useCreatePayment, usePaymentClass } from "@/hooks/use-payment-class";
 import { useStudents } from "@/hooks/use-students";
 import { useUsers } from "@/hooks/use-users";
 import { useAuthStore } from "@/store/auth-store";
-import { Handshake, Plus } from "lucide-react";
+import { Handshake, Loader2, Plus } from "lucide-react";
 import { useState, useCallback, useMemo } from "react";
 import * as React from "react";
 
@@ -28,14 +28,15 @@ export default function DashboardPage() {
     amount: "",
   });
 
-  const { data: classes = [] } = useClasses(form);
+  const { data: classes = [], isLoading: classesLoading } = useClasses(form);
 
   // Memoize class options to prevent unnecessary re-renders
   const classOptions = useMemo(
-    () => classes.map((cls) => ({
-      value: cls.id,
-      label: cls.name,
-    })),
+    () =>
+      classes.map((cls) => ({
+        value: cls.id,
+        label: cls.name,
+      })),
     [classes]
   );
 
@@ -43,10 +44,11 @@ export default function DashboardPage() {
 
   // Memoize student options to prevent unnecessary re-renders
   const studentsOptions = useMemo(
-    () => paymentClass?.map((student) => ({
-      value: student.id,
-      label: student.name,
-    })) || [],
+    () =>
+      paymentClass?.map((student) => ({
+        value: student.id,
+        label: student.name,
+      })) || [],
     [paymentClass]
   );
 
@@ -69,7 +71,7 @@ export default function DashboardPage() {
   // Memoized handlers to prevent unnecessary re-renders
   const handleStudentChange = useCallback((value: string) => {
     // Update studentId immediately for responsive UI
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       studentId: value,
       classId: "", // Reset these until data loads
@@ -80,9 +82,11 @@ export default function DashboardPage() {
   // Effect to update classId and amount when paymentClass data changes
   React.useEffect(() => {
     if (form.studentId && paymentClass) {
-      const selectedStudent = paymentClass.find((cls) => cls.id === form.studentId);
+      const selectedStudent = paymentClass.find(
+        (cls) => cls.id === form.studentId
+      );
       if (selectedStudent) {
-        setForm(prev => ({
+        setForm((prev) => ({
           ...prev,
           classId: selectedStudent.classId || "",
           amount: selectedStudent.monthlyFeeAmount.toString() || "",
@@ -92,16 +96,19 @@ export default function DashboardPage() {
   }, [form.studentId, paymentClass]);
 
   const handleYearChange = useCallback((value: string) => {
-    setForm(prev => ({ ...prev, year: value, classId: "", studentId: "" }));
+    setForm((prev) => ({ ...prev, year: value, classId: "", studentId: "" }));
   }, []);
 
   const handleClassChange = useCallback((value: string) => {
-    setForm(prev => ({ ...prev, classId: value, studentId: "" }));
+    setForm((prev) => ({ ...prev, classId: value, studentId: "" }));
   }, []);
 
-  const handleAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm(prev => ({ ...prev, amount: e.target.value }));
-  }, []);
+  const handleAmountChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setForm((prev) => ({ ...prev, amount: e.target.value }));
+    },
+    []
+  );
 
   return (
     <DashboardLayout>
@@ -113,6 +120,7 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-2">
           <Label>Siswa</Label>
           <ComboBox
+            isLoading={isLoading || classesLoading}
             rootClassName="h-12 rounded-xl"
             value={form.studentId}
             onValueChange={handleStudentChange}
@@ -130,6 +138,7 @@ export default function DashboardPage() {
           placeholder="Pilih kelas"
           options={classOptions}
           value={form.classId}
+          isLoading={classesLoading || isLoading}
           onValueChange={handleClassChange}
         />
         <div className="flex flex-col gap-2">
@@ -147,7 +156,11 @@ export default function DashboardPage() {
           onClick={handleCreatePayment}
           className="h-12 rounded-xl"
         >
-          <Plus className="mr-2 h-4 w-4" />
+          {createPayment.isPending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="mr-2 h-4 w-4" />
+          )}
           Tambah
         </Button>
       </section>

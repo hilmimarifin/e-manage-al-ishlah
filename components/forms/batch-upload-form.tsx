@@ -1,29 +1,28 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useBatchUploadStudents } from "@/hooks/use-batch-upload";
 import {
-  Upload,
-  FileSpreadsheet,
   AlertCircle,
   CheckCircle,
   Download,
-  X,
+  FileSpreadsheet,
+  Loader2,
+  Upload,
+  X
 } from "lucide-react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface BatchUploadFormProps {
@@ -208,6 +207,11 @@ export function BatchUploadForm({ onClose }: BatchUploadFormProps) {
           disabled={!selectedFile || batchUpload.isPending}
           className="flex-1"
         >
+          {batchUpload.isPending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Upload className="mr-2 h-4 w-4" />
+          )}
           {batchUpload.isPending ? "Uploading..." : "Upload Siswa"}
         </Button>
         {onClose && (
