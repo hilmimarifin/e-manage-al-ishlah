@@ -44,8 +44,13 @@ export function Modal({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className={cn(sizeClasses[size], "max-h-[calc(100vh-10rem)]")}>
-        <DialogHeader className="bg-gradient-to-r from-primary to-primary/90 text-primary-foreground p-4 max-h-20">
+      <DialogContent
+        className={cn(
+          sizeClasses[size],
+          "max-h-[calc(100vh-10rem)] flex flex-col overflow-hidden"
+        )}
+      >
+        <DialogHeader className="bg-gradient-to-r from-primary to-primary/90 text-primary-foreground p-4 max-h-20 flex-shrink-0">
           <DialogTitle>{title}</DialogTitle>
           {description && (
             <DialogDescription className="text-primary-foreground">
@@ -53,8 +58,12 @@ export function Modal({
             </DialogDescription>
           )}
         </DialogHeader>
-        <div className="px-4 pb-4 overflow-y-auto">{children}</div>
-        {footer && <DialogFooter>{footer}</DialogFooter>}
+        <div className="px-4 pb-4 overflow-y-auto flex-1 min-h-0">
+          {children}
+        </div>
+        {footer && (
+          <DialogFooter className="flex-shrink-0">{footer}</DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );
