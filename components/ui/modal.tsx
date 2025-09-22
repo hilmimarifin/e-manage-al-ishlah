@@ -44,8 +44,8 @@ export function Modal({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className={cn(sizeClasses[size], "h-[calc(100vh-10rem)]")}>
-        <DialogHeader className="bg-gradient-to-r from-primary to-primary/90 text-primary-foreground p-4">
+      <DialogContent className={cn(sizeClasses[size], "max-h-[calc(100vh-10rem)]")}>
+        <DialogHeader className="bg-gradient-to-r from-primary to-primary/90 text-primary-foreground p-4 max-h-20">
           <DialogTitle>{title}</DialogTitle>
           {description && (
             <DialogDescription className="text-primary-foreground">

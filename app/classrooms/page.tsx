@@ -83,6 +83,7 @@ export default function ClassesPage() {
   const handleAddStudentToClass = async () => {
     try {
       await addStudentToClass.mutateAsync(form);
+      setForm((prev) => ({ ...prev, studentId: "" }));
     } catch (error) {
       console.error("Failed to add student to class:", error);
     }
@@ -157,12 +158,10 @@ export default function ClassesPage() {
   const mobileItemMapper = (classroom: Classroom): MobileListItem => ({
     id: classroom.id,
     title: classroom.name,
-    subtitle: classroom.className,
-    badge: { text: classroom.className, variant: "default" },
+    subtitle: `${classroom.className} - ${classroom.year}`,
     details: [
-      { label: "Kelas", value: classroom.className },
-      { label: "Alamat", value: classroom.address || "No address" },
       { label: "No Telp", value: classroom.phone || "No phone" },
+      { label: "Alamat", value: classroom.address || "No address" },
     ],
     actions: [
       ...(showDeleteButton

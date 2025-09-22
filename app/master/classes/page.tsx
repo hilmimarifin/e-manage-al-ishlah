@@ -154,11 +154,9 @@ export default function ClassesPage() {
     id: classItem.id,
     title: classItem.name,
     subtitle: `Kelas ${classItem.grade} - ${classItem.year}`,
-    badge: { text: classItem.grade, variant: "default" },
     details: [
-      { label: "Kelas", value: classItem.grade },
-      { label: "Tahun Ajaran", value: classItem.year },
       { label: "Wali Kelas", value: classItem.teacherName || "No teacher" },
+      { label: "Jenjang kelas", value: classItem.grade },
       { label: "Biaya SPP", value: classItem.monthlyFee || "No monthly fee" },
     ],
     actions: [

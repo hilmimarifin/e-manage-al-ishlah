@@ -170,11 +170,7 @@ export default function StudentsPage() {
   const mobileItemMapper = (student: Student): MobileListItem => ({
     id: student.id,
     title: student.fullName,
-    subtitle: student.address || "No address",
-    badge: {
-      text: student.gender === Gender.MALE ? "Laki-laki" : "Perempuan",
-      variant: student.gender === Gender.MALE ? "default" : "secondary",
-    },
+    subtitle: student.nik || "-",
     details: [
       { label: "Alamat", value: student.address || "No address" },
       {
