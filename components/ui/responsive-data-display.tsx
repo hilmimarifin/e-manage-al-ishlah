@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { MobileListView, MobileListItem } from "@/components/ui/mobile-list-view";
 import { ColumnDef } from "@tanstack/react-table";
@@ -14,6 +14,7 @@ interface ResponsiveDataDisplayProps<T> {
   pageSize?: number;
   mobileItemMapper: (item: T) => MobileListItem;
   headerComponent?: React.ReactNode;
+  mobileItemCustomContent?: (item: MobileListItem) => ReactNode;
 }
 
 export function ResponsiveDataDisplay<T>({
@@ -25,6 +26,7 @@ export function ResponsiveDataDisplay<T>({
   pageSize = 10,
   mobileItemMapper,
   headerComponent,
+  mobileItemCustomContent,
 }: ResponsiveDataDisplayProps<T>) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -54,6 +56,7 @@ export function ResponsiveDataDisplay<T>({
           items={mobileItems}
           isLoading={isLoading}
           emptyMessage={emptyMessage}
+          customContent={mobileItemCustomContent}
         />
       </div>
     );

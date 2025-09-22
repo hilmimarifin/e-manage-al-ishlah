@@ -1,28 +1,23 @@
 "use client";
 
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { Card, CardContent } from "@/components/ui/card";
-import { ResponsiveDataDisplay } from "@/components/ui/responsive-data-display";
 import { MobileListItem } from "@/components/ui/mobile-list-view";
+import { ResponsiveDataDisplay } from "@/components/ui/responsive-data-display";
 import { usePermissionGuard } from "@/hooks/use-permissions";
 import { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
+import FilterContainer from "@/components/elements/filter-container";
 import Select from "@/components/elements/select";
 import TahunAjaran from "@/components/elements/tahun-ajaran-picker";
-import { usePaymentClass } from "@/hooks/use-payment-class";
-import { useCreatePayment } from "@/hooks/use-payment-class";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { useClasses } from "@/hooks/use-classes";
+import { useCreatePayment, usePaymentClass } from "@/hooks/use-payment-class";
 import { useUsers } from "@/hooks/use-users";
 import { useAuthStore } from "@/store/auth-store";
 import { CreatePaymentClass, PaymentClass as PaymentClassType } from "@/types";
-import TrueHeaderRowMergingExamples from "./example";
-import { Check, Plus } from "lucide-react";
-import { ComboBox } from "@/components/elements/combo-box";
-import { Button } from "@/components/ui/button";
-import FilterContainer from "@/components/elements/filter-container";
-import Container from "@/components/elements/container";
-import HeaderTitle from "@/components/elements/header-title";
-import { useClasses } from "@/hooks/use-classes";
+import { Check } from "lucide-react";
 
 type PaymentClass = PaymentClassType;
 
@@ -233,19 +228,26 @@ export default function ClassesPage() {
       ),
     },
   ];
+  const months = [
+    { key: "jul", name: "Jul" },
+    { key: "aug", name: "Aug" },
+    { key: "sep", name: "Sep" },
+    { key: "oct", name: "Oct" },
+    { key: "nov", name: "Nov" },
+    { key: "dec", name: "Dec" },
+    { key: "jan", name: "Jan" },
+    { key: "feb", name: "Feb" },
+    { key: "mar", name: "Mar" },
+    { key: "apr", name: "Apr" },
+    { key: "may", name: "May" },
+    { key: "jun", name: "Jun" },
+  ];
 
   const mobileItemMapper = (payment: PaymentClass): MobileListItem => {
     const paidMonths: string[] = [];
     const unpaidMonths: string[] = [];
-    
-    const months = [
-      { key: 'jul', name: 'Jul' }, { key: 'aug', name: 'Aug' }, { key: 'sep', name: 'Sep' },
-      { key: 'oct', name: 'Oct' }, { key: 'nov', name: 'Nov' }, { key: 'dec', name: 'Dec' },
-      { key: 'jan', name: 'Jan' }, { key: 'feb', name: 'Feb' }, { key: 'mar', name: 'Mar' },
-      { key: 'apr', name: 'Apr' }, { key: 'may', name: 'May' }, { key: 'jun', name: 'Jun' }
-    ];
 
-    months.forEach(month => {
+    months.forEach((month) => {
       if (payment.monthlyFee[month.key as keyof typeof payment.monthlyFee]) {
         paidMonths.push(month.name);
       } else {
@@ -256,13 +258,13 @@ export default function ClassesPage() {
     return {
       id: payment.id,
       title: payment.name,
-      subtitle: payment.className,
-      badge: { text: payment.className, variant: "default" },
+      subtitle: `${payment.className} - ${payment.year}`,
+      // badge: { text: payment.className, variant: "default" },
       details: [
-        { label: "Kelas", value: payment.className },
-        { label: "Lunas", value: paidMonths.length > 0 ? paidMonths.join(', ') : 'Belum ada' },
-        { label: "Belum Lunas", value: unpaidMonths.length > 0 ? unpaidMonths.join(', ') : 'Semua lunas' },
-        { label: "Total Lunas", value: `${paidMonths.length}/12 bulan` },
+        // { label: "Kelas", value: payment.className },
+        // { label: "Lunas", value: paidMonths.length > 0 ? paidMonths.join(', ') : 'Belum ada' },
+        // { label: "Belum Lunas", value: unpaidMonths.length > 0 ? unpaidMonths.join(', ') : 'Semua lunas' },
+        // { label: "Total Lunas", value: `${paidMonths.length}/12 bulan` },
       ],
       actions: [],
     };
@@ -273,6 +275,31 @@ export default function ClassesPage() {
     value: cls.id,
     label: cls.name,
   }));
+
+  const renderContent = (item: MobileListItem) => {
+    return (
+      <ul className="space-y-2 grid grid-cols-6">
+        {months.map((month) => {
+          const person = paymentClass?.find((item2) => item2.id === item.id);
+          return (
+            <li key={month.key} className="flex items-center gap-1">
+              <Checkbox
+                disabled
+                checked={
+                  Boolean(
+                    person?.monthlyFee[
+                      month.key as keyof (typeof person)["monthlyFee"]
+                    ]
+                  )
+                }
+              />
+              <Label className="text-xs">{month.name}</Label>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  };
 
   return (
     <DashboardLayout>
@@ -311,6 +338,7 @@ export default function ClassesPage() {
           emptyMessage="Tidak ada siswa ditemukan."
           pageSize={10}
           mobileItemMapper={mobileItemMapper}
+          mobileItemCustomContent={renderContent}
         />
       </div>
     </DashboardLayout>

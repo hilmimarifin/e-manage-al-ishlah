@@ -39,6 +39,7 @@ interface MobileListViewProps {
   isLoading?: boolean;
   emptyMessage?: string;
   searchPlaceholder?: string;
+  customContent?: (item: MobileListItem) => ReactNode;
 }
 
 export function MobileListView({
@@ -46,6 +47,7 @@ export function MobileListView({
   isLoading = false,
   emptyMessage = "No items found.",
   searchPlaceholder = "Cari...",
+  customContent,
 }: MobileListViewProps) {
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -176,6 +178,7 @@ export function MobileListView({
                     ))}
                   </div>
                 )}
+                {customContent && customContent(item)}
               </div>
             </CardContent>
           </Card>
