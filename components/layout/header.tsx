@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { useAuthStore } from '@/store/auth-store'
-import { useLogout } from '@/hooks/use-auth'
-import { Button } from '@/components/ui/button'
+import { useAuthStore } from "@/store/auth-store";
+import { useLogout } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,22 +10,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { LogOut, User, Menu } from 'lucide-react'
-import { useAppStore } from '@/store/app-store'
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { LogOut, User, Menu } from "lucide-react";
+import { useAppStore } from "@/store/app-store";
 
 export function Header({ title }: { title: string }) {
-  const { user } = useAuthStore()
-  const logout = useLogout()
-  const { toggleSidebar } = useAppStore()
+  const { user } = useAuthStore();
+  const logout = useLogout();
+  const { toggleSidebar } = useAppStore();
 
   const handleLogout = () => {
-    logout.mutate()
-  }
+    logout.mutate();
+  };
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-card px-6">
+    <header className="flex h-16 items-center justify-between border-b bg-card md:bg-card bg-gradient-to-r from-primary to-primary/90 md:bg-gradient-to-r md:from-transparent md:to-transparent text-primary-foreground md:text-black px-6">
       <div className="flex items-center space-x-4">
         <Button
           variant="ghost"
@@ -52,7 +52,9 @@ export function Header({ title }: { title: string }) {
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user?.username}</p>
+                <p className="text-sm font-medium leading-none">
+                  {user?.username}
+                </p>
                 <p className="text-xs leading-none text-muted-foreground">
                   {user?.email}
                 </p>
@@ -70,5 +72,5 @@ export function Header({ title }: { title: string }) {
         </DropdownMenu>
       </div>
     </header>
-  )
+  );
 }

@@ -158,10 +158,7 @@ export default function RolesPage() {
     id: role.id,
     title: role.name,
     subtitle: role.description || "No description",
-    badge: { text: role.name, variant: "outline" },
     details: [
-      { label: "Deskripsi", value: role.description || "No description" },
-      { label: "Users", value: role._count?.users || 0 },
     ],
     actions: [
       ...(showEditButton

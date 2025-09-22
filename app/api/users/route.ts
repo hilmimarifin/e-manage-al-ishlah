@@ -117,7 +117,7 @@ export const POST = withWritePermission("/users", async (req: NextRequest) => {
     );
   } catch (error) {
     return NextResponse.json(
-      createErrorResponse("Failed to create user", "Internal server error"),
+      createErrorResponse(error as string, "Internal server error"),
       { status: 500 }
     );
   }

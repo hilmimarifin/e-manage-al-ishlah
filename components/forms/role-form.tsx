@@ -37,7 +37,7 @@ export function RoleForm({ role, onSubmit, isLoading }: RoleFormProps) {
     <form onSubmit={handleSubmit}>
       <div className="grid gap-4 py-4">
         <div className="grid gap-2">
-          <Label htmlFor="name">Role Name</Label>
+          <Label htmlFor="name">Nama Role</Label>
           <Input
             id="name"
             value={formData.name}
@@ -47,10 +47,10 @@ export function RoleForm({ role, onSubmit, isLoading }: RoleFormProps) {
         </div>
         
         <div className="grid gap-2">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">Deskripsi</Label>
           <Textarea
             id="description"
-            placeholder="Enter role description"
+            placeholder="Masukkan deskripsi role"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           />
@@ -64,7 +64,7 @@ export function RoleForm({ role, onSubmit, isLoading }: RoleFormProps) {
           ) : (
             <Plus className="mr-2 h-4 w-4" />
           )}
-          {isLoading ? 'Saving...' : role ? 'Update Role' : 'Create Role'}
+          {isLoading ? 'Menyimpan...' : role ? 'Ubah Role' : 'Tambah Role'}
         </Button>
       </div>
     </form>

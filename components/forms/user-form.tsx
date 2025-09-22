@@ -92,7 +92,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="gender">Gender</Label>
+            <Label htmlFor="gender">Jenis Kelamin</Label>
             <Select
               value={formData.gender}
               onValueChange={(value) => setFormData({ ...formData, gender: value })}
@@ -101,8 +101,8 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="MALE">Male</SelectItem>
-                <SelectItem value="FEMALE">Female</SelectItem>
+                <SelectItem value="MALE">Laki-laki</SelectItem>
+                <SelectItem value="FEMALE">Perempuan</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -120,7 +120,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="birthDate">Birth Date</Label>
+            <Label htmlFor="birthDate">Tanggal Lahir</Label>
             <Input
               id="birthDate"
               type="date"
@@ -130,7 +130,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
           </div>
           
           <div className="grid gap-2">
-            <Label htmlFor="birthPlace">Birth Place</Label>
+            <Label htmlFor="birthPlace">Tempat Lahir</Label>
             <Input
               id="birthPlace"
               value={formData.birthPlace}
@@ -140,7 +140,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="education">Education</Label>
+          <Label htmlFor="education">Pendidikan</Label>
           <Input
             id="education"
             value={formData.education}
@@ -150,7 +150,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="address">Address</Label>
+          <Label htmlFor="address">Alamat</Label>
           <Input
             id="address"
             value={formData.address}
@@ -159,7 +159,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="photo">Photo URL</Label>
+          <Label htmlFor="photo">Foto</Label>
           <Input
             id="photo"
             value={formData.photo}
@@ -170,7 +170,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
         
         <div className="grid gap-2">
           <Label htmlFor="password">
-            {user ? 'New Password (leave empty to keep current)' : 'Password'}
+            {user ? 'Password baru (Biarkan kosong jika tidak ingin mengubah)' : 'Password'}
           </Label>
           <Input
             id="password"
@@ -184,7 +184,7 @@ export function UserForm({ user, onSubmit, isLoading }: UserFormProps) {
         <div className="grid gap-2">
           <Label htmlFor="role">Role</Label>
           {rolesError ? (
-            <div className="text-sm text-red-500">Failed to load roles</div>
+            <div className="text-sm text-red-500">Gagal memuat role</div>
           ) : (
             <Select
               value={formData.roleId}

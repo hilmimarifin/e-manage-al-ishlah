@@ -38,9 +38,9 @@ export interface ComboBoxProps {
 
 export function ComboBox({
   label,
-  placeholder = "Select option...",
-  searchPlaceholder = "Search...",
-  emptyMessage = "No option found.",
+  placeholder = "Pilih...",
+  searchPlaceholder = "Cari...",
+  emptyMessage = "Data tidak ditemukan.",
   value,
   onValueChange,
   options,

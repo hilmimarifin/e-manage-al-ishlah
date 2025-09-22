@@ -7,11 +7,11 @@ export const GenderEnum = z.enum(['MALE', 'FEMALE'])
 
 // User validation schemas
 export const createUserSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  username: z.string().min(3, 'Username must be at least 3 characters'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  nik: z.string().min(16, 'NIK must be 16 characters').max(16, 'NIK must be 16 characters'),
-  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Format email tidak valid'),
+  username: z.string().min(3, 'Username minimal 3 karakter'),
+  password: z.string().min(6, 'Password minimal 6 karakter'),
+  nik: z.string().min(16, 'NIK harus 16 karakter').max(16, 'NIK harus 16 karakter'),
+  name: z.string().min(1, 'Nama wajib diisi'),
   gender: GenderEnum,
   birthDate: z.string().optional(),
   birthPlace: z.string().optional(),
@@ -23,11 +23,11 @@ export const createUserSchema = z.object({
 })
 
 export const updateUserSchema = z.object({
-  email: z.string().email('Invalid email format').optional(),
-  username: z.string().min(3, 'Username must be at least 3 characters').optional(),
-  password: z.string().min(6, 'Password must be at least 6 characters').optional(),
-  nik: z.string().min(16, 'NIK must be 16 characters').max(16, 'NIK must be 16 characters').optional(),
-  name: z.string().min(1, 'Name is required').optional(),
+  email: z.string().email('Format email tidak valid').optional(),
+  username: z.string().min(3, 'Username minimal 3 karakter').optional(),
+  password: z.string().min(6, 'Password minimal 6 karakter').optional(),
+  nik: z.string().min(16, 'NIK harus 16 karakter').max(16, 'NIK harus 16 karakter').optional(),
+  name: z.string().min(1, 'Nama wajib diisi').optional(),
   gender: GenderEnum.optional(),
   birthDate: z.string().optional(),
   birthPlace: z.string().optional(),
@@ -35,32 +35,32 @@ export const updateUserSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   photo: z.string().optional(),
-  roleId: z.string().min(1, 'Role is required').optional()
+  roleId: z.string().min(1, 'Role wajib diisi').optional()
 })
 
 // Role validation schemas
 export const createRoleSchema = z.object({
-  name: z.string().min(1, 'Role name is required'),
+  name: z.string().min(1, 'Nama role wajib diisi'),
   description: z.string().optional()
 })
 
 export const updateRoleSchema = z.object({
-  name: z.string().min(1, 'Role name is required').optional(),
+  name: z.string().min(1, 'Nama role wajib diisi').optional(),
   description: z.string().optional()
 })
 
 // Menu validation schemas
 export const createMenuSchema = z.object({
-  name: z.string().min(1, 'Menu name is required'),
-  path: z.string().min(1, 'Menu path is required'),
+  name: z.string().min(1, 'Nama menu wajib diisi'),
+  path: z.string().min(1, 'Path menu wajib diisi'),
   icon: z.string().optional(),
   parentId: z.string().optional(),
   orderIndex: z.number().int().min(0).default(0)
 })
 
 export const updateMenuSchema = z.object({
-  name: z.string().min(1, 'Menu name is required').optional(),
-  path: z.string().min(1, 'Menu path is required').optional(),
+  name: z.string().min(1, 'Nama menu wajib diisi').optional(),
+  path: z.string().min(1, 'Path menu wajib diisi').optional(),
   icon: z.string().optional(),
   parentId: z.string().optional(),
   orderIndex: z.number().int().min(0).optional()
@@ -68,8 +68,8 @@ export const updateMenuSchema = z.object({
 
 // RoleMenu validation schemas
 export const createRoleMenuSchema = z.object({
-  roleId: z.string().min(1, 'Role ID is required'),
-  menuId: z.string().min(1, 'Menu ID is required'),
+  roleId: z.string().min(1, 'Role ID wajib diisi'),
+  menuId: z.string().min(1, 'Menu ID wajib diisi'),
   canRead: z.boolean().default(true),
   canWrite: z.boolean().default(false),
   canUpdate: z.boolean().default(false),
@@ -85,9 +85,9 @@ export const updateRoleMenuSchema = z.object({
 
 // Student validation schemas
 export const createStudentSchema = z.object({
-  nik: z.string().min(16, 'NIK must be 16 characters').max(16, 'NIK must be 16 characters'),
-  fullName: z.string().min(1, 'Full name is required'),
-  birthDate: z.string().min(1, 'Birth date is required').optional(),
+  nik: z.string().min(16, 'NIK harus 16 karakter').max(16, 'NIK harus 16 karakter'),
+  fullName: z.string().min(1, 'Nama lengkap wajib diisi'),
+  birthDate: z.string().min(1, 'Tanggal lahir wajib diisi').optional(),
   birthPlace: z.string().optional(),
   address: z.string().optional(),
   phone: z.string().optional(),
@@ -95,13 +95,13 @@ export const createStudentSchema = z.object({
   gender: GenderEnum,
   photo: z.string().optional(),
   status: StudentStatusEnum.default('ACTIVE'),
-  entryYear: z.string().min(1, 'Entry year is required')
+  entryYear: z.string().min(1, 'Tahun masuk wajib diisi')
 })
 
 export const updateStudentSchema = z.object({
-  nik: z.string().min(16, 'NIK must be 16 characters').max(16, 'NIK must be 16 characters').optional(),
-  fullName: z.string().min(1, 'Full name is required').optional(),
-  birthDate: z.string().min(1, 'Birth date is required').optional(),
+  nik: z.string().min(16, 'NIK harus 16 karakter').max(16, 'NIK harus 16 karakter').optional(),
+  fullName: z.string().min(1, 'Nama lengkap wajib diisi').optional(),
+  birthDate: z.string().min(1, 'Tanggal lahir wajib diisi').optional(),
   birthPlace: z.string().optional(),
   address: z.string().optional(),
   phone: z.string().optional(),
@@ -109,63 +109,63 @@ export const updateStudentSchema = z.object({
   gender: GenderEnum.optional(),
   photo: z.string().optional(),
   status: StudentStatusEnum.optional(),
-  entryYear: z.string().min(1, 'Entry year is required')
+  entryYear: z.string().min(1, 'Tahun masuk wajib diisi')
 })
 
 // Class validation schemas
 export const createClassSchema = z.object({
-  name: z.string().min(1, "Class name is required"),
-  grade: z.string().min(1, "Grade is required"),
-  year: z.string().min(1, "Year is required"),
-  teacherId: z.string().min(1, "Teacher ID is required"),
+  name: z.string().min(1, "Nama kelas wajib diisi"),
+  grade: z.string().min(1, "Jenjang kelas wajib diisi"),
+  year: z.string().min(1, "Tahun ajaran wajib diisi"),
+  teacherId: z.string().min(1, "Wali kelas wajib diisi"),
   monthlyFee: z.coerce
     .number()
     .int()
     .positive()
-    .min(1, "Monthly fee is required"),
+    .min(1, "Biaya SPP wajib diisi"),
 });
 
 export const updateClassSchema = z.object({
-  name: z.string().min(1, "Class name is required").optional(),
-  grade: z.string().min(1, "Grade is required").optional(),
-  year: z.string().min(1, "Year is required").optional(),
-  teacherId: z.string().min(1, "Teacher ID is required").optional(),
+  name: z.string().min(1, "Nama kelas wajib diisi").optional(),
+  grade: z.string().min(1, "Jenjang kelas wajib diisi").optional(),
+  year: z.string().min(1, "Tahun ajaran wajib diisi").optional(),
+  teacherId: z.string().min(1, "Wali kelas wajib diisi").optional(),
   monthlyFee: z.coerce
     .number()
     .int()
     .positive()
-    .min(1, "Monthly fee is required"),
+    .min(1, "Biaya SPP wajib diisi"),
 });
 
 // StudentClass validation schemas
 export const createStudentClassSchema = z.object({
-  studentId: z.string().min(1, 'Student ID is required'),
+  studentId: z.string().min(1, 'ID siswa wajib diisi'),
   classId: z.string().optional(),
-  year: z.string().min(1, 'Year is required'),
+  year: z.string().min(1, 'Tahun ajaran wajib diisi'),
   teacherId: z.string().optional(),
 })
 
 export const updateStudentClassSchema = z.object({
-  studentId: z.string().min(1, 'Student ID is required'),
-  classId: z.string().min(1, 'Class ID is required'),
-  year: z.string().min(1, 'Year is required').optional()
+  studentId: z.string().min(1, 'ID siswa wajib diisi'),
+  classId: z.string().min(1, 'ID kelas wajib diisi'),
+  year: z.string().min(1, 'Tahun ajaran wajib diisi').optional()
 })
 
 // Payment validation schemas
 export const createPaymentSchema = z.object({
-  studentId: z.string().min(1, 'Student ID is required'),
-  amount: z.number().positive('Amount must be positive'),
-  month: z.number().int().min(1).max(12, 'Month must be between 1 and 12'),
-  year: z.number().int().min(1900).max(2100, 'Year must be valid'),
+  studentId: z.string().min(1, 'ID siswa wajib diisi'),
+  amount: z.number().positive('Jumlah pembayaran harus positif'),
+  month: z.number().int().min(1).max(12, 'Bulan harus antara 1 dan 12'),
+  year: z.number().int().min(1900).max(2100, 'Tahun harus valid'),
   status: PaymentStatusEnum.default('PAID'),
   paidAt: z.string().datetime().optional().or(z.date().optional()),
   recordedBy: z.string().min(1, 'Recorded by is required')
 })
 
 export const updatePaymentSchema = z.object({
-  amount: z.number().positive('Amount must be positive').optional(),
-  month: z.number().int().min(1).max(12, 'Month must be between 1 and 12').optional(),
-  year: z.number().int().min(1900).max(2100, 'Year must be valid').optional(),
+  amount: z.number().positive('Jumlah pembayaran harus positif').optional(),
+  month: z.number().int().min(1).max(12, 'Bulan harus antara 1 dan 12').optional(),
+  year: z.number().int().min(1900).max(2100, 'Tahun harus valid').optional(),
   status: PaymentStatusEnum.optional(),
   paidAt: z.string().datetime().optional().or(z.date().optional())
 })
