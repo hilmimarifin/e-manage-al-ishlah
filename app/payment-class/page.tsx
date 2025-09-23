@@ -5,7 +5,7 @@ import { MobileListItem } from "@/components/ui/mobile-list-view";
 import { ResponsiveDataDisplay } from "@/components/ui/responsive-data-display";
 import { usePermissionGuard } from "@/hooks/use-permissions";
 import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import FilterContainer from "@/components/elements/filter-container";
 import Select from "@/components/elements/select";
@@ -13,11 +13,25 @@ import TahunAjaran from "@/components/elements/tahun-ajaran-picker";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useClasses } from "@/hooks/use-classes";
-import { useCreatePayment, usePaymentClass } from "@/hooks/use-payment-class";
+import {
+  useCreatePayment,
+  usePaymentClass,
+  useUpdatePayment,
+} from "@/hooks/use-payment-class";
 import { useUsers } from "@/hooks/use-users";
 import { useAuthStore } from "@/store/auth-store";
 import { CreatePaymentClass, PaymentClass as PaymentClassType } from "@/types";
-import { Check } from "lucide-react";
+import { Check, Edit, MoreHorizontal, Plus } from "lucide-react";
+import { isAdminClient } from "@/lib/client-utils";
+import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/ui/button";
+import PaymentForm from "@/components/forms/payment-form";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type PaymentClass = PaymentClassType;
 
@@ -39,6 +53,8 @@ export default function ClassesPage() {
     value: student.id,
     label: student.name,
   }));
+  const isAdmin = isAdminClient();
+
   // Permission checks for /roles path
   const {
     showAddButton,
@@ -227,6 +243,30 @@ export default function ClassesPage() {
         </>
       ),
     },
+    {
+      id: "actions",
+      header: "Aksi",
+      cell: ({ row }) => {
+        const classes = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {showEditButton && (
+                <DropdownMenuItem onClick={() => openEditDialog(classes)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
   ];
   const months = [
     { key: "jul", name: "Jul" },
@@ -242,6 +282,10 @@ export default function ClassesPage() {
     { key: "may", name: "May" },
     { key: "jun", name: "Jun" },
   ];
+  const openEditDialog = (payment: PaymentClass) => {
+    setSelectedClass(payment);
+    setDialogOpen(true);
+  };
 
   const mobileItemMapper = (payment: PaymentClass): MobileListItem => {
     const paidMonths: string[] = [];
@@ -260,13 +304,18 @@ export default function ClassesPage() {
       title: payment.name,
       subtitle: `${payment.className} - ${payment.year}`,
       // badge: { text: payment.className, variant: "default" },
-      details: [
-        // { label: "Kelas", value: payment.className },
-        // { label: "Lunas", value: paidMonths.length > 0 ? paidMonths.join(', ') : 'Belum ada' },
-        // { label: "Belum Lunas", value: unpaidMonths.length > 0 ? unpaidMonths.join(', ') : 'Semua lunas' },
-        // { label: "Total Lunas", value: `${paidMonths.length}/12 bulan` },
+      details: [],
+      actions: [
+        ...(showEditButton
+          ? [
+              {
+                label: "Update Pembayaran",
+                icon: <Edit className="mr-2 h-4 w-4" />,
+                onClick: () => openEditDialog(payment),
+              },
+            ]
+          : []),
       ],
-      actions: [],
     };
   };
   const { data: classes = [] } = useClasses(filter);
@@ -275,6 +324,12 @@ export default function ClassesPage() {
     value: cls.id,
     label: cls.name,
   }));
+
+  useEffect(() => {
+    if (classes.length === 1) {
+      setFilter((prev) => ({ ...prev, classId: classes[0].id }));
+    }
+  }, [classes]);
 
   const renderContent = (item: MobileListItem) => {
     return (
@@ -285,19 +340,45 @@ export default function ClassesPage() {
             <li key={month.key} className="flex items-center gap-1">
               <Checkbox
                 disabled
-                checked={
-                  Boolean(
-                    person?.monthlyFee[
-                      month.key as keyof (typeof person)["monthlyFee"]
-                    ]
-                  )
-                }
+                checked={Boolean(
+                  person?.monthlyFee[
+                    month.key as keyof (typeof person)["monthlyFee"]
+                  ]
+                )}
               />
-              <Label className="text-xs">{month.name}</Label>
+              <Label className="text-[10px]">{month.name}</Label>
             </li>
           );
         })}
       </ul>
+    );
+  };
+  const openCreateDialog = () => {
+    setSelectedClass(null);
+    setDialogOpen(true);
+  };
+
+  const renderHeader = () => {
+    return (
+      <div className="flex items-center justify-between">
+        {showAddButton && (
+          <Modal
+            isOpen={dialogOpen}
+            onOpenChange={setDialogOpen}
+            title={selectedClass ? "Update Pembayaran" : "Create Pembayaran"}
+            description={
+              selectedClass
+                ? "Update Pembayaran pada siswa ini."
+                : "Add a new classes to the system."
+            }
+          >
+            <PaymentForm
+              selectedPayment={selectedClass}
+              onClose={() => setDialogOpen(false)}
+            />
+          </Modal>
+        )}
+      </div>
     );
   };
 
@@ -306,12 +387,13 @@ export default function ClassesPage() {
       <div className="space-y-6">
         <FilterContainer className="grid md:grid-cols-3 grid-cols-1 gap-2">
           <Select
-            label="Guru"
+            label="Tenaga Pendidik"
             options={teacherOptions}
             value={filter.teacherId}
             onValueChange={(value) => {
               setFilter({ ...filter, teacherId: value });
             }}
+            disabled={!isAdmin}
           />
           <TahunAjaran
             onValueChange={(value) => {
@@ -339,6 +421,7 @@ export default function ClassesPage() {
           pageSize={10}
           mobileItemMapper={mobileItemMapper}
           mobileItemCustomContent={renderContent}
+          headerComponent={renderHeader()}
         />
       </div>
     </DashboardLayout>

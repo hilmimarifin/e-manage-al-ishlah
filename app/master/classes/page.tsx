@@ -153,9 +153,9 @@ export default function ClassesPage() {
   const mobileItemMapper = (classItem: Class): MobileListItem => ({
     id: classItem.id,
     title: classItem.name,
-    subtitle: `Kelas ${classItem.grade} - ${classItem.year}`,
+    badge: { text: classItem.year },
+    subtitle: classItem.teacherName,
     details: [
-      { label: "Wali Kelas", value: classItem.teacherName || "No teacher" },
       { label: "Jenjang kelas", value: classItem.grade },
       { label: "Biaya SPP", value: classItem.monthlyFee || "No monthly fee" },
     ],

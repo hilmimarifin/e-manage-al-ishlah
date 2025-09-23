@@ -113,6 +113,12 @@ export interface CreatePaymentClass {
   classId: string;
 }
 
+export interface UpdatePaymentClass {
+  studentId: string;
+  classId: string;
+  months: string[];
+}
+
 export interface Menu {
   id: string;
   name: string;

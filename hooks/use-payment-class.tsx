@@ -1,6 +1,6 @@
 import { apiClient } from "@/lib/api";
 import { showToast } from "@/lib/toast";
-import { CreatePaymentClass, PaymentClass } from "@/types";
+import { CreatePaymentClass, PaymentClass, UpdatePaymentClass } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function usePaymentClass({
@@ -36,6 +36,27 @@ export function useCreatePayment() {
     onError: () => {
       showToast.error(
         "Gagal menambahkan pembayaran",
+        "Silahkan coba lagi"
+      );
+    },
+  });
+}
+
+export function useUpdatePayment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: UpdatePaymentClass) =>
+      apiClient.put<PaymentClass>("/payment/student", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payment-class"] });
+      showToast.success(
+        "Pembayaran berhasil diupdate",
+        "Informasi pembayaran telah diperbarui"
+      );
+    },
+    onError: () => {
+      showToast.error(
+        "Gagal mengupdate pembayaran",
         "Silahkan coba lagi"
       );
     },

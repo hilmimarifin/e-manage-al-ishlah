@@ -79,6 +79,12 @@ export default function ClassesPage() {
   useEffect(() => {
     setForm((prev) => ({ ...prev, classId: filter.classId }));
   }, [filter.classId]);
+
+  useEffect(() => {
+    if (classes.length === 1) {
+      setFilter((prev) => ({ ...prev, classId: classes[0].id }));
+    }
+  }, [classes]);
   const addStudentToClass = useAddStudentToClass();
   const handleAddStudentToClass = async () => {
     try {
@@ -217,7 +223,7 @@ export default function ClassesPage() {
       <div className="space-y-6">
         <FilterContainer className="grid grid-cols-1 md:grid-cols-4 gap-2">
           <Select
-            label="Guru"
+            label="Tenaga Pendidik"
             options={teacherOptions}
             value={filter.teacherId}
             onValueChange={(value) => {
@@ -235,7 +241,7 @@ export default function ClassesPage() {
 
           <Select
             label="Kelas"
-            placeholder="Pilih kelas"
+            placeholder="Semua Kelas"
             options={classOptions}
             value={filter.classId}
             onValueChange={(value) => {
