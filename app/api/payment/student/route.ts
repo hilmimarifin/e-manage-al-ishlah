@@ -168,3 +168,110 @@ export const POST = withAuth(async (req: NextRequest, user: any) => {
     );
   }
 });
+
+export const PUT = withAuth(async (req: NextRequest, user: any) => {
+  try {
+    const { studentId, classId, months } = await req.json();
+
+    // Validate input
+    if (!studentId || !classId || !Array.isArray(months)) {
+      return NextResponse.json(
+        createErrorResponse("Missing required fields: studentId, classId, months"),
+        { status: 400 }
+      );
+    }
+
+    // Convert month numbers to integers and validate
+    const monthNumbers = months.map(m => parseInt(m)).filter(m => m >= 1 && m <= 12);
+    if (monthNumbers.length !== months.length) {
+      return NextResponse.json(
+        createErrorResponse("Invalid month numbers provided"),
+        { status: 400 }
+      );
+    }
+
+    // Get student class info to fetch monthly fee
+    const studentClass = await prisma.studentClass.findFirst({
+      where: {
+        studentId,
+        classId,
+      },
+      include: {
+        class: {
+          select: {
+            monthlyFee: true,
+            year: true,
+          },
+        },
+      },
+    });
+
+    if (!studentClass) {
+      return NextResponse.json(
+        createErrorResponse("Student is not enrolled in this class"),
+        { status: 404 }
+      );
+    }
+
+    // Get existing payments for this student and class
+    const existingPayments = await prisma.payment.findMany({
+      where: {
+        studentId,
+        classId,
+      },
+      select: {
+        id: true,
+        month: true,
+      },
+    });
+
+    const existingMonths = existingPayments.map(p => p.month);
+    const monthsToCreate = monthNumbers.filter(month => !existingMonths.includes(month));
+    const monthsToDelete = existingMonths.filter(month => !monthNumbers.includes(month));
+
+    // Use transaction to ensure data consistency
+    const result = await prisma.$transaction(async (tx) => {
+      // Delete payments for unchecked months
+      if (monthsToDelete.length > 0) {
+        await tx.payment.deleteMany({
+          where: {
+            studentId,
+            classId,
+            month: {
+              in: monthsToDelete,
+            },
+          },
+        });
+      }
+
+      // Create payments for newly checked months
+      if (monthsToCreate.length > 0) {
+        await tx.payment.createMany({
+          data: monthsToCreate.map(month => ({
+            studentId,
+            classId,
+            month,
+            amount: studentClass.class.monthlyFee || 0,
+            recordedBy: user.userId,
+          })),
+        });
+      }
+
+      return {
+        created: monthsToCreate.length,
+        deleted: monthsToDelete.length,
+        totalMonths: monthNumbers.length,
+      };
+    });
+
+    return NextResponse.json(
+      createSuccessResponse(result, "Payment updated successfully")
+    );
+  } catch (error) {
+    console.error("Payment update error:", error);
+    return NextResponse.json(
+      createErrorResponse(error as string, "Internal server error"),
+      { status: 500 }
+    );
+  }
+});
