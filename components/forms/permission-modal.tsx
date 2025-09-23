@@ -136,7 +136,7 @@ export function PermissionModal({ isOpen, onOpenChange, role }: PermissionModalP
 
     return (
       <div key={menu.id} className="space-y-2">
-        <Card className="border-l-4 border-l-blue-500">
+        <Card className="border-l-4 border-l-primary">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -232,8 +232,8 @@ export function PermissionModal({ isOpen, onOpenChange, role }: PermissionModalP
     <Modal
       isOpen={isOpen}
       onOpenChange={onOpenChange}
-      title={`Manage Permissions - ${role.name}`}
-      description="Configure CRUD permissions for each menu item and submenu."
+      title={`Hak Akses - ${role.name}`}
+      description="Mengatur hak akses untuk setiap menu item dan submenu."
       size="xl"
     >
       <div className="space-y-4">

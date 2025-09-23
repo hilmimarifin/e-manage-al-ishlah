@@ -47,7 +47,7 @@ export function Modal({
       <DialogContent
         className={cn(
           sizeClasses[size],
-          "max-h-[calc(100vh-10rem)] flex flex-col overflow-hidden"
+          "max-h-[calc(100vh-10rem)] flex flex-col"
         )}
       >
         <DialogHeader className="bg-gradient-to-r from-primary to-primary/90 text-primary-foreground p-4 max-h-20 flex-shrink-0">

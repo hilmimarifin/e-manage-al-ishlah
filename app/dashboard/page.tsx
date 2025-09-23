@@ -1,7 +1,6 @@
 "use client";
 
 import { ComboBox } from "@/components/elements/combo-box";
-import FilterContainer from "@/components/elements/filter-container";
 import Select from "@/components/elements/select";
 import TahunAjaran from "@/components/elements/tahun-ajaran-picker";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
@@ -10,21 +9,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useClasses } from "@/hooks/use-classes";
 import { useCreatePayment, usePaymentClass } from "@/hooks/use-payment-class";
-import { useStudents } from "@/hooks/use-students";
-import { useUsers } from "@/hooks/use-users";
+import { getCurrentAcademicYear } from "@/lib/client-utils";
 import { useAuthStore } from "@/store/auth-store";
 import { Handshake, Loader2, Plus } from "lucide-react";
-import { useState, useCallback, useMemo } from "react";
 import * as React from "react";
+import { useCallback, useMemo, useState } from "react";
 
 export default function DashboardPage() {
-  const { user } = useAuthStore();
-
   const [form, setForm] = useState({
     teacherId: useAuthStore.getState().user?.id,
     studentId: "",
     classId: "",
-    year: "2025/2026",
+    year: getCurrentAcademicYear(),
     amount: "",
   });
 

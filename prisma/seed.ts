@@ -1,7 +1,6 @@
 import {
   PrismaClient,
   StudentStatus,
-  PaymentStatus,
   Gender,
 } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -268,7 +267,6 @@ async function main() {
         studentId: student1.id,
         amount: 500000,
         month: 1,
-        status: PaymentStatus.PAID,
         recordedBy: teacherUser.id,
         classId: class1.id,
       },
@@ -276,7 +274,6 @@ async function main() {
         studentId: student2.id,
         amount: 500000,
         month: 1,
-        status: PaymentStatus.PENDING,
         recordedBy: teacherUser.id,
         classId: class1.id,
       },

@@ -3,51 +3,39 @@
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ResponsiveDataDisplay } from "@/components/ui/responsive-data-display";
-import { MobileListItem } from "@/components/ui/mobile-list-view";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Modal } from "@/components/ui/modal";
+import { MobileListItem } from "@/components/ui/mobile-list-view";
+import { ResponsiveDataDisplay } from "@/components/ui/responsive-data-display";
 import { usePermissionGuard } from "@/hooks/use-permissions";
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit, Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
+import { Loader2, MoreHorizontal, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { ComboBox } from "@/components/elements/combo-box";
+import FilterContainer from "@/components/elements/filter-container";
+import Select from "@/components/elements/select";
 import TahunAjaran from "@/components/elements/tahun-ajaran-picker";
+import { useClasses } from "@/hooks/use-classes";
+import { useStudents } from "@/hooks/use-students";
+import { useUsers } from "@/hooks/use-users";
 import {
   useAddStudentToClass,
   useDeleteClassroom,
   useStudentClassrooms,
 } from "@/hooks/user-classroom";
+import { getCurrentAcademicYear, isAdminClient } from "@/lib/client-utils";
 import { useAuthStore } from "@/store/auth-store";
-import { Classroom as ClassroomType, StudentClass } from "@/types";
-import { ComboBox } from "@/components/elements/combo-box";
-import { useStudents } from "@/hooks/use-students";
-import Select from "@/components/elements/select";
-import { useUsers } from "@/hooks/use-users";
-import FilterContainer from "@/components/elements/filter-container";
-import Container from "@/components/elements/container";
-import { isAdminClient } from "@/lib/client-utils";
-import HeaderTitle from "@/components/elements/header-title";
-import { useClasses } from "@/hooks/use-classes";
-import moment from "moment";
+import { Classroom as ClassroomType } from "@/types";
 
 type Classroom = ClassroomType;
 
 export default function ClassesPage() {
   const initFilter = {
-    year:
-      moment().format("YYYY") + "/" + moment().add(1, "year").format("YYYY"),
+    year: getCurrentAcademicYear(),
     teacherId: useAuthStore.getState().user?.id,
     classId: "",
   };

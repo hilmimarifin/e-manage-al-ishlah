@@ -136,7 +136,7 @@ export function ComboBox({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-full p-0"
+          className="w-[--radix-popover-trigger-width] p-0"
           align="start"
           side="bottom"
           sideOffset={4}
@@ -157,7 +157,7 @@ export function ComboBox({
               autoFocus
             />
           </div>
-          <ScrollArea className="max-h-60">
+          <ScrollArea className="max-h-60 overflow-y-auto">
             {filteredOptions.length === 0 ? (
               <div className="px-2 py-6 text-center text-sm text-muted-foreground">
                 {emptyMessage}
