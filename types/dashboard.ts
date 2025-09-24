@@ -14,8 +14,8 @@ export interface GenderDistribution {
 
 export interface ClassGenderData {
   class: string;
-  lakiLaki: number;
-  perempuan: number;
+  "Laki-laki": number;
+  "Perempuan": number;
   [key: string]: string | number;
 }
 

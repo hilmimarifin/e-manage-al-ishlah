@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { getCurrentAcademicYear } from "@/lib/client-utils";
 import { useState } from "react";
 import { StatCard, CustomPieChart, CustomBarChart, CustomLineChart } from "@/components/charts";
-import { Users, GraduationCap, CreditCard, TrendingUp } from "lucide-react";
+import { Users, GraduationCap, CreditCard, TrendingUp, Loader2 } from "lucide-react";
 import { useDashboard } from "@/hooks/use-dashboard";
 
 export default function DashboardPage() {
@@ -16,8 +16,9 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-lg">Loading dashboard data...</div>
+        <div className="flex flex-col items-center justify-center h-64">
+          <Loader2 className="animate-spin h-12 w-12 text-primary" />
+          <div className="text-lg text-muted-foreground">Loading dashboard data...</div>
         </div>
       </DashboardLayout>
     );
@@ -88,11 +89,6 @@ export default function DashboardPage() {
             value={`Rp ${data.stats.totalPayments.toLocaleString()}`}
             description="Total pembayaran tahun ini"
             icon={CreditCard}
-            trend={{
-              value: data.stats.paymentGrowth,
-              label: "dari bulan lalu",
-              isPositive: true
-            }}
           />
           <StatCard
             title="Total Siswa"
@@ -126,15 +122,15 @@ export default function DashboardPage() {
             config={classGenderConfig}
             xAxisKey="class"
             bars={[
-              { dataKey: "lakiLaki" },
-              { dataKey: "perempuan" }
+              { dataKey: "Laki-laki" },
+              { dataKey: "Perempuan" }
             ]}
           />
         </div>
 
         {/* Payment Trend Line Chart */}
         <CustomLineChart
-          title="Tren Pembayaran Bulanan per Kelas"
+          title="Total Pembayaran Bulanan per Kelas"
           description="Perkembangan pembayaran setiap bulan berdasarkan tingkat kelas"
           data={data.paymentTrendData}
           config={paymentTrendConfig}

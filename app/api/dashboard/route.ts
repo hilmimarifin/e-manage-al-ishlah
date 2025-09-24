@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       }),
 
       // Total classes
-      prisma.class.count({
+      prisma.class.findMany({
         where: {
           year: yearParam,
         },
@@ -130,19 +130,33 @@ export async function GET(request: NextRequest) {
       }),
 
       // Payment trends by month
-      prisma.$queryRaw<
-        Array<{ month: number; class_name: string; total_amount: number }>
-      >`
-        SELECT 
-          EXTRACT(MONTH FROM "paidAt") as month,
-          c.name as class_name,
-          SUM(p.amount) as total_amount
-        FROM payments p
-        JOIN classes c ON p."classId" = c.id
-        WHERE EXTRACT(YEAR FROM p."paidAt") = ${startYear}
-        GROUP BY EXTRACT(MONTH FROM "paidAt"), c.name
-        ORDER BY month, class_name
-      `,
+      // prisma.$queryRaw<
+      //   Array<{ month: number; class_name: string; total_amount: number }>
+      // >`
+      //   SELECT 
+      //     EXTRACT(MONTH FROM "paidAt") as month,
+      //     c.name as class_name,
+      //     SUM(p.amount) as total_amount
+      //   FROM payments p
+      //   JOIN classes c ON p."classId" = c.id
+      //   WHERE year = ${yearParam}
+      //   GROUP BY EXTRACT(MONTH FROM "paidAt"), c.name
+      //   ORDER BY month, class_name
+      // `,
+      prisma.payment.findMany({
+        where: {
+          class: {
+            year: yearParam,
+          },
+        },
+        include: {
+          class: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      }),
     ]);
 
     // Calculate payment growth
@@ -198,8 +212,8 @@ export async function GET(request: NextRequest) {
     const classGenderData = Array.from(classGenderMap.entries()).map(
       ([className, data]) => ({
         class: className,
-        lakiLaki: data.lakiLaki,
-        perempuan: data.perempuan,
+        "Laki-laki": data.lakiLaki,
+        "Perempuan": data.perempuan,
       })
     );
 
@@ -223,11 +237,14 @@ export async function GET(request: NextRequest) {
 
     paymentTrends.forEach((trend) => {
       const month = Number(trend.month);
-      const className = trend.class_name;
-      const amount = Number(trend.total_amount);
+      const className = trend.class.name;
+      const amount = Number(trend.amount);
 
       if (!paymentTrendMap.has(month)) {
-        paymentTrendMap.set(month, {});
+        paymentTrendMap.set(month, totalClasses.reduce((acc, item) => {
+          acc[item.name] = 0;
+          return acc;
+        }, {} as Record<string, number>));
       }
 
       paymentTrendMap.get(month)![className] = amount;
@@ -235,7 +252,10 @@ export async function GET(request: NextRequest) {
 
     const paymentTrendData = Array.from({ length: 12 }, (_, i) => {
       const month = i + 1;
-      const monthData = paymentTrendMap.get(month) || {};
+      const monthData = paymentTrendMap.get(month) || totalClasses.reduce((acc, item) => {
+        acc[item.name] = 0;
+        return acc;
+      }, {} as Record<string, number>);
 
       return {
         month: monthNames[i],
@@ -247,7 +267,7 @@ export async function GET(request: NextRequest) {
       stats: {
         totalPayments: currentTotal,
         totalStudents,
-        totalClasses,
+        totalClasses: totalClasses.length,
         paymentGrowth,
       },
       genderDistribution,

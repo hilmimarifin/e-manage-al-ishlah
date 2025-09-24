@@ -3,11 +3,18 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartConfig } from "@/components/ui/chart";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface LineChartData {
   [key: string]: string | number;
 }
 
+function toKilo(num: number): string {
+  if (num >= 1000) {
+    return (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1) + "K";
+  }
+  return num.toString();
+}
 interface CustomLineChartProps {
   title: string;
   description?: string;
@@ -36,15 +43,15 @@ export function CustomLineChart({
   showGrid = true
 }: CustomLineChartProps) {
   return (
-    <Card className={className}>
+    <Card className={cn("shadow-md", className)}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+        <CardTitle className="text-sm">{title}</CardTitle>
+        {description && <CardDescription className="text-xs">{description}</CardDescription>}
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
+            <LineChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
               {showGrid && <CartesianGrid vertical={false} />}
               <XAxis
                 dataKey={xAxisKey}
@@ -58,13 +65,14 @@ export function CustomLineChart({
                 axisLine={false}
                 tickMargin={8}
                 tickCount={3}
+                tickFormatter={(value) => toKilo(value)}
               />
               <Legend />
               <Tooltip />
               {lines.map((line, index) => (
                 <Line
                   key={line.dataKey}
-                  type="monotone"
+                  type="linear"
                   dataKey={line.dataKey}
                   stroke={`hsl(var(--chart-${index + 1}))`}
                   strokeWidth={2}
