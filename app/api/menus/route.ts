@@ -19,7 +19,15 @@ export async function GET(req: NextRequest) {
     }
 
     const { verifyAccessToken } = await import('@/lib/jwt')
-    const user = verifyAccessToken(token)
+    let user
+    try {
+      user = verifyAccessToken(token)
+    } catch (error) {
+      return NextResponse.json(
+        createErrorResponse('Invalid or expired token'),
+        { status: 401 }
+      )
+    }
 
     if (forUser) {
       // Get menus for the current user based on their role (for sidebar navigation)

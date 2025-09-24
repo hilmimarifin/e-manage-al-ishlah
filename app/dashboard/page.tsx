@@ -1,164 +1,154 @@
 "use client";
 
-import { ComboBox } from "@/components/elements/combo-box";
-import Select from "@/components/elements/select";
 import TahunAjaran from "@/components/elements/tahun-ajaran-picker";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useClasses } from "@/hooks/use-classes";
-import { useCreatePayment, usePaymentClass } from "@/hooks/use-payment-class";
 import { getCurrentAcademicYear } from "@/lib/client-utils";
-import { useAuthStore } from "@/store/auth-store";
-import { Handshake, Loader2, Plus } from "lucide-react";
-import * as React from "react";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
+import { StatCard, CustomPieChart, CustomBarChart, CustomLineChart } from "@/components/charts";
+import { Users, GraduationCap, CreditCard, TrendingUp } from "lucide-react";
+import { useDashboard } from "@/hooks/use-dashboard";
 
 export default function DashboardPage() {
-  const [form, setForm] = useState({
-    teacherId: useAuthStore.getState().user?.id,
-    studentId: "",
-    classId: "",
-    year: getCurrentAcademicYear(),
-    amount: "",
-  });
+  const [year, setYear] = useState(getCurrentAcademicYear());
+  const { data, loading, error, refetch } = useDashboard(year);
 
-  const { data: classes = [], isLoading: classesLoading } = useClasses(form);
+  // Loading state
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">Loading dashboard data...</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
-  // Memoize class options to prevent unnecessary re-renders
-  const classOptions = useMemo(
-    () =>
-      classes.map((cls) => ({
-        value: cls.id,
-        label: cls.name,
-      })),
-    [classes]
-  );
+  // Error state
+  if (error || !data) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-red-500">Error: {error || 'Failed to load data'}</div>
+          <button 
+            onClick={refetch}
+            className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Retry
+          </button>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
-  const { data: paymentClass, isLoading, error } = usePaymentClass(form);
-
-  // Memoize student options to prevent unnecessary re-renders
-  const studentsOptions = useMemo(
-    () =>
-      paymentClass?.map((student) => ({
-        value: student.id,
-        label: student.name,
-      })) || [],
-    [paymentClass]
-  );
-
-  const createPayment = useCreatePayment();
-
-  const handleCreatePayment = useCallback(async () => {
-    try {
-      await createPayment.mutateAsync(form).then(() => {
-        setForm((prev) => ({
-          ...prev,
-          studentId: "",
-          amount: "",
-        }));
-      });
-    } catch (error) {
-      console.error("Failed to add student to class:", error);
-    }
-  }, [form, createPayment]);
-
-  // Memoized handlers to prevent unnecessary re-renders
-  const handleStudentChange = useCallback((value: string) => {
-    // Update studentId immediately for responsive UI
-    setForm((prev) => ({
-      ...prev,
-      studentId: value,
-      classId: "", // Reset these until data loads
-      amount: "",
-    }));
-  }, []);
-
-  // Effect to update classId and amount when paymentClass data changes
-  React.useEffect(() => {
-    if (form.studentId && paymentClass) {
-      const selectedStudent = paymentClass.find(
-        (cls) => cls.id === form.studentId
-      );
-      if (selectedStudent) {
-        setForm((prev) => ({
-          ...prev,
-          classId: selectedStudent.classId || "",
-          amount: selectedStudent.monthlyFeeAmount.toString() || "",
-        }));
-      }
-    }
-  }, [form.studentId, paymentClass]);
-
-  const handleYearChange = useCallback((value: string) => {
-    setForm((prev) => ({ ...prev, year: value, classId: "", studentId: "" }));
-  }, []);
-
-  const handleClassChange = useCallback((value: string) => {
-    setForm((prev) => ({ ...prev, classId: value, studentId: "" }));
-  }, []);
-
-  const handleAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setForm((prev) => ({ ...prev, amount: e.target.value }));
+  const genderConfig = {
+    "Laki-laki": {
+      label: "Laki-laki",
+      color: "hsl(var(--chart-1))"
     },
-    []
-  );
+    "Perempuan": {
+      label: "Perempuan", 
+      color: "hsl(var(--chart-2))"
+    }
+  };
+
+  const classGenderConfig = {
+    lakiLaki: {
+      label: "Laki-laki",
+      color: "hsl(var(--chart-1))"
+    },
+    perempuan: {
+      label: "Perempuan",
+      color: "hsl(var(--chart-2))"
+    }
+  };
+
+  // Generate dynamic config for payment trends based on available classes
+  const paymentTrendConfig = Object.keys(data.paymentTrendData[0] || {})
+    .filter(key => key !== 'month')
+    .reduce((config, className, index) => {
+      config[className] = {
+        label: className,
+        color: `hsl(var(--chart-${(index % 5) + 1}))`
+      };
+      return config;
+    }, {} as Record<string, { label: string; color: string }>);
+
 
   return (
     <DashboardLayout>
-      <section className="md:w-1/3 flex flex-col gap-8 border p-4 rounded-xl mx-auto">
-        <div className="flex flex-col items-center gap-2 text-primary">
-          <Handshake className="h-12 w-12" />
-          <h2 className="text-xl font-semibold">Tambah Pembayaran SPP</h2>
+      <section className="space-y-6">
+        <div>
+          <h1 className="text-xl font-semibold">Dashboard Tahunan</h1>
+          <TahunAjaran onValueChange={setYear} value={year} rootClassName="h-12 rounded-xl" />
         </div>
-        <div className="flex flex-col gap-2">
-          <Label>Siswa</Label>
-          <ComboBox
-            isLoading={isLoading || classesLoading}
-            rootClassName="h-12 rounded-xl"
-            value={form.studentId}
-            onValueChange={handleStudentChange}
-            options={studentsOptions}
+
+        {/* Statistics Cards */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            title="Total Pembayaran"
+            value={`Rp ${data.stats.totalPayments.toLocaleString()}`}
+            description="Total pembayaran tahun ini"
+            icon={CreditCard}
+            trend={{
+              value: data.stats.paymentGrowth,
+              label: "dari bulan lalu",
+              isPositive: true
+            }}
+          />
+          <StatCard
+            title="Total Siswa"
+            value={data.stats.totalStudents}
+            description="Siswa aktif tahun ini"
+            icon={Users}
+          />
+          <StatCard
+            title="Total Kelas"
+            value={data.stats.totalClasses}
+            description="Kelas aktif tahun ini"
+            icon={GraduationCap}
+          />
+          <StatCard
+            title="Rata-rata Pembayaran"
+            value={`Rp ${Math.round(data.stats.totalPayments / data.stats.totalStudents || 0).toLocaleString()}`}
+            description="Per siswa tahun ini"
+            icon={TrendingUp}
           />
         </div>
-        <TahunAjaran
-          rootClassName="h-12 rounded-xl"
-          onValueChange={handleYearChange}
-          value={form.year}
-        />
-        <Select
-          label="Kelas"
-          rootClassName="h-12 rounded-xl"
-          placeholder="Pilih kelas"
-          options={classOptions}
-          value={form.classId}
-          isLoading={classesLoading || isLoading}
-          onValueChange={handleClassChange}
-        />
-        <div className="flex flex-col gap-2">
-          <Label>Jumlah</Label>
-          <Input
-            type="number"
-            value={form.amount}
-            onChange={handleAmountChange}
-            placeholder="Jumlah"
-            className="h-12 rounded-xl"
+
+        {/* Charts Grid */}
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Gender Distribution Pie Chart */}
+          <CustomPieChart
+            title="Distribusi Siswa Berdasarkan Gender"
+            description="Perbandingan jumlah siswa laki-laki dan perempuan"
+            data={data.genderDistribution}
+            config={genderConfig}
+          />
+
+          {/* Students by Class and Gender Bar Chart */}
+          <CustomBarChart
+            title="Siswa per Kelas Berdasarkan Gender"
+            description="Jumlah siswa laki-laki dan perempuan di setiap kelas"
+            data={data.classGenderData}
+            config={classGenderConfig}
+            xAxisKey="class"
+            bars={[
+              { dataKey: "lakiLaki" },
+              { dataKey: "perempuan" }
+            ]}
           />
         </div>
-        <Button
-          disabled={!form.studentId || createPayment.isPending}
-          onClick={handleCreatePayment}
-          className="h-12 rounded-xl shadow-md shadow-primary/50"
-        >
-          {createPayment.isPending ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Plus className="mr-2 h-4 w-4" />
-          )}
-          Tambah
-        </Button>
+
+        {/* Payment Trend Line Chart */}
+        <CustomLineChart
+          title="Tren Pembayaran Bulanan per Kelas"
+          description="Perkembangan pembayaran setiap bulan berdasarkan tingkat kelas"
+          data={data.paymentTrendData}
+          config={paymentTrendConfig}
+          xAxisKey="month"
+          lines={Object.keys(paymentTrendConfig).map(className => ({ dataKey: className }))}
+          className="col-span-full"
+        />
       </section>
     </DashboardLayout>
   );

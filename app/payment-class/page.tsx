@@ -49,10 +49,6 @@ export default function ClassesPage() {
     classId: "",
   });
   const createPayment = useCreatePayment();
-  const studentsOptions = paymentClass?.map((student) => ({
-    value: student.id,
-    label: student.name,
-  }));
   const isAdmin = isAdminClient();
 
   // Permission checks for /roles path
@@ -268,13 +264,6 @@ export default function ClassesPage() {
       },
     },
   ];
-  if (isAdmin) {
-    columns.splice(2, 0, {
-      id: "teacher",
-      header: "Tenaga Pendidik",
-      accessorKey: "teacherName",
-    });
-  }
   const months = [
     { key: "jul", name: "Jul" },
     { key: "aug", name: "Aug" },
@@ -311,7 +300,14 @@ export default function ClassesPage() {
       title: payment.name,
       subtitle: `${payment.className} - ${payment.year}`,
       // badge: { text: payment.className, variant: "default" },
-      details: [],
+      details: isAdmin
+        ? [
+            {
+              label: "Wali Kelas",
+              value: payment.teacherName,
+            },
+          ]
+        : [],
       actions: [
         ...(showEditButton
           ? [
@@ -325,6 +321,14 @@ export default function ClassesPage() {
       ],
     };
   };
+  if (isAdmin) {
+    columns.splice(2, 0, {
+      id: "teacher",
+      header: "Wali Kelas",
+      accessorKey: "teacherName",
+    });
+  }
+
   const { data: classes = [] } = useClasses(filter);
 
   const classOptions = classes.map((cls) => ({

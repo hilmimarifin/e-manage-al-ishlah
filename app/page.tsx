@@ -3,18 +3,19 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth-store'
+import { isAdminClient } from '@/lib/client-utils'
 
 export default function HomePage() {
   const { isAuthenticated } = useAuthStore()
   const router = useRouter()
-
+  const isAdmin = isAdminClient()
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace('/dashboard')
+      isAdmin ? router.replace('/dashboard') : router.replace('/transaction')
     } else {
       router.replace('/login')
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, router, isAdmin])
 
   return (
     <div className="min-h-screen flex items-center justify-center">
