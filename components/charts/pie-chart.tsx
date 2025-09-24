@@ -23,6 +23,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface PieChartData {
   name: string;
@@ -53,10 +54,10 @@ export function CustomPieChart({
   outerRadius = 80,
 }: CustomPieChartProps) {
   return (
-    <Card className={className}>
+    <Card className={cn("shadow-md", className)}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+        <CardTitle className="text-sm">{title}</CardTitle>
+        {description && <CardDescription className="text-xs">{description}</CardDescription>}
       </CardHeader>
       <CardContent>
         <div className="mx-auto aspect-square max-h-[300px] w-full">

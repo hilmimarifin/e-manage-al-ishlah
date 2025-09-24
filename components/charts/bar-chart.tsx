@@ -3,6 +3,7 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartConfig } from "@/components/ui/chart";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface BarChartData {
   [key: string]: string | number;
@@ -35,22 +36,23 @@ export function CustomBarChart({
   showGrid = true
 }: CustomBarChartProps) {
   return (
-    <Card className={className}>
+    <Card className={cn("shadow-md", className)}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+        <CardTitle className="text-sm">{title}</CardTitle>
+        {description && <CardDescription className="text-xs">{description}</CardDescription>}
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
+            <BarChart data={data} margin={{ top: 0, right: 0, left: -30, bottom: 0 }}>
               {showGrid && <CartesianGrid vertical={false} />}
+              <Tooltip />
+              <Legend />
               <XAxis
                 dataKey={xAxisKey}
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
-                tickFormatter={(value) => String(value).slice(0, 3)}
               />
               <YAxis
                 tickLine={false}
@@ -67,8 +69,6 @@ export function CustomBarChart({
                   radius={4}
                 />
               ))}
-              <Legend />
-              <Tooltip />
             </BarChart>
           </ResponsiveContainer>
         </div>
