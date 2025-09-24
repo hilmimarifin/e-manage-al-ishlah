@@ -91,6 +91,7 @@ export interface PaymentClass {
     grade: string;
     classId: string;
     className: string;
+    teacherName: string;
     monthlyFeeAmount: number;
     monthlyFee: {
       jan: number;

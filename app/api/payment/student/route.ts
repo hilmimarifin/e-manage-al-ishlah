@@ -28,7 +28,11 @@ export const GET = withAuth(async (req: NextRequest) => {
             payments: true,
           },
         },
-        class: true,
+        class: {
+          include: {
+            teacher: true,
+          },
+        },
       },
     });
 
@@ -39,6 +43,7 @@ export const GET = withAuth(async (req: NextRequest) => {
       className: student.class.name,
       year: student.class.year,
       grade: student.class.grade,
+      teacherName: student.class.teacher?.name || "",
       monthlyFeeAmount: student.class.monthlyFee,
       monthlyFee: {
         jan:
