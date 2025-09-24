@@ -76,14 +76,13 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <section className="space-y-6">
+      <section className="space-y-3">
         <div>
-          <h1 className="text-xl font-semibold">Dashboard Tahunan</h1>
           <TahunAjaran onValueChange={setYear} value={year} rootClassName="h-12 rounded-xl" />
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <StatCard
             title="Total Pembayaran"
             value={`Rp ${data.stats.totalPayments.toLocaleString()}`}
@@ -106,12 +105,6 @@ export default function DashboardPage() {
             value={data.stats.totalClasses}
             description="Kelas aktif tahun ini"
             icon={GraduationCap}
-          />
-          <StatCard
-            title="Rata-rata Pembayaran"
-            value={`Rp ${Math.round(data.stats.totalPayments / data.stats.totalStudents || 0).toLocaleString()}`}
-            description="Per siswa tahun ini"
-            icon={TrendingUp}
           />
         </div>
 
