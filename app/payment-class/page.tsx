@@ -268,6 +268,13 @@ export default function ClassesPage() {
       },
     },
   ];
+  if (isAdmin) {
+    columns.splice(2, 0, {
+      id: "teacher",
+      header: "Tenaga Pendidik",
+      accessorKey: "teacherName",
+    });
+  }
   const months = [
     { key: "jul", name: "Jul" },
     { key: "aug", name: "Aug" },
