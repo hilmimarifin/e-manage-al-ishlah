@@ -1,6 +1,6 @@
-# RBAC Starter Application
+# AL-ISHLAH E-Management
 
-A complete Role-Based Access Control (RBAC) starter application built with Next.js 15, featuring JWT authentication, user management, and granular permission control.
+A complete Role-Based Access Control (RBAC) application built with Next.js 15, featuring JWT authentication, user management, and granular permission control.
 
 ## Features
 
