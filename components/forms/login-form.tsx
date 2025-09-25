@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -41,6 +41,8 @@ export function LoginForm() {
     }
   };
 
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
@@ -64,6 +66,7 @@ export function LoginForm() {
             <Input
               id="email"
               type="email"
+              className="h-12"
               placeholder="Masukkan email Anda"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -73,17 +76,33 @@ export function LoginForm() {
 
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Masukkan password Anda"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                className="h-12"
+                placeholder="Masukkan password Anda"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              {
+                showPassword ? (
+                  <Eye
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  />
+                ) : (
+                  <EyeOff
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  />
+                )
+              }
+            </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={login.isPending}>
+          <Button type="submit" className="w-full h-12" disabled={login.isPending}>
             {login.isPending && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
