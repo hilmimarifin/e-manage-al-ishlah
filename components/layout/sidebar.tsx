@@ -8,27 +8,11 @@ import { useLogout, useUserMenus } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/app-store";
 import { useAuthStore } from "@/store/auth-store";
-import {
-  ChevronDown,
-  ChevronLeft,
-  Home,
-  LayoutDashboard,
-  LogOut,
-  Menu as MenuIcon,
-  UserCheck,
-  Users,
-} from "lucide-react";
+import { ChevronDown, ChevronLeft, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-
-const iconMap: Record<string, any> = {
-  LayoutDashboard,
-  Users,
-  UserCheck,
-  MenuIcon,
-  Home,
-};
+import { Icons } from "./icons";
 
 interface Menu {
   id: string;
@@ -113,12 +97,11 @@ export function Sidebar({ setHeaderTitle }: SidebarProps) {
   };
 
   const renderMenuItem = (menu: any, isChild = false) => {
-    const Icon = iconMap[menu.icon] || LayoutDashboard;
     const isActive = pathname === menu.path;
     const isExpanded = expandedMenus.has(menu.id);
     const hasChildren = menu.children && menu.children.length > 0;
 
-    // For parent menus that should not be clickable (path: "/parent")
+    // For parent menus that should not be clickable (path: "#")
     const isParentOnly = menu.path === "#";
 
     if (isParentOnly && hasChildren) {
@@ -136,7 +119,7 @@ export function Sidebar({ setHeaderTitle }: SidebarProps) {
                 sidebarOpen && toggleExpanded(menu.id);
               }}
             >
-              <Icon className="h-4 w-4" />
+              <Icons icon={menu.icon} className="h-4 w-4" />
               <>
                 <span className="ml-3 flex-1 text-left">{menu.name}</span>
                 {hasChildren && (
@@ -162,7 +145,7 @@ export function Sidebar({ setHeaderTitle }: SidebarProps) {
                   sidebarOpen && toggleExpanded(menu.id);
                 }}
               >
-                <Icon className="h-4 w-4" />
+                <Icons icon={menu.icon} className="h-4 w-4" />
               </Button>
             </Tooltip>
           )}
@@ -189,7 +172,7 @@ export function Sidebar({ setHeaderTitle }: SidebarProps) {
                 isChild && "ml-4 w-[calc(100%-1rem)]"
               )}
             >
-              <Icon className="h-4 w-4" />
+              <Icons icon={menu.icon} className="h-4 w-4" />
               <span className="ml-3">{menu.name}</span>
             </Button>
           ) : (
@@ -202,7 +185,7 @@ export function Sidebar({ setHeaderTitle }: SidebarProps) {
                   isChild && "ml-4 w-[calc(100%-1rem)]"
                 )}
               >
-                <Icon className="h-4 w-4" />
+                <Icons icon={menu.icon} className="h-4 w-4" />
               </Button>
             </Tooltip>
           )}
