@@ -92,7 +92,7 @@ export function MobileListView({
           placeholder={searchPlaceholder}
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(String(event.target.value))}
-          className="pl-8"
+          className="pl-8 bg-card"
         />
       </div>
       {filteredItems.length === 0 ? (
