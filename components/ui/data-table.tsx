@@ -186,7 +186,7 @@ export function DataTable<TData, TValue>({
   };
 
   return (
-    <Card className="shadow-sm bg-gradient-to-r from-background to-accent/30 border-r-primary border-r-4">
+    <Card className="shadow-md border-r-primary border-r-4">
       <CardContent className="p-6">
         <div className="space-y-4">
           <div
