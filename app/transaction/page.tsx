@@ -108,7 +108,7 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <section className="md:w-1/3 flex flex-col gap-8 border p-4 rounded-xl mx-auto">
+      <section className="md:w-1/3 flex flex-col gap-8 bg-card shadow-md border p-4 rounded-xl mx-auto">
         <div className="flex flex-col items-center gap-2 text-primary">
           <Handshake className="h-12 w-12" />
           <h2 className="text-xl font-semibold">Tambah Pembayaran SPP</h2>

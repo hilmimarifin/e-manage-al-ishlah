@@ -2,7 +2,7 @@ import { useAuthStore } from "@/store/auth-store";
 import moment from "moment";
 
 export function isAdminClient(): boolean {
-  const unrestricted = ["Super admin", "Admin"];
+  const unrestricted = ["Super admin", "Admin", "Kepala Sekolah"];
   const user = useAuthStore.getState().user;
   const isAdmin = unrestricted.includes(user?.role?.name || "");
   return isAdmin;

@@ -11,7 +11,7 @@ async function main() {
   console.log("🌱 Starting database seed...");
 
   // Roles
-  const adminRole = await prisma.role.upsert({
+  const superAdminRole = await prisma.role.upsert({
     where: { name: "Super admin" },
     update: {},
     create: {
@@ -21,22 +21,33 @@ async function main() {
   });
 
   const teacherRole = await prisma.role.upsert({
-    where: { name: "Teacher" },
+    where: { name: "Guru" },
     update: {},
     create: {
-      name: "Teacher",
+      name: "Guru",
       description: "Handles teaching and class management",
     },
   });
 
-  const userRole = await prisma.role.upsert({
-    where: { name: "User" },
+  const headMasterRole = await prisma.role.upsert({
+    where: { name: "Kepala Sekolah" },
     update: {},
     create: {
-      name: "User",
+      name: "Kepala Sekolah",
       description: "Regular user with limited access",
     },
   });
+
+    const adminRole = await prisma.role.upsert({
+      where: { name: "Admin" },
+      update: {},
+      create: {
+        name: "Admin",
+        description: "Administrator with full system access",
+      },
+    });
+
+
 
   // Menus
   const dashboardMenu = await prisma.menu.upsert({
@@ -49,15 +60,26 @@ async function main() {
       orderIndex: 1,
     },
   });
+  const Master = await prisma.menu.upsert({
+    where: { path: "#" },
+    update: {},
+    create: {
+      name: "Master",
+      path: "#",
+      icon: "HardDrive",
+      orderIndex: 99,
+    },
+  });
 
   const usersMenu = await prisma.menu.upsert({
     where: { path: "/master/users" },
     update: {},
     create: {
-      name: "Users",
+      name: "Tenaga Pendidik",
       path: "/master/users",
       icon: "Users",
       orderIndex: 2,
+      parentId: Master.id,
     },
   });
 
@@ -65,23 +87,26 @@ async function main() {
     where: { path: "/master/roles" },
     update: {},
     create: {
-      name: "Roles",
+      name: "Role dan Hak Akses",
       path: "/master/roles",
       icon: "UserCheck",
       orderIndex: 3,
+      parentId: Master.id,
     },
   });
 
-  const masterMenu = await prisma.menu.upsert({
-    where: { path: "/master/menus" },
-    update: {},
-    create: {
-      name: "Master Menu",
-      path: "/master/menus",
-      icon: "MenuIcon",
-      orderIndex: 4,
-    },
-  });
+    const masterMenu = await prisma.menu.upsert({
+      where: { path: "/master/menus" },
+      update: {},
+      create: {
+        name: "Master Menu",
+        path: "/master/menus",
+        icon: "MenuIcon",
+        orderIndex: 4,
+        parentId: Master.id,
+      },
+    });
+
 
   const masterClass = await prisma.menu.upsert({
     where: { path: "/master/classes" },
@@ -89,8 +114,9 @@ async function main() {
     create: {
       name: "Master Kelas",
       path: "/master/classes",
-      icon: "MenuIcon",
+      icon: "GraduationCap",
       orderIndex: 4,
+      parentId: Master.id,
     },
   });
 
@@ -100,8 +126,9 @@ async function main() {
     create: {
       name: "Master Siswa",
       path: "/master/students",
-      icon: "MenuIcon",
+      icon: "Users",
       orderIndex: 4,
+      parentId: Master.id,
     },
   });
 
@@ -111,7 +138,7 @@ async function main() {
     create: {
       name: "Kelas",
       path: "/classrooms",
-      icon: "MenuIcon",
+      icon: "GraduationCap",
       orderIndex: 4,
     },
   });
@@ -120,9 +147,19 @@ async function main() {
     where: { path: "/payment-class" },
     update: {},
     create: {
-      name: "Pembayaran",
+      name: "Rekapulasi Pembayaran",
       path: "/payment-class",
-      icon: "MenuIcon",
+      icon: "CreditCard",
+      orderIndex: 4,
+    },
+  });
+  const transactionMenu = await prisma.menu.upsert({
+    where: { path: "/transaction" },
+    update: {},
+    create: {
+      name: "Pembayaran",
+      path: "/transaction",
+      icon: "NotebookPen",
       orderIndex: 4,
     },
   });
@@ -137,14 +174,15 @@ async function main() {
     studentsMenu,
     classRoomMenu,
     paymentMenu,
+    transactionMenu,
   ]) {
     await prisma.roleMenu.upsert({
       where: {
-        roleId_menuId: { roleId: adminRole.id, menuId: menu.id },
+        roleId_menuId: { roleId: superAdminRole.id, menuId: menu.id },
       },
       update: {},
       create: {
-        roleId: adminRole.id,
+        roleId: superAdminRole.id,
         menuId: menu.id,
         canRead: true,
         canWrite: true,
@@ -154,7 +192,81 @@ async function main() {
     });
   }
 
+    for (const menu of [
+      usersMenu,
+      rolesMenu,
+      masterClass,
+      studentsMenu,
+      classRoomMenu,
+      paymentMenu,
+      transactionMenu,
+    ]) {
+      await prisma.roleMenu.upsert({
+        where: {
+          roleId_menuId: { roleId: adminRole.id, menuId: menu.id },
+        },
+        update: {},
+        create: {
+          roleId: adminRole.id,
+          menuId: menu.id,
+          canRead: true,
+          canWrite: true,
+          canUpdate: true,
+          canDelete: true,
+        },
+      });
+    }
+
+      for (const menu of [
+        dashboardMenu,
+        usersMenu,
+        rolesMenu,
+        masterClass,
+        studentsMenu,
+        classRoomMenu,
+        paymentMenu,
+        transactionMenu,
+      ]) {
+        await prisma.roleMenu.upsert({
+          where: {
+            roleId_menuId: { roleId: superAdminRole.id, menuId: menu.id },
+          },
+          update: {},
+          create: {
+            roleId: superAdminRole.id,
+            menuId: menu.id,
+            canRead: true,
+            canWrite: true,
+            canUpdate: true,
+            canDelete: true,
+          },
+        });
+      }
+
+
   // Users
+
+    const superAdminPassword = await bcrypt.hash(process.env.SUPER_ADMIN_PASSWORD || "", 12);
+    const superAdminUser = await prisma.user.upsert({
+      where: { email: "hilmi.m.arifin@gmail.com" },
+      update: {},
+      create: {
+        email: "hilmi.m.arifin@gmail.com",
+        username: "hilmimarifin",
+        password: superAdminPassword,
+        nik: "3201010101010001",
+        name: "Hilmi M. Arifin",
+        gender: Gender.MALE,
+        birthDate: new Date("1990-01-01"),
+        birthPlace: "Jakarta",
+        education: "S1 Sistem Informasi",
+        photo: "https://placehold.co/100x100",
+        phone: "08123456789",
+        address: "Jl. Admin No. 1, Jakarta",
+        roleId: superAdminRole.id,
+      },
+    });
+
   const adminPassword = await bcrypt.hash("admin123", 12);
   const adminUser = await prisma.user.upsert({
     where: { email: "admin@example.com" },
@@ -176,109 +288,88 @@ async function main() {
     },
   });
 
-  const teacherPassword = await bcrypt.hash("teacher123", 12);
-  const teacherUser = await prisma.user.upsert({
-    where: { email: "teacher@example.com" },
-    update: {},
-    create: {
-      email: "teacher@example.com",
-      username: "teacher",
-      password: teacherPassword,
-      nik: "3201010101010002",
-      name: "Guru Utama",
-      gender: Gender.FEMALE,
-      birthDate: new Date("1985-05-15"),
-      birthPlace: "Bandung",
-      education: "S1 Pendidikan",
-      photo: "https://placehold.co/100x100",
-      phone: "08234567890",
-      address: "Jl. Guru No. 2, Bandung",
-      roleId: teacherRole.id,
-    },
-  });
-
   // Classes
-  const class1 = await prisma.class.create({
-    data: {
-      name: "Kelas 1A",
-      grade: "1",
-      year: "2025/2026",
-      teacherId: teacherUser.id,
-      monthlyFee: 25000,
-    },
-  });
+  // const class1 = await prisma.class.create({
+  //   data: {
+  //     name: "Kelas 1A",
+  //     grade: "1",
+  //     year: "2025/2026",
+  //     teacherId: teacherUser.id,
+  //     monthlyFee: 25000,
+  //   },
+  // });
 
-  const class2 = await prisma.class.create({
-    data: {
-      name: "Kelas 2A",
-      grade: "2",
-      year: "2024/2025",
-      teacherId: teacherUser.id,
-      monthlyFee: 30000,
-    },
-  });
+  // const class2 = await prisma.class.create({
+  //   data: {
+  //     name: "Kelas 2A",
+  //     grade: "2",
+  //     year: "2024/2025",
+  //     teacherId: teacherUser.id,
+  //     monthlyFee: 30000,
+  //   },
+  // });
 
   // Students
-  const student1 = await prisma.student.create({
-    data: {
-      nik: "3201010101010003",
-      fullName: "Ahmad Fauzi",
-      birthDate: new Date("2015-01-10"),
-      birthPlace: "Jakarta",
-      address: "Jl. Merdeka No. 1",
-      phone: "08123456789",
-      entryYear: "2025/2026",
-      gender: Gender.MALE,
-      guardian: "Bapak Fauzi",
-      photo: "https://placehold.co/100x100",
-      status: StudentStatus.ACTIVE,
-    },
-  });
+  // const student1 = await prisma.student.create({
+  //   data: {
+  //     nik: "3201010101010003",
+  //     fullName: "Ahmad Fauzi",
+  //     birthDate: new Date("2015-01-10"),
+  //     birthPlace: "Jakarta",
+  //     address: "Jl. Merdeka No. 1",
+  //     phone: "08123456789",
+  //     entryYear: "2025/2026",
+  //     gender: Gender.MALE,
+  //     guardian: "Bapak Fauzi",
+  //     photo: "https://placehold.co/100x100",
+  //     status: StudentStatus.ACTIVE,
+  //   },
+  // });
 
-  const student2 = await prisma.student.create({
-    data: {
-      nik: "3201010101010004",
-      fullName: "Siti Aminah",
-      birthDate: new Date("2014-06-20"),
-      birthPlace: "Bandung",
-      address: "Jl. Mawar No. 2",
-      phone: "08234567890",
-      entryYear: "2025/2026",
-      gender: Gender.FEMALE,
-      guardian: "Ibu Aminah",
-      photo: "https://placehold.co/100x100",
-      status: StudentStatus.ACTIVE,
-    },
-  });
+  // const student2 = await prisma.student.create({
+  //   data: {
+  //     nik: "3201010101010004",
+  //     fullName: "Siti Aminah",
+  //     birthDate: new Date("2014-06-20"),
+  //     birthPlace: "Bandung",
+  //     address: "Jl. Mawar No. 2",
+  //     phone: "08234567890",
+  //     entryYear: "2025/2026",
+  //     gender: Gender.FEMALE,
+  //     guardian: "Ibu Aminah",
+  //     photo: "https://placehold.co/100x100",
+  //     status: StudentStatus.ACTIVE,
+  //   },
+  // });
 
   // StudentClass (riwayat kelas)
-  await prisma.studentClass.createMany({
-    data: [
-      { studentId: student1.id, classId: class1.id, year: "2025" },
-      { studentId: student1.id, classId: class2.id, year: "2026" },
-      { studentId: student2.id, classId: class1.id, year: "2025" },
-    ],
-  });
+  // await prisma.studentClass.createMany({
+  //   data: [
+  //     { studentId: student1.id, classId: class1.id, year: "2025" },
+  //     { studentId: student1.id, classId: class2.id, year: "2026" },
+  //     { studentId: student2.id, classId: class1.id, year: "2025" },
+  //   ],
+  // });
 
-  // Payments
-  await prisma.payment.createMany({
-    data: [
-      {
-        studentId: student1.id,
-        amount: 500000,
-        month: 1,
-        recordedBy: teacherUser.id,
-        classId: class1.id,
-      },
-      {
-        studentId: student2.id,
-        amount: 500000,
-        month: 1,
-        recordedBy: teacherUser.id,
-        classId: class1.id,
-      },
-    ],
-  });
+  // // Payments
+  // await prisma.payment.createMany({
+  //   data: [
+  //     {
+  //       studentId: student1.id,
+  //       amount: 500000,
+  //       month: 1,
+  //       recordedBy: teacherUser.id,
+  //       classId: class1.id,
+  //     },
+  //     {
+  //       studentId: student2.id,
+  //       amount: 500000,
+  //       month: 1,
+  //       recordedBy: teacherUser.id,
+  //       classId: class1.id,
+  //     },
+  //   ],
+  // });
 
   console.log("✅ Database seeded successfully!");
   console.log("🔑 Admin credentials: admin@example.com / admin123");

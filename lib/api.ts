@@ -59,6 +59,16 @@ class ApiClient {
       async (error) => {
         const originalRequest = error.config
 
+        // Handle API error responses by extracting the error message
+        if (error.response?.data?.status === 'error') {
+          const apiError = new Error(error.response.data.message || 'An error occurred')
+          apiError.name = 'ApiError'
+          // Preserve the original error for debugging
+          ;(apiError as any).originalError = error
+          ;(apiError as any).status = error.response.status
+          error.message = apiError.message
+        }
+
         if (error.response?.status === 401 && !originalRequest._retry) {
           if (this.isRefreshing) {
             return new Promise((resolve, reject) => {
