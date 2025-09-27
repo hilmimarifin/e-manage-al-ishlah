@@ -233,8 +233,12 @@ export async function GET(request: NextRequest) {
       "Dec",
     ];
 
+    //{
+    // month: 1,
+    // class_name: "kelas 1",
+    // amount: 100000
+    //}
     const paymentTrendMap = new Map<number, Record<string, number>>();
-
     paymentTrends.forEach((trend) => {
       const month = Number(trend.month);
       const className = trend.class.name;
@@ -247,9 +251,8 @@ export async function GET(request: NextRequest) {
         }, {} as Record<string, number>));
       }
 
-      paymentTrendMap.get(month)![className] = amount;
+      paymentTrendMap.get(month)![className] += amount;
     });
-
     const paymentTrendData = Array.from({ length: 12 }, (_, i) => {
       const month = i + 1;
       const monthData = paymentTrendMap.get(month) || totalClasses.reduce((acc, item) => {

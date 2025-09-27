@@ -25,7 +25,7 @@ export function Header({ title }: { title: string }) {
   };
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-card md:bg-card bg-gradient-to-r from-primary to-primary/90 md:bg-gradient-to-r md:from-transparent md:to-transparent text-primary-foreground md:text-black px-6">
+    <header className="flex h-16 items-center justify-between border-b bg-card shadow-lg md:bg-card bg-gradient-to-r from-primary to-primary/90 md:bg-gradient-to-r md:from-transparent md:to-transparent text-primary-foreground md:text-black px-6">
       <div className="flex items-center space-x-4">
         <Button
           variant="ghost"

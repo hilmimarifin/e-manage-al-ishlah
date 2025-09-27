@@ -16,14 +16,12 @@ import {
 } from "@/components/ui/select";
 import { createMenuSchema, updateMenuSchema, CreateMenuInput, UpdateMenuInput } from '@/lib/validations'
 import { Loader2, Plus } from "lucide-react";
+import { IconMap, Icons } from "@/components/layout/icons";
 
-const iconOptions = [
-  { value: "LayoutDashboard", label: "Dashboard" },
-  { value: "Users", label: "Users" },
-  { value: "UserCheck", label: "User Check" },
-  { value: "MenuIcon", label: "Menu" },
-  { value: "Home", label: "Home" },
-];
+const iconOptions = Object.keys(IconMap).map((key) => ({
+  value: key,
+  label: key,
+}));
 
 interface MenuFormProps {
   menu?: any;
@@ -111,8 +109,11 @@ export function MenuForm({ menu, onSubmit, isLoading }: MenuFormProps) {
             </SelectTrigger>
             <SelectContent>
               {iconOptions.map((icon) => (
-                <SelectItem key={icon.value} value={icon.value}>
-                  {icon.label}
+                <SelectItem key={icon.value} value={icon.value} >
+                  <div className="flex flex-row gap-2">
+                    <Icons icon={icon.value as keyof typeof IconMap} size={16} />
+                    <span>{icon.label}</span>
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>

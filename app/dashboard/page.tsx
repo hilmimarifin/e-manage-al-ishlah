@@ -5,8 +5,9 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { getCurrentAcademicYear } from "@/lib/client-utils";
 import { useState } from "react";
 import { StatCard, CustomPieChart, CustomBarChart, CustomLineChart } from "@/components/charts";
-import { Users, GraduationCap, CreditCard, TrendingUp, Loader2 } from "lucide-react";
 import { useDashboard } from "@/hooks/use-dashboard";
+import { Icons } from "@/components/layout/icons";
+import { GraduationCap } from "lucide-react";
 
 export default function DashboardPage() {
   const [year, setYear] = useState(getCurrentAcademicYear());
@@ -17,7 +18,7 @@ export default function DashboardPage() {
     return (
       <DashboardLayout>
         <div className="flex flex-col items-center justify-center h-64">
-          <Loader2 className="animate-spin h-12 w-12 text-primary" />
+          <Icons icon="Loader2" className="animate-spin h-12 w-12 text-primary" />
           <div className="text-lg text-muted-foreground">Loading dashboard data...</div>
         </div>
       </DashboardLayout>
@@ -79,7 +80,7 @@ export default function DashboardPage() {
     <DashboardLayout>
       <section className="space-y-3">
         <div>
-          <TahunAjaran onValueChange={setYear} value={year} rootClassName="h-12 rounded-xl" />
+          <TahunAjaran onValueChange={setYear} value={year} rootClassName="h-12 rounded-xl bg-card" />
         </div>
 
         {/* Statistics Cards */}
@@ -88,19 +89,19 @@ export default function DashboardPage() {
             title="Total Pembayaran"
             value={`Rp ${data.stats.totalPayments.toLocaleString()}`}
             description="Total pembayaran tahun ini"
-            icon={CreditCard}
+            icon="CreditCard"
           />
           <StatCard
             title="Total Siswa"
             value={data.stats.totalStudents}
             description="Siswa aktif tahun ini"
-            icon={Users}
+            icon="Users"
           />
           <StatCard
             title="Total Kelas"
             value={data.stats.totalClasses}
             description="Kelas aktif tahun ini"
-            icon={GraduationCap}
+            icon="GraduationCap"
           />
         </div>
 

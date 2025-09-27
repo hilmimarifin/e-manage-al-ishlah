@@ -155,7 +155,6 @@ export default function ClassesPage() {
     subtitle: `${classroom.className} - ${classroom.year}`,
     details: [
       { label: "No Telp", value: classroom.phone || "No phone" },
-      { label: "Alamat", value: classroom.address || "No address" },
     ],
     actions: [
       ...(showDeleteButton
@@ -176,7 +175,7 @@ export default function ClassesPage() {
       <div className="flex flex-row gap-2 w-full md:justify-end">
         <ComboBox
           className="md:w-[250px] w-full"
-          rootClassName="h-12 md:h-[30px]"
+          rootClassName="h-12 md:h-[30px] bg-card"
           value={form.studentId}
           placeholder="Tambahkan siswa"
           onValueChange={(value) => setForm({ ...form, studentId: value })}

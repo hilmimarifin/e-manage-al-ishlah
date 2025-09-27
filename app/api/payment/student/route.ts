@@ -12,20 +12,25 @@ export const GET = withAuth(async (req: NextRequest) => {
     const admin = await isAdmin(teacherId || "");
     const studentofClass = await prisma.studentClass.findMany({
       where: {
-        class: {
-          AND: [
-            { year: year || undefined },
-            { teacherId: admin ? undefined : teacherId },
-            { id: classId || undefined },
-          ],
-        },
+      class: {
+        AND: [
+          { year },
+          { id: classId },
+          { teacherId: admin ? undefined : teacherId },
+        ],
+      },
+        
       },
       include: {
         student: {
           select: {
             id: true,
             fullName: true,
-            payments: true,
+            payments: {
+              where: {
+                classId,
+              },
+            },
           },
         },
         class: {
@@ -181,13 +186,17 @@ export const PUT = withAuth(async (req: NextRequest, user: any) => {
     // Validate input
     if (!studentId || !classId || !Array.isArray(months)) {
       return NextResponse.json(
-        createErrorResponse("Missing required fields: studentId, classId, months"),
+        createErrorResponse(
+          "Missing required fields: studentId, classId, months"
+        ),
         { status: 400 }
       );
     }
 
     // Convert month numbers to integers and validate
-    const monthNumbers = months.map(m => parseInt(m)).filter(m => m >= 1 && m <= 12);
+    const monthNumbers = months
+      .map((m) => parseInt(m))
+      .filter((m) => m >= 1 && m <= 12);
     if (monthNumbers.length !== months.length) {
       return NextResponse.json(
         createErrorResponse("Invalid month numbers provided"),
@@ -230,9 +239,13 @@ export const PUT = withAuth(async (req: NextRequest, user: any) => {
       },
     });
 
-    const existingMonths = existingPayments.map(p => p.month);
-    const monthsToCreate = monthNumbers.filter(month => !existingMonths.includes(month));
-    const monthsToDelete = existingMonths.filter(month => !monthNumbers.includes(month));
+    const existingMonths = existingPayments.map((p) => p.month);
+    const monthsToCreate = monthNumbers.filter(
+      (month) => !existingMonths.includes(month)
+    );
+    const monthsToDelete = existingMonths.filter(
+      (month) => !monthNumbers.includes(month)
+    );
 
     // Use transaction to ensure data consistency
     const result = await prisma.$transaction(async (tx) => {
@@ -252,7 +265,7 @@ export const PUT = withAuth(async (req: NextRequest, user: any) => {
       // Create payments for newly checked months
       if (monthsToCreate.length > 0) {
         await tx.payment.createMany({
-          data: monthsToCreate.map(month => ({
+          data: monthsToCreate.map((month) => ({
             studentId,
             classId,
             month,
