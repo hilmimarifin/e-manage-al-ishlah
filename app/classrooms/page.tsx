@@ -155,7 +155,6 @@ export default function ClassesPage() {
     subtitle: `${classroom.className} - ${classroom.year}`,
     details: [
       { label: "No Telp", value: classroom.phone || "No phone" },
-      { label: "Alamat", value: classroom.address || "No address" },
     ],
     actions: [
       ...(showDeleteButton

@@ -10,7 +10,8 @@ import {
   TrendingUp,
   Loader2,
   NotebookPen,
-  HardDrive
+  HardDrive,
+  CircleUserRound
 } from "lucide-react";
 
 
@@ -25,7 +26,8 @@ export const IconMap = {
   TrendingUp,
   Loader2,
   NotebookPen,
-  HardDrive
+  HardDrive,
+  CircleUserRound
 };
 
 interface IconsProps extends LucideProps {
