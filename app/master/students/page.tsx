@@ -210,7 +210,7 @@ export default function StudentsPage() {
     return (
       <div className="flex items-center justify-between">
         {showAddButton && (
-          <div className="flex flex-col md:flex-row gap-2">
+          <div className="flex flex-row md:flex-row gap-2">
             <Modal
               isOpen={dialogOpen}
               onOpenChange={setDialogOpen}

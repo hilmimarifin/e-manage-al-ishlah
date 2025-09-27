@@ -88,19 +88,19 @@ export default function DashboardPage() {
           <StatCard
             title="Total Pembayaran"
             value={`Rp ${data.stats.totalPayments.toLocaleString()}`}
-            description="Total pembayaran tahun ini"
+            description={`Total pembayaran tahun ajaran ${year}`}
             icon="CreditCard"
           />
           <StatCard
             title="Total Siswa"
             value={data.stats.totalStudents}
-            description="Siswa aktif tahun ini"
+            description={`Siswa aktif tahun ajaran ${year}`}
             icon="Users"
           />
           <StatCard
             title="Total Kelas"
             value={data.stats.totalClasses}
-            description="Kelas aktif tahun ini"
+            description={`Kelas aktif tahun ajaran ${year}`}
             icon="GraduationCap"
           />
         </div>
@@ -110,7 +110,7 @@ export default function DashboardPage() {
           {/* Gender Distribution Pie Chart */}
           <CustomPieChart
             title="Distribusi Siswa Berdasarkan Gender"
-            description="Perbandingan jumlah siswa laki-laki dan perempuan"
+            description={`Perbandingan jumlah siswa laki-laki dan perempuan tahun ajaran ${year}`}
             data={data.genderDistribution}
             config={genderConfig}
           />
@@ -118,7 +118,7 @@ export default function DashboardPage() {
           {/* Students by Class and Gender Bar Chart */}
           <CustomBarChart
             title="Siswa per Kelas Berdasarkan Gender"
-            description="Jumlah siswa laki-laki dan perempuan di setiap kelas"
+            description={`Jumlah siswa laki-laki dan perempuan di setiap kelas tahun ajaran ${year}`}
             data={data.classGenderData}
             config={classGenderConfig}
             xAxisKey="class"
@@ -132,7 +132,7 @@ export default function DashboardPage() {
         {/* Payment Trend Line Chart */}
         <CustomLineChart
           title="Total Pembayaran Bulanan per Kelas"
-          description="Perkembangan pembayaran setiap bulan berdasarkan tingkat kelas"
+          description={`Perkembangan pembayaran setiap bulan berdasarkan tingkat kelas tahun ajaran ${year}`}
           data={data.paymentTrendData}
           config={paymentTrendConfig}
           xAxisKey="month"

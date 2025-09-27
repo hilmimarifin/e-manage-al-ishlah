@@ -54,8 +54,9 @@ export function useAddStudentToClass() {
       );
     },
     onError: (error: any) => {
+      console.log(error)
       showToast.error(
-        "Failed to add student to class",
+        error.error,
         error.message || "Please try again"
       );
     },

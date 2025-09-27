@@ -15,7 +15,7 @@ export function convertToAcademicMonthNumber(month: number): number {
 }
 
 export async function isAdmin(id: string): Promise<boolean> {
-  const unrestricted = ["Super admin", "Admin"];
+  const unrestricted = ["Super admin", "Admin", "Kepala Sekolah"];
   const user = await prisma.user.findUnique({
           where: {
             id: id || undefined
