@@ -21,6 +21,8 @@ import {
 import { usePermissionGuard } from "@/hooks/use-permissions";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, MoreHorizontal, Plus, Trash } from "lucide-react";
+import { apiClient } from "@/lib/api";
+import { showToast } from "@/lib/toast";
 import { useState } from "react";
 
 import { ClassForm } from "@/components/forms/class-form";
@@ -48,7 +50,20 @@ export default function ClassesPage() {
 
   const handleCreateClass = async (data: any) => {
     try {
-      await createClass.mutateAsync(data);
+      const { studentIds = [], ...payload } = data || {};
+      const created = await createClass.mutateAsync(payload);
+      const createdClass = created as Class;
+      if (studentIds && studentIds.length > 0 && createdClass?.id) {
+        try {
+          await apiClient.post(`/classes/${createdClass.id}/students`, {
+            studentIds,
+            year: createdClass.year,
+          });
+          showToast.success("Siswa ditambahkan", "Berhasil menambahkan siswa ke kelas");
+        } catch (e: any) {
+          showToast.error("Gagal menambahkan siswa", e?.message || "Silakan coba lagi");
+        }
+      }
       setDialogOpen(false);
     } catch (error) {
       console.error("Failed to create classes:", error);
@@ -58,7 +73,20 @@ export default function ClassesPage() {
   const handleUpdateClass = async (data: any) => {
     try {
       if (selectedClass) {
-        await updateClass.mutateAsync({ id: selectedClass.id, ...data });
+        const { studentIds = [], ...payload } = data || {};
+        const updated = await updateClass.mutateAsync({ id: selectedClass.id, ...payload });
+        const updatedClass = updated as Class;
+        if (studentIds && studentIds.length > 0) {
+          try {
+            await apiClient.post(`/classes/${selectedClass.id}/students`, {
+              studentIds,
+              year: updatedClass?.year || selectedClass.year,
+            });
+            showToast.success("Siswa ditambahkan", "Berhasil menambahkan siswa ke kelas");
+          } catch (e: any) {
+            showToast.error("Gagal menambahkan siswa", e?.message || "Silakan coba lagi");
+          }
+        }
         setDialogOpen(false);
         setSelectedClass(null);
       }

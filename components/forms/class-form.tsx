@@ -19,6 +19,9 @@ import Select from "../elements/select";
 import { useUsers } from "@/hooks/use-users";
 import TahunAjaran from "../elements/tahun-ajaran-picker";
 import { Loader2, Plus } from "lucide-react";
+import { MultiSelect } from "../elements/multi-select";
+import { useStudents } from "@/hooks/use-students";
+import { apiClient } from "@/lib/api";
 
 interface ClassFormProps {
   classes?: Class;
@@ -63,17 +66,41 @@ export function ClassForm({
         teacherId: classes.teacherId || "",
         monthlyFee: classes.monthlyFee || 0,
       });
+      // Prefill selected students for edit mode
+      (async () => {
+        try {
+          const res = await apiClient.get<{ studentIds: string[] }>(`/classes/${classes.id}/students`, {
+            params: { year: classes.year },
+          });
+          setStudentIds(Array.isArray(res?.studentIds) ? res.studentIds : []);
+        } catch (e) {
+          // silently ignore
+          setStudentIds([]);
+        }
+      })();
+    } else {
+      // Create mode: ensure empty selection
+      setStudentIds([]);
     }
   }, [classes, reset]);
 
   const onFormSubmit = (data: CreateClassInput | UpdateClassInput) => {
-    onSubmit(data);
+    onSubmit({
+      ...data,
+      // Attach selected students for bulk assigning after create/update
+      studentIds,
+    });
   };
 
   const teacherOptions = useUsers({}).data?.map((user) => ({
     value: user.id,
     label: user.username,
   })) || [];
+
+  // Students options for multi-select
+  const { data: studentsData, isLoading: isStudentsLoading } = useStudents();
+  const studentOptions = studentsData?.map((s) => ({ value: s.id, label: s.fullName })) || [];
+  const [studentIds, setStudentIds] = useState<string[]>([]);
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)}>
@@ -91,6 +118,19 @@ export function ClassForm({
             </span>
           )}
         </div>
+
+      <div className="grid gap-2 mb-4">
+        <MultiSelect
+          id="studentIds"
+          label="Tambah Siswa ke Kelas (multi)"
+          values={studentIds}
+          onValuesChange={setStudentIds}
+          options={studentOptions}
+          isLoading={isStudentsLoading}
+          placeholder="Pilih siswa..."
+        />
+        <span className="text-xs text-muted-foreground">Opsional. Anda dapat menambahkan beberapa siswa sekaligus ke kelas ini.</span>
+      </div>
 
         <div className="grid gap-2">
           <Label htmlFor="grade">Jenjang Kelas</Label>
