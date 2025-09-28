@@ -1,21 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useLogin } from "@/hooks/use-auth";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useLogin } from "@/hooks/use-auth";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -44,14 +44,18 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md shadow-md rounded-3xl">
       <CardHeader className="space-y-1">
+        <Image
+          src="/images/logo.webp"
+          alt="Logo"
+          width={150}
+          height={150}
+          className="mx-auto"
+        />
         <CardTitle className="text-2xl font-bold text-center">
-          DTA AL-ISHLAH
+          MADRASAH AL-ISHLAH
         </CardTitle>
-        <CardDescription className="text-center">
-          Masuk ke akun Anda
-        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">

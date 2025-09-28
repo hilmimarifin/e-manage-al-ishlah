@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
-import { toast } from 'sonner';
 
 interface BatchUploadResult {
   created: number;
@@ -39,26 +38,10 @@ export function useBatchUploadStudents() {
     onSuccess: (data) => {
       // Invalidate students query to refresh the list
       queryClient.invalidateQueries({ queryKey: ['students'] });
-      
-      if (data.success) {
-        const { created, duplicates, totalProcessed } = data.data;
-        let message = `Successfully uploaded ${created} students`;
-        
-        if (duplicates.length > 0) {
-          message += `, ${duplicates.length} duplicates skipped`;
-        }
-        
-        if (totalProcessed > created + duplicates.length) {
-          const failed = totalProcessed - created - duplicates.length;
-          message += `, ${failed} failed`;
-        }
-        
-        toast.success(message);
-      }
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Failed to upload students';
-      toast.error(errorMessage);
+      // Let the form handle error display
+      console.error('Batch upload error:', error);
     },
   });
 }

@@ -175,6 +175,7 @@ async function main() {
     classRoomMenu,
     paymentMenu,
     transactionMenu,
+    Master,
   ]) {
     await prisma.roleMenu.upsert({
       where: {
@@ -251,10 +252,10 @@ async function main() {
       where: { email: "hilmi.m.arifin@gmail.com" },
       update: {},
       create: {
+        nik: "3201010101010001",
         email: "hilmi.m.arifin@gmail.com",
         username: "hilmimarifin",
         password: superAdminPassword,
-        nik: "3201010101010001",
         name: "Hilmi M. Arifin",
         gender: Gender.MALE,
         birthDate: new Date("1990-01-01"),
@@ -272,10 +273,10 @@ async function main() {
     where: { email: "admin@example.com" },
     update: {},
     create: {
+      nik: "3201010101010002",
       email: "admin@example.com",
       username: "admin",
       password: adminPassword,
-      nik: "3201010101010001",
       name: "Administrator",
       gender: Gender.MALE,
       birthDate: new Date("1990-01-01"),

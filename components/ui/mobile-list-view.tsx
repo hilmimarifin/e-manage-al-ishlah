@@ -103,7 +103,7 @@ export function MobileListView({
           </CardContent>
         </Card>
       ) : (
-        filteredItems.map((item) => (
+        filteredItems.map((item, index) => (
           <Card key={item.id} className="shadow-md transition-shadow">
             <CardContent className="p-4 border-r-4 border-r-primary rounded-r-lg">
               <div className="space-y-3">
@@ -112,7 +112,7 @@ export function MobileListView({
                   <div className="space-y-1 flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="font-medium text-sm leading-tight truncate">
-                        {item.title}
+                        {index + 1}. {item.title}
                       </h3>
                       {item.badge && (
                         <Badge

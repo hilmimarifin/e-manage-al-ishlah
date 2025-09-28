@@ -66,13 +66,27 @@ function validateExcelRow(row: any, rowIndex: number): { isValid: boolean; error
 
   // Birth date validation (optional but must be valid if provided)
   if (row['Tanggal Lahir']) {
-    const birthDate = new Date(row['Tanggal Lahir']);
+    const dateValue = row['Tanggal Lahir'].toString().trim();
+    let birthDate: Date;
+    
+    // Check if it's an Excel serial number (numeric value)
+    if (!isNaN(Number(dateValue)) && Number(dateValue) > 1) {
+      // Convert Excel serial number to date
+      // Excel epoch starts from January 1, 1900 (but treats 1900 as leap year)
+      const excelEpoch = new Date(1900, 0, 1);
+      const days = Number(dateValue) - 2; // Subtract 2 to account for Excel's leap year bug
+      birthDate = new Date(excelEpoch.getTime() + days * 24 * 60 * 60 * 1000);
+    } else {
+      // Try to parse as regular date string
+      birthDate = new Date(dateValue);
+    }
+    
     if (isNaN(birthDate.getTime())) {
       errors.push({
         row: rowIndex,
         field: 'Tanggal Lahir',
-        message: 'Format tanggal lahir tidak valid',
-        value: row['Tanggal Lahir']
+        message: 'Format tanggal lahir tidak valid (gunakan format YYYY-MM-DD atau pastikan Excel tidak mengubah format tanggal)',
+        value: dateValue
       });
     }
   }
@@ -87,10 +101,32 @@ function validateExcelRow(row: any, rowIndex: number): { isValid: boolean; error
     normalizedGender = 'FEMALE';
   }
 
+  // Parse birth date properly
+  let parsedBirthDate: string | undefined = undefined;
+  if (row['Tanggal Lahir']) {
+    const dateValue = row['Tanggal Lahir'].toString().trim();
+    let birthDate: Date;
+    
+    // Check if it's an Excel serial number (numeric value)
+    if (!isNaN(Number(dateValue)) && Number(dateValue) > 1) {
+      // Convert Excel serial number to date
+      const excelEpoch = new Date(1900, 0, 1);
+      const days = Number(dateValue) - 2; // Subtract 2 to account for Excel's leap year bug
+      birthDate = new Date(excelEpoch.getTime() + days * 24 * 60 * 60 * 1000);
+    } else {
+      // Try to parse as regular date string
+      birthDate = new Date(dateValue);
+    }
+    
+    if (!isNaN(birthDate.getTime())) {
+      parsedBirthDate = birthDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    }
+  }
+
   const studentData: StudentRow = {
     fullName: row['Nama Lengkap'].trim(),
     nik: row['NIK']?.toString().trim() || undefined,
-    birthDate: row['Tanggal Lahir'] ? new Date(row['Tanggal Lahir']).toISOString() : undefined,
+    birthDate: parsedBirthDate,
     birthPlace: row['Tempat Lahir']?.toString().trim() || undefined,
     address: row['Alamat']?.toString().trim() || undefined,
     phone: row['No. Telepon']?.toString().trim() || undefined,
