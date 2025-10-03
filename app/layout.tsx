@@ -1,4 +1,4 @@
-import { NetworkStatusIndicator } from '@/components/pwa-install-prompt'
+import { NetworkStatusIndicator, PWAInstallPrompt } from '@/components/pwa-install-prompt'
 import { Toaster } from '@/components/ui/toaster'
 import { ReactQueryProvider } from '@/lib/react-query'
 import type { Metadata, Viewport } from 'next'
@@ -62,7 +62,7 @@ export default function RootLayout({
             {children}
           </Suspense>
           <Toaster />
-          {/* <PWAInstallPrompt /> */}
+          <PWAInstallPrompt />
           <NetworkStatusIndicator />
         </ReactQueryProvider>
       </body>
