@@ -5,6 +5,7 @@ import Select from "@/components/elements/select";
 import TahunAjaran from "@/components/elements/tahun-ajaran-picker";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useClasses } from "@/hooks/use-classes";
@@ -105,6 +106,20 @@ export default function DashboardPage() {
     },
     []
   );
+  const months = [
+    { key: "jul", name: "Jul" },
+    { key: "aug", name: "Aug" },
+    { key: "sep", name: "Sep" },
+    { key: "oct", name: "Oct" },
+    { key: "nov", name: "Nov" },
+    { key: "dec", name: "Dec" },
+    { key: "jan", name: "Jan" },
+    { key: "feb", name: "Feb" },
+    { key: "mar", name: "Mar" },
+    { key: "apr", name: "Apr" },
+    { key: "may", name: "May" },
+    { key: "jun", name: "Jun" },
+  ];
 
   return (
     <DashboardLayout>
@@ -123,6 +138,48 @@ export default function DashboardPage() {
             options={studentsOptions}
           />
         </div>
+        <div>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-4">
+        <div>
+          <div className="grid grid-cols-2 gap-3 mt-3">
+            {months.map((month) => {
+              const isSelected = selectedMonths.includes(
+                month.number.toString()
+              );
+
+              return (
+                <div key={month.key} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={month.key}
+                    checked={!isSelected}
+                    onCheckedChange={() =>
+                      handleMonthToggle(month.number.toString())
+                    }
+                  />
+                  <Label htmlFor={month.key} className={`text-sm`}>
+                    {month.name}
+                  </Label>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-end space-x-2">
+        <Button type="button" variant="outline" onClick={onClose}>
+          Batal
+        </Button>
+        <Button
+          type="submit"
+          disabled={selectedMonths.length === 0 || updatePayment.isPending}
+        >
+          {updatePayment.isPending ? "Menyimpan..." : "Simpan Pembayaran"}
+        </Button>
+      </div>
+    </form>
+        </div>
         <TahunAjaran
           rootClassName="h-12 rounded-xl"
           onValueChange={handleYearChange}
@@ -137,7 +194,7 @@ export default function DashboardPage() {
           isLoading={classesLoading || isLoading}
           onValueChange={handleClassChange}
         />
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <Label>Jumlah</Label>
           <Input
             type="number"
@@ -146,7 +203,7 @@ export default function DashboardPage() {
             placeholder="Jumlah"
             className="h-12 rounded-xl"
           />
-        </div>
+        </div> */}
         <Button
           disabled={!form.studentId || createPayment.isPending}
           onClick={handleCreatePayment}

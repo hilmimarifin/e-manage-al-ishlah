@@ -122,14 +122,13 @@ export function ClassForm({
       <div className="grid gap-2 mb-4">
         <MultiSelect
           id="studentIds"
-          label="Tambah Siswa ke Kelas (multi)"
+          label="Tambah Siswa ke Kelas"
           values={studentIds}
           onValuesChange={setStudentIds}
           options={studentOptions}
           isLoading={isStudentsLoading}
           placeholder="Pilih siswa..."
         />
-        <span className="text-xs text-muted-foreground">Opsional. Anda dapat menambahkan beberapa siswa sekaligus ke kelas ini.</span>
       </div>
 
         <div className="grid gap-2">

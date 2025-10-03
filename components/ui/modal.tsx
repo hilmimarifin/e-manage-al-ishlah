@@ -53,12 +53,12 @@ export function Modal({
         <DialogHeader className="bg-gradient-to-r from-primary to-primary/90 text-primary-foreground p-4 max-h-20 flex-shrink-0">
           <DialogTitle>{title}</DialogTitle>
           {description && (
-            <DialogDescription className="text-primary-foreground">
+            <DialogDescription className="text-primary-foreground ">
               {description}
             </DialogDescription>
           )}
         </DialogHeader>
-        <div className="px-4 pb-4 overflow-y-auto flex-1 min-h-0">
+        <div className="px-4 pb-4 overflow-y-auto flex-1 min-h-0 bg-card">
           {children}
         </div>
         {footer && (
