@@ -205,6 +205,8 @@ export default function ClassesPage() {
     }
   }, [filter.year]);
 
+  console.log(form);
+  
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -221,7 +223,8 @@ export default function ClassesPage() {
 
           <TahunAjaran
             onValueChange={(value) => {
-              setFilter({ ...filter, year: value });
+              setFilter({ ...filter, year: value, classId: "" });
+              setForm({ ...form, year: value, classId: "", studentId: "" });
             }}
             value={filter.year}
           />
@@ -233,6 +236,7 @@ export default function ClassesPage() {
             value={filter.classId}
             onValueChange={(value) => {
               setFilter({ ...filter, classId: value });
+              setForm({ ...form, classId: value, studentId: "" });
             }}
           />
         </FilterContainer>

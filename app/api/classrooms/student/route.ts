@@ -45,7 +45,9 @@ export const GET = withReadPermission(
           },
         },
         orderBy: {
-          createdAt: "desc",
+          student: {
+            fullName: "asc",
+          },
         },
       });
 
@@ -74,6 +76,16 @@ export const GET = withReadPermission(
 export const POST = withAuth(async (req: NextRequest) => {
   try {
     const body = await req.json();
+
+    if (!body.classId) {
+      return NextResponse.json(
+        createErrorResponse(
+          "Gagal menambahkan siswa",
+          "Kelas tidak boleh kosong"
+        ),
+        { status: 400 }
+      );
+    }
     //validate is user is exist in class
     const studentClass = await prisma.studentClass.findFirst({
       where: {

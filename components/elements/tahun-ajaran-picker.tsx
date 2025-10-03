@@ -25,8 +25,8 @@ const generateTahunAjaranOptions = (
   yearsCount?: number
 ) => {
   const currentYear = new Date().getFullYear();
-  const defaultStartYear = startYear || currentYear - 10;
-  const defaultEndYear = endYear || currentYear + 10;
+  const defaultStartYear = startYear || currentYear - 5;
+  const defaultEndYear = endYear || currentYear + 3;
   const totalYears = yearsCount || defaultEndYear - defaultStartYear;
 
   const options = [];

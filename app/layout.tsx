@@ -1,10 +1,10 @@
-import './globals.css'
+import { NetworkStatusIndicator } from '@/components/pwa-install-prompt'
+import { Toaster } from '@/components/ui/toaster'
+import { ReactQueryProvider } from '@/lib/react-query'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
-import { ReactQueryProvider } from '@/lib/react-query'
-import { Toaster } from '@/components/ui/toaster'
-import { PWAInstallPrompt, NetworkStatusIndicator } from '@/components/pwa-install-prompt'
 import { Suspense } from 'react'
+import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -62,7 +62,7 @@ export default function RootLayout({
             {children}
           </Suspense>
           <Toaster />
-          <PWAInstallPrompt />
+          {/* <PWAInstallPrompt /> */}
           <NetworkStatusIndicator />
         </ReactQueryProvider>
       </body>

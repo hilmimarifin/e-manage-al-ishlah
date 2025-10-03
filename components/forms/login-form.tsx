@@ -2,12 +2,7 @@
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLogin } from "@/hooks/use-auth";
@@ -16,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Icons } from "../layout/icons";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -34,7 +30,7 @@ export function LoginForm() {
         sessionStorage.removeItem("redirectAfterLogin");
         router.push(redirectPath);
       } else {
-        router.push("/dashboard");
+        router.push("/");
       }
     } catch (error) {
       // Error is handled by the mutation
@@ -90,23 +86,27 @@ export function LoginForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              {
-                showPassword ? (
-                  <Eye
-                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
-                    onClick={() => setShowPassword(!showPassword)}
-                  />
-                ) : (
-                  <EyeOff
-                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
-                    onClick={() => setShowPassword(!showPassword)}
-                  />
-                )
-              }
+              {showPassword ? (
+                <Icons
+                  icon="Eye"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+              ) : (
+                <Icons
+                  icon="EyeOff"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+              )}
             </div>
           </div>
 
-          <Button type="submit" className="w-full h-12" disabled={login.isPending}>
+          <Button
+            type="submit"
+            className="w-full h-12"
+            disabled={login.isPending}
+          >
             {login.isPending && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}

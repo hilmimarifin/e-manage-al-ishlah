@@ -5,7 +5,7 @@ import { generateTokens } from '@/lib/jwt'
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, username, password } = await request.json()
+    const { email, username, password, fullname, nik } = await request.json()
 
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     // Get default user role
     const userRole = await prisma.role.findUnique({
-      where: { name: 'user' }
+      where: { name: 'User' }
     })
 
     if (!userRole) {
@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
         username,
         password: hashedPassword,
         roleId: userRole.id,
-        nik: "", // Will be filled later by user
-        name: username, // Use username as default name
+        nik, // Will be filled later by user
+        name: fullname, // Use username as default name
         gender: "MALE", // Default gender
         phone: "" // Will be filled later by user
       },

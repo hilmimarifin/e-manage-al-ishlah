@@ -38,6 +38,15 @@ async function main() {
     },
   });
 
+  const userRole = await prisma.role.upsert({
+    where: { name: "User" },
+    update: {},
+    create: {
+      name: "User",
+      description: "Default initial user",
+    },
+  });
+
     const adminRole = await prisma.role.upsert({
       where: { name: "Admin" },
       update: {},
@@ -247,7 +256,7 @@ async function main() {
 
   // Users
 
-    const superAdminPassword = await bcrypt.hash(process.env.SUPER_ADMIN_PASSWORD || "", 12);
+    const superAdminPassword = await bcrypt.hash(process.env.SUPER_ADMIN_PASSWORD!, 12);
     const superAdminUser = await prisma.user.upsert({
       where: { email: "hilmi.m.arifin@gmail.com" },
       update: {},

@@ -13,6 +13,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Icons } from "./icons";
+import Image from "next/image";
 
 interface Menu {
   id: string;
@@ -51,10 +52,12 @@ export function Sidebar({ setHeaderTitle }: SidebarProps) {
     if (activeMenu) {
       // Set the header title based on the active menu
       setHeaderTitle(activeMenu.name);
-      
+
       // Expand parent menu if this is a child menu
       if (activeMenu.parentId) {
-        setExpandedMenus((prev) => new Set(prev).add(activeMenu.parentId || ""));
+        setExpandedMenus((prev) =>
+          new Set(prev).add(activeMenu.parentId || "")
+        );
       }
     }
   }, [pathname, menus, setHeaderTitle]);
@@ -206,7 +209,7 @@ export function Sidebar({ setHeaderTitle }: SidebarProps) {
 
       <div
         className={cn(
-          "relative flex h-full flex-col text-primary-foreground bg-primary",
+          "relative flex h-full flex-col text-primary-foreground bg-gradient-to-r from-primary/90 to-primary",
           // Smooth transitions with easing
           "transition-all duration-300 ease-in-out transform",
           // Desktop behavior
@@ -223,7 +226,16 @@ export function Sidebar({ setHeaderTitle }: SidebarProps) {
       >
         <div className="flex h-16 items-center justify-between border-b px-4">
           {sidebarOpen && (
-            <h2 className="text-lg font-semibold">DTA Al-Ishlah</h2>
+            <div className="flex items-center min-h-[60px]">
+              <Image
+                src="/images/logo.webp"
+                alt="Logo"
+                width={60}
+                height={60}
+                className="mx-auto"
+              />
+              <h2 className="text-lg font-semibold">Al-Ishlah</h2>
+            </div>
           )}
           <Button
             variant="ghost"

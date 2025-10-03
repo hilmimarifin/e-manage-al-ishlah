@@ -209,11 +209,11 @@ export default function ClassesPage() {
           <Modal
             isOpen={dialogOpen}
             onOpenChange={setDialogOpen}
-            title={selectedClass ? "Edit Class" : "Create Class"}
+            title={selectedClass ? "Ubah Data Kelas" : "Tambah Kelas"}
             description={
               selectedClass
-                ? "Make changes to the classes here."
-                : "Add a new classes to the system."
+                ? "Ubah data kelas."
+                : "Tambahkan kelas baru."
             }
             trigger={
               <Button onClick={openCreateDialog}>

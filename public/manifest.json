@@ -1,6 +1,6 @@
 {
-  "name": "E-Manage Al-Ishlah",
-  "short_name": "E-Manage",
+  "name": "Al-Ishlah",
+  "short_name": "Al-Ishlah",
   "description": "Educational Management System for Al-Ishlah",
   "start_url": "/",
   "display": "standalone",

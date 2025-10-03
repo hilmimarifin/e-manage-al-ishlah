@@ -13,6 +13,8 @@ interface RegisterData {
   email: string
   username: string
   password: string
+  fullname: string
+  nik: string
 }
 
 export function useLogin() {

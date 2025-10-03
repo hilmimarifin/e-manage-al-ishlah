@@ -9,15 +9,62 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useClasses } from "@/hooks/use-classes";
-import { useCreatePayment, usePaymentClass } from "@/hooks/use-payment-class";
+import {
+  useCreatePayment,
+  usePaymentClass,
+  useUpdatePayment,
+} from "@/hooks/use-payment-class";
 import { getCurrentAcademicYear } from "@/lib/client-utils";
 import { useAuthStore } from "@/store/auth-store";
 import { Handshake, Loader2, Plus } from "lucide-react";
 import * as React from "react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+type MonthKey =
+  | "jan"
+  | "feb"
+  | "mar"
+  | "apr"
+  | "may"
+  | "jun"
+  | "jul"
+  | "aug"
+  | "sep"
+  | "oct"
+  | "nov"
+  | "dec";
+
+interface MonthData {
+  key: MonthKey;
+  name: string;
+  number: number;
+}
+
+interface FormState {
+  teacherId: string | undefined;
+  studentId: string;
+  classId: string;
+  year: string;
+  amount: string;
+}
+
+const MONTHS: MonthData[] = [
+  { key: "jul", name: "Juli", number: 7 },
+  { key: "aug", name: "Agustus", number: 8 },
+  { key: "sep", name: "September", number: 9 },
+  { key: "oct", name: "Oktober", number: 10 },
+  { key: "nov", name: "November", number: 11 },
+  { key: "dec", name: "Desember", number: 12 },
+  { key: "jan", name: "Januari", number: 1 },
+  { key: "feb", name: "Februari", number: 2 },
+  { key: "mar", name: "Maret", number: 3 },
+  { key: "apr", name: "April", number: 4 },
+  { key: "may", name: "Mei", number: 5 },
+  { key: "jun", name: "Juni", number: 6 },
+];
 
 export default function DashboardPage() {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     teacherId: useAuthStore.getState().user?.id,
     studentId: "",
     classId: "",
@@ -25,7 +72,15 @@ export default function DashboardPage() {
     amount: "",
   });
 
+  const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
+  const [initialSelectedMonths, setInitialSelectedMonths] = useState<string[]>(
+    []
+  );
+
   const { data: classes = [], isLoading: classesLoading } = useClasses(form);
+  const { data: paymentClass, isLoading, error } = usePaymentClass(form);
+  const createPayment = useCreatePayment();
+  const updatePayment = useUpdatePayment();
 
   // Memoize class options to prevent unnecessary re-renders
   const classOptions = useMemo(
@@ -37,9 +92,7 @@ export default function DashboardPage() {
     [classes]
   );
 
-  const { data: paymentClass, isLoading, error } = usePaymentClass(form);
-
-  // Memoize student options to prevent unnecessary re-renders
+  // Memoize student options
   const studentsOptions = useMemo(
     () =>
       paymentClass?.map((student) => ({
@@ -49,8 +102,15 @@ export default function DashboardPage() {
     [paymentClass]
   );
 
-  const createPayment = useCreatePayment();
+  // Check if there are changes to submit
+  const hasChanges = useMemo(() => {
+    if (selectedMonths.length !== initialSelectedMonths.length) return true;
+    return selectedMonths.some(
+      (month) => !initialSelectedMonths.includes(month)
+    );
+  }, [selectedMonths, initialSelectedMonths]);
 
+  // Handlers
   const handleCreatePayment = useCallback(async () => {
     try {
       await createPayment.mutateAsync(form).then(() => {
@@ -65,7 +125,6 @@ export default function DashboardPage() {
     }
   }, [form, createPayment]);
 
-  // Memoized handlers to prevent unnecessary re-renders
   const handleStudentChange = useCallback((value: string) => {
     // Update studentId immediately for responsive UI
     setForm((prev) => ({
@@ -86,7 +145,7 @@ export default function DashboardPage() {
         setForm((prev) => ({
           ...prev,
           classId: selectedStudent.classId || "",
-          amount: selectedStudent.monthlyFeeAmount.toString() || "",
+          amount: selectedStudent.monthlyFeeAmount?.toString() || "",
         }));
       }
     }
@@ -106,20 +165,64 @@ export default function DashboardPage() {
     },
     []
   );
-  const months = [
-    { key: "jul", name: "Jul" },
-    { key: "aug", name: "Aug" },
-    { key: "sep", name: "Sep" },
-    { key: "oct", name: "Oct" },
-    { key: "nov", name: "Nov" },
-    { key: "dec", name: "Dec" },
-    { key: "jan", name: "Jan" },
-    { key: "feb", name: "Feb" },
-    { key: "mar", name: "Mar" },
-    { key: "apr", name: "Apr" },
-    { key: "may", name: "May" },
-    { key: "jun", name: "Jun" },
-  ];
+
+  const handleMonthToggle = useCallback((monthNumber: string) => {
+    setSelectedMonths((prev) =>
+      prev.includes(monthNumber)
+        ? prev.filter((m) => m !== monthNumber)
+        : [...prev, monthNumber]
+    );
+  }, []);
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      if (!form.studentId || !form.classId || !hasChanges) {
+        return;
+      }
+
+      try {
+        const monthsToUpdate = MONTHS.filter(
+          (month) => !selectedMonths.includes(month.number.toString())
+        ).map((month) => month.number.toString());
+
+        await updatePayment.mutateAsync({
+          studentId: form.studentId,
+          classId: form.classId,
+          months: monthsToUpdate,
+        });
+
+        // Update initial state after successful submission
+        setInitialSelectedMonths(selectedMonths);
+      } catch (error) {
+        console.error("Failed to update payment:", error);
+      }
+    },
+    [form.studentId, form.classId, selectedMonths, hasChanges, updatePayment]
+  );
+
+  // Effects
+  // Update selected months when student changes
+  useEffect(() => {
+    if (form.studentId && paymentClass) {
+      const selectedPerson = paymentClass.find(
+        (cls) => cls.id === form.studentId
+      );
+      if (selectedPerson) {
+        const monthlyFee = selectedPerson.monthlyFee as Record<string, unknown>;
+        const unpaidMonths = MONTHS.filter(
+          (month) => !monthlyFee[month.key]
+        ).map((month) => month.number.toString());
+
+        setSelectedMonths(unpaidMonths);
+        setInitialSelectedMonths([...unpaidMonths]);
+      }
+    } else {
+      setSelectedMonths([]);
+      setInitialSelectedMonths([]);
+    }
+  }, [form.studentId, paymentClass]);
 
   return (
     <DashboardLayout>
@@ -138,48 +241,6 @@ export default function DashboardPage() {
             options={studentsOptions}
           />
         </div>
-        <div>
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <div>
-          <div className="grid grid-cols-2 gap-3 mt-3">
-            {months.map((month) => {
-              const isSelected = selectedMonths.includes(
-                month.number.toString()
-              );
-
-              return (
-                <div key={month.key} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={month.key}
-                    checked={!isSelected}
-                    onCheckedChange={() =>
-                      handleMonthToggle(month.number.toString())
-                    }
-                  />
-                  <Label htmlFor={month.key} className={`text-sm`}>
-                    {month.name}
-                  </Label>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      <div className="flex justify-end space-x-2">
-        <Button type="button" variant="outline" onClick={onClose}>
-          Batal
-        </Button>
-        <Button
-          type="submit"
-          disabled={selectedMonths.length === 0 || updatePayment.isPending}
-        >
-          {updatePayment.isPending ? "Menyimpan..." : "Simpan Pembayaran"}
-        </Button>
-      </div>
-    </form>
-        </div>
         <TahunAjaran
           rootClassName="h-12 rounded-xl"
           onValueChange={handleYearChange}
@@ -194,6 +255,84 @@ export default function DashboardPage() {
           isLoading={classesLoading || isLoading}
           onValueChange={handleClassChange}
         />
+        <div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                {form.studentId && (
+                  <div className="grid grid-cols-2 gap-3 mt-3">
+                    {MONTHS.map((month) => {
+                      const selectedPerson = paymentClass?.find(
+                        (cls) => cls.id === form.studentId
+                      );
+
+                      const monthlyFee = selectedPerson?.monthlyFee as
+                        | Record<string, unknown>
+                        | undefined;
+                      const isPaid = monthlyFee
+                        ? Boolean(monthlyFee[month.key])
+                        : false;
+                      const isSelected = selectedMonths.includes(
+                        month.number.toString()
+                      );
+
+                      return (
+                        <div
+                          key={month.key}
+                          className="flex items-center space-x-2"
+                        >
+                          <Checkbox
+                            id={month.key}
+                            disabled={!!isPaid}
+                            checked={!isSelected}
+                            onCheckedChange={() =>
+                              handleMonthToggle(month.number.toString())
+                            }
+                          />
+                          <Label
+                            htmlFor={month.key}
+                            className={`text-sm ${
+                              isPaid ? "text-muted-foreground line-through" : ""
+                            }`}
+                          >
+                            {month.name}
+                          </Label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-2">
+              <Button
+                type="submit"
+                className="h-12 rounded-xl shadow-md shadow-primary/50 w-full"
+                disabled={
+                  !form.studentId ||
+                  !form.classId ||
+                  !hasChanges ||
+                  updatePayment.isPending ||
+                  createPayment.isPending
+                }
+              >
+                {updatePayment.isPending || createPayment.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Menyimpan...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Tambah Pembayaran
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </div>
+
         {/* <div className="flex flex-col gap-2">
           <Label>Jumlah</Label>
           <Input
@@ -204,7 +343,7 @@ export default function DashboardPage() {
             className="h-12 rounded-xl"
           />
         </div> */}
-        <Button
+        {/* <Button
           disabled={!form.studentId || createPayment.isPending}
           onClick={handleCreatePayment}
           className="h-12 rounded-xl shadow-md shadow-primary/50"
@@ -215,7 +354,7 @@ export default function DashboardPage() {
             <Plus className="mr-2 h-4 w-4" />
           )}
           Tambah
-        </Button>
+        </Button> */}
       </section>
     </DashboardLayout>
   );

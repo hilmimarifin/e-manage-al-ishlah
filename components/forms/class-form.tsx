@@ -29,11 +29,7 @@ interface ClassFormProps {
   isLoading?: boolean;
 }
 
-export function ClassForm({
-  classes,
-  onSubmit,
-  isLoading,
-}: ClassFormProps) {
+export function ClassForm({ classes, onSubmit, isLoading }: ClassFormProps) {
   const isEditing = !!classes;
   const schema = isEditing ? updateClassSchema : createClassSchema;
 
@@ -47,11 +43,11 @@ export function ClassForm({
   } = useForm<CreateClassInput | UpdateClassInput>({
     resolver: zodResolver(schema),
     defaultValues: {
-     name: classes?.name || "",
-     grade: classes?.grade || "",
-     year: classes?.year || "",
-     teacherId: classes?.teacherId || "",
-     monthlyFee: classes?.monthlyFee || 0,
+      name: classes?.name || "",
+      grade: classes?.grade || "",
+      year: classes?.year || "",
+      teacherId: classes?.teacherId || "",
+      monthlyFee: classes?.monthlyFee || 0,
     },
   });
 
@@ -69,9 +65,12 @@ export function ClassForm({
       // Prefill selected students for edit mode
       (async () => {
         try {
-          const res = await apiClient.get<{ studentIds: string[] }>(`/classes/${classes.id}/students`, {
-            params: { year: classes.year },
-          });
+          const res = await apiClient.get<{ studentIds: string[] }>(
+            `/classes/${classes.id}/students`,
+            {
+              params: { year: classes.year },
+            }
+          );
           setStudentIds(Array.isArray(res?.studentIds) ? res.studentIds : []);
         } catch (e) {
           // silently ignore
@@ -92,14 +91,16 @@ export function ClassForm({
     });
   };
 
-  const teacherOptions = useUsers({}).data?.map((user) => ({
-    value: user.id,
-    label: user.username,
-  })) || [];
+  const teacherOptions =
+    useUsers({}).data?.map((user) => ({
+      value: user.id,
+      label: user.username,
+    })) || [];
 
   // Students options for multi-select
   const { data: studentsData, isLoading: isStudentsLoading } = useStudents();
-  const studentOptions = studentsData?.map((s) => ({ value: s.id, label: s.fullName })) || [];
+  const studentOptions =
+    studentsData?.map((s) => ({ value: s.id, label: s.fullName })) || [];
   const [studentIds, setStudentIds] = useState<string[]>([]);
 
   return (
@@ -110,39 +111,25 @@ export function ClassForm({
           <Input
             id="name"
             {...register("name")}
+            placeholder="contoh: Kelas 1, Kelas 2"
             className={errors.name ? "border-red-500" : ""}
           />
           {errors.name && (
-            <span className="text-sm text-red-500">
-              {errors.name.message}
-            </span>
+            <span className="text-sm text-red-500">{errors.name.message}</span>
           )}
         </div>
-
-      <div className="grid gap-2 mb-4">
-        <MultiSelect
-          id="studentIds"
-          label="Tambah Siswa ke Kelas"
-          values={studentIds}
-          onValuesChange={setStudentIds}
-          options={studentOptions}
-          isLoading={isStudentsLoading}
-          placeholder="Pilih siswa..."
-        />
-      </div>
-
         <div className="grid gap-2">
           <Label htmlFor="grade">Jenjang Kelas</Label>
           <Input
             type="number"
+            placeholder="contoh: 1, 2, 3, dst"
+            min={0}
             id="grade"
             {...register("grade")}
             className={errors.grade ? "border-red-500" : ""}
           />
           {errors.grade && (
-            <span className="text-sm text-red-500">
-              {errors.grade.message}
-            </span>
+            <span className="text-sm text-red-500">{errors.grade.message}</span>
           )}
         </div>
       </div>
@@ -154,6 +141,7 @@ export function ClassForm({
           className={errors.year ? "border-red-500" : ""}
           onValueChange={(value) => setValue("year", value)}
           value={watchedValues.year}
+          placeholder="Pilih tahun ajaran..."
         />
       </div>
 
@@ -166,23 +154,37 @@ export function ClassForm({
           className={errors.teacherId ? "border-red-500" : ""}
           onValueChange={(value) => setValue("teacherId", value)}
           value={watchedValues.teacherId}
+          placeholder="Pilih wali kelas..."
         />
       </div>
 
       <div className="grid gap-2 mb-4">
-        <Label htmlFor="monthlyFee">SPP Bulanan</Label>
+        <Label htmlFor="monthlyFee">SPP Bulanan (Rp)</Label>
 
         <Input
           type="number"
           id="monthlyFee"
           {...register("monthlyFee")}
           className={errors.monthlyFee ? "border-red-500" : ""}
+          placeholder="contoh: 100000"
+          min={0}
         />
         {errors.monthlyFee && (
           <span className="text-sm text-red-500">
             {errors.monthlyFee.message}
           </span>
         )}
+      </div>
+      <div className="grid gap-2 mb-4">
+        <MultiSelect
+          id="studentIds"
+          label="Tambah Siswa ke Kelas"
+          values={studentIds}
+          onValuesChange={setStudentIds}
+          options={studentOptions}
+          isLoading={isStudentsLoading}
+          placeholder="Pilih siswa..."
+        />
       </div>
 
       <div className="flex justify-end mt-4">

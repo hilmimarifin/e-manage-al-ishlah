@@ -11,7 +11,9 @@ import {
   Loader2,
   NotebookPen,
   HardDrive,
-  CircleUserRound
+  CircleUserRound,
+  EyeOff,
+  Eye
 } from "lucide-react";
 
 
@@ -27,7 +29,9 @@ export const IconMap = {
   Loader2,
   NotebookPen,
   HardDrive,
-  CircleUserRound
+  CircleUserRound,
+  EyeOff,
+  Eye
 };
 
 interface IconsProps extends LucideProps {
