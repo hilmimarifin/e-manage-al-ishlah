@@ -27,3 +27,10 @@ export async function isAdmin(id: string): Promise<boolean> {
         const isAdmin = unrestricted.includes(user?.role?.name || "");
         return isAdmin;
 }
+
+export const maxTextFormater = (text: string, maxLength: number) => {
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength) + "...";
+  }
+  return text;
+}

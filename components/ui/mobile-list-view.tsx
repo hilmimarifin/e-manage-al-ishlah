@@ -1,20 +1,20 @@
 "use client";
 
-import { ReactNode, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Input } from "./input";
-import { Icons } from "../layout/icons";
+import { MoreVertical, Search } from "lucide-react";
 import Image from "next/image";
+import { ReactNode, useState } from "react";
+import { Input } from "./input";
+import { maxTextFormater } from "@/lib/utils";
 
 export interface MobileListItem {
   id: string;
@@ -119,7 +119,7 @@ export function MobileListView({
                   <div className="space-y-1 flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="font-medium text-sm leading-tight truncate">
-                        {index + 1}. {item.title}
+                        {index + 1}. {maxTextFormater(item.title, 18)}
                       </h3>
                       {item.badge && (
                         <Badge
@@ -145,7 +145,7 @@ export function MobileListView({
                           variant="ghost"
                           className="h-8 w-8 p-0 flex-shrink-0"
                         >
-                          <MoreHorizontal className="h-4 w-4" />
+                          <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
