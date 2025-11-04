@@ -14,6 +14,7 @@ import { MoreHorizontal, Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "./input";
 import { Icons } from "../layout/icons";
+import Image from "next/image";
 
 export interface MobileListItem {
   id: string;
@@ -105,10 +106,16 @@ export function MobileListView({
       ) : (
         filteredItems.map((item, index) => (
           <Card key={item.id} className="shadow-md transition-shadow">
-            <CardContent className="p-4 border-r-4 border-r-primary rounded-r-lg">
-              <div className="space-y-3">
+            <CardContent className="p-4 border-r-4 border-r-primary rounded-r-lg flex flex-row gap-4">
+              <Image
+                src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200"
+                alt={item.title}
+                width={70}
+                height={50}
+              />
+              <div className="space-y-3 w-full">
                 {/* Header with title, subtitle, and actions */}
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between ">
                   <div className="space-y-1 flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="font-medium text-sm leading-tight truncate">

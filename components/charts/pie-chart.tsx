@@ -24,6 +24,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 interface PieChartData {
   name: string;
@@ -41,6 +42,7 @@ interface CustomPieChartProps {
   showLegend?: boolean;
   innerRadius?: number;
   outerRadius?: number;
+  isLoading?: boolean;
 }
 
 export function CustomPieChart({
@@ -52,38 +54,47 @@ export function CustomPieChart({
   showLegend = true,
   innerRadius = 0,
   outerRadius = 80,
+  isLoading = false,
 }: CustomPieChartProps) {
   return (
     <Card className={cn("shadow-md", className)}>
       <CardHeader>
         <CardTitle className="text-sm">{title}</CardTitle>
-        {description && <CardDescription className="text-xs">{description}</CardDescription>}
+        {description && (
+          <CardDescription className="text-xs">{description}</CardDescription>
+        )}
       </CardHeader>
       <CardContent>
         <div className="mx-auto aspect-square max-h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Legend />
-              <Tooltip />
-              <Pie
-                data={data}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                innerRadius={innerRadius}
-                outerRadius={80}
-                strokeWidth={2}
-              >
-                {data.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={entry.fill || `hsl(var(--chart-${index + 1}))`}
-                  />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
+          {isLoading ? (
+            <div className="h-full w-full">
+              <Loader2 className="animate-spin" />
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Legend />
+                <Tooltip />
+                <Pie
+                  data={data}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={innerRadius}
+                  outerRadius={80}
+                  strokeWidth={2}
+                >
+                  {data.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.fill || `hsl(var(--chart-${index + 1}))`}
+                    />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </CardContent>
     </Card>

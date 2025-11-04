@@ -13,18 +13,6 @@ export default function DashboardPage() {
   const [year, setYear] = useState(getCurrentAcademicYear());
   const { data, loading, error, refetch } = useDashboard(year);
 
-  // Loading state
-  if (loading) {
-    return (
-      <DashboardLayout>
-        <div className="flex flex-col items-center justify-center h-64">
-          <Icons icon="Loader2" className="animate-spin h-12 w-12 text-primary" />
-          <div className="text-lg text-muted-foreground">Loading dashboard data...</div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   // Error state
   if (error || !data) {
     return (
@@ -113,6 +101,7 @@ export default function DashboardPage() {
             description={`Perbandingan jumlah siswa laki-laki dan perempuan tahun ajaran ${year}`}
             data={data.genderDistribution}
             config={genderConfig}
+            isLoading={loading}
           />
 
           {/* Students by Class and Gender Bar Chart */}
@@ -126,6 +115,7 @@ export default function DashboardPage() {
               { dataKey: "Laki-laki" },
               { dataKey: "Perempuan" }
             ]}
+            isLoading={loading}
           />
         </div>
 
@@ -138,6 +128,7 @@ export default function DashboardPage() {
           xAxisKey="month"
           lines={Object.keys(paymentTrendConfig).map(className => ({ dataKey: className }))}
           className="col-span-full"
+          isLoading={loading}
         />
       </section>
     </DashboardLayout>
