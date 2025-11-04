@@ -37,7 +37,7 @@ export function StatCard({
       <CardContent>
         {isLoading ? (
           <>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold mb-2">
               <Skeleton className="h-12 w-12"></Skeleton>
             </div>
             {description && (
