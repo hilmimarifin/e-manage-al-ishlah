@@ -115,6 +115,7 @@ export function MobileListView({
                   alt={item.title}
                   width={70}
                   height={50}
+                  className="rounded-lg"
                 />
               )}
               <div className="space-y-3 w-full">

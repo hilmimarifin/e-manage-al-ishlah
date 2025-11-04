@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useClasses } from "@/hooks/use-classes";
 import {
   useCreatePayment,
@@ -261,7 +262,7 @@ export default function DashboardPage() {
               <div>
                 {form.studentId && (
                   <div className="grid grid-cols-2 gap-3 mt-3">
-                    {MONTHS.map((month) => {
+                    {MONTHS.map((month, index) => {
                       const selectedPerson = paymentClass?.find(
                         (cls) => cls.id === form.studentId
                       );
@@ -276,6 +277,17 @@ export default function DashboardPage() {
                         month.number.toString()
                       );
 
+                      if (classesLoading || isLoading) {
+                        return (
+                          <div
+                            key={index}
+                            className="flex items-center space-x-2"
+                          >
+                            <Skeleton className="h-4 w-4" />
+                            <Skeleton className="h-4 w-20" />
+                          </div>
+                        );
+                      }
                       return (
                         <div
                           key={month.key}
