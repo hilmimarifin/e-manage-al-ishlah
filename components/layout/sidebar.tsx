@@ -209,7 +209,7 @@ export function Sidebar({ setHeaderTitle }: SidebarProps) {
 
       <div
         className={cn(
-          "relative flex h-full flex-col text-primary-foreground bg-gradient-to-r from-primary/90 to-primary",
+          "relative flex h-full flex-col text-primary-foreground bg-primary",
           // Smooth transitions with easing
           "transition-all duration-300 ease-in-out transform",
           // Desktop behavior

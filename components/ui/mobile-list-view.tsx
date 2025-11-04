@@ -42,6 +42,7 @@ interface MobileListViewProps {
   emptyMessage?: string;
   searchPlaceholder?: string;
   customContent?: (item: MobileListItem) => ReactNode;
+  userImage?: boolean;
 }
 
 export function MobileListView({
@@ -50,6 +51,7 @@ export function MobileListView({
   emptyMessage = "No items found.",
   searchPlaceholder = "Cari...",
   customContent,
+  userImage,
 }: MobileListViewProps) {
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -107,12 +109,14 @@ export function MobileListView({
         filteredItems.map((item, index) => (
           <Card key={item.id} className="shadow-md transition-shadow">
             <CardContent className="p-4 border-r-4 border-r-primary rounded-r-lg flex flex-row gap-4">
-              <Image
-                src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200"
-                alt={item.title}
-                width={70}
-                height={50}
-              />
+              {userImage && (
+                <Image
+                  src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200"
+                  alt={item.title}
+                  width={70}
+                  height={50}
+                />
+              )}
               <div className="space-y-3 w-full">
                 {/* Header with title, subtitle, and actions */}
                 <div className="flex items-start justify-between ">

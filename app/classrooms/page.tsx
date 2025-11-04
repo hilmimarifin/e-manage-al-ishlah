@@ -96,7 +96,7 @@ export default function ClassesPage() {
   const { data: teachers = [] } = useUsers({});
   const teacherOptions = teachers.map((teacher) => ({
     value: teacher.id,
-    label: teacher.username,
+    label: teacher.name,
   }));
   const classOptions = classes.map((cls) => ({
     value: cls.id,
@@ -250,6 +250,7 @@ export default function ClassesPage() {
           pageSize={10}
           mobileItemMapper={mobileItemMapper}
           headerComponent={addStudentToClassComponent()}
+          userImage={true}
         />
       </div>
     </DashboardLayout>

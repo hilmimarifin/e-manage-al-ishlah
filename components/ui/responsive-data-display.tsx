@@ -15,6 +15,7 @@ interface ResponsiveDataDisplayProps<T> {
   mobileItemMapper: (item: T) => MobileListItem;
   headerComponent?: React.ReactNode;
   mobileItemCustomContent?: (item: MobileListItem) => ReactNode;
+  userImage?: boolean;
 }
 
 export function ResponsiveDataDisplay<T>({
@@ -27,6 +28,7 @@ export function ResponsiveDataDisplay<T>({
   mobileItemMapper,
   headerComponent,
   mobileItemCustomContent,
+  userImage,
 }: ResponsiveDataDisplayProps<T>) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -57,6 +59,7 @@ export function ResponsiveDataDisplay<T>({
           isLoading={isLoading}
           emptyMessage={emptyMessage}
           customContent={mobileItemCustomContent}
+          userImage={userImage}
         />
       </div>
     );
