@@ -3,11 +3,23 @@ import { apiClient } from "@/lib/api";
 import { User } from "@/types";
 import { showToast } from "@/lib/toast";
 
-export function useUsers({ classId, year }: { classId?: string; year?: string }) {
-  return useQuery({
+export function useUsers({
+  classId,
+  year,
+}: {
+  classId?: string;
+  year?: string;
+}) {
+  const { data, isLoading, error } = useQuery({
     queryKey: ["users", classId, year],
-    queryFn: () => apiClient.get<User[]>("/users", { params: { classId, year } }),
+    queryFn: () =>
+      apiClient.get<User[]>("/users", { params: { classId, year } }),
   });
+  const options = data?.map((user) => ({
+    value: user.id,
+    label: user.name,
+  })) || [];
+  return { data, isLoading, error, options };
 }
 
 export function useCreateUser() {

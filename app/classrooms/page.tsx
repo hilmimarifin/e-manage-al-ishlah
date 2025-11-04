@@ -41,7 +41,7 @@ export default function ClassesPage() {
   };
   const [filter, setFilter] = useState(initFilter);
   const { data: classrooms, isLoading, error } = useStudentClassrooms(filter);
-  const { data: classes = [] } = useClasses(filter);
+  const { data: classes = [], options: classOptions } = useClasses(filter);
 
   const isAdmin = isAdminClient();
   const deleteClassroom = useDeleteClassroom();
@@ -93,16 +93,7 @@ export default function ClassesPage() {
     }
   };
 
-  const { data: teachers = [] } = useUsers({});
-  const teacherOptions = teachers.map((teacher) => ({
-    value: teacher.id,
-    label: teacher.name,
-  }));
-  const classOptions = classes.map((cls) => ({
-    value: cls.id,
-    label: cls.name,
-  }));
-
+  const { options: teacherOptions } = useUsers({});
   const columns: ColumnDef<Classroom>[] = [
     {
       accessorKey: "name",
@@ -153,9 +144,7 @@ export default function ClassesPage() {
     id: classroom.id,
     title: classroom.name,
     subtitle: `${classroom.className} - ${classroom.year}`,
-    details: [
-      { label: "No Telp", value: classroom.phone || "No phone" },
-    ],
+    details: [{ label: "No Telp", value: classroom.phone || "No phone" }],
     actions: [
       ...(showDeleteButton
         ? [
@@ -206,14 +195,14 @@ export default function ClassesPage() {
   }, [filter.year]);
 
   console.log(form);
-  
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <FilterContainer className="grid grid-cols-1 md:grid-cols-4 gap-2">
           <Select
             label="Tenaga Pendidik"
-            options={teacherOptions}
+            options={teacherOptions || []}
             value={filter.teacherId}
             onValueChange={(value) => {
               setFilter({ ...filter, teacherId: value });

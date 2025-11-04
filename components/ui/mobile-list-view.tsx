@@ -123,7 +123,7 @@ export function MobileListView({
                   <div className="space-y-1 flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className="font-medium text-sm leading-tight truncate">
-                        {index + 1}. {maxTextFormater(item.title, 18)}
+                        {index + 1}. {maxTextFormater(item.title, userImage ? 18 : 30)}
                       </h3>
                       {item.badge && (
                         <Badge

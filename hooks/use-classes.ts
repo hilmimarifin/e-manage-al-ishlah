@@ -4,10 +4,17 @@ import { Class } from '@/types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export function useClasses({ year, classId, teacherId }: { year?: string, classId?: string, teacherId?: string }) {
-  return useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['classes', year, classId, teacherId].filter(Boolean),
     queryFn: () => apiClient.get<Class[]>('/classes', { params: { year, classId, teacherId } }),
   })
+
+  const options = data?.map((cls) => ({
+    value: cls.id,
+    label: cls.name,
+  })) || [];
+
+  return { data, isLoading, error, options };
 }
 
 export function useCreateClass() {

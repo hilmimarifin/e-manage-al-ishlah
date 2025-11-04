@@ -68,11 +68,7 @@ export default function ClassesPage() {
     }
   };
 
-  const { data: teachers = [] } = useUsers({});
-  const teacherOptions = teachers.map((teacher) => ({
-    value: teacher.id,
-    label: teacher.username,
-  }));
+  const { options: teacherOptions } = useUsers({});
 
   const columns: ColumnDef<PaymentClass>[] = [
     {
@@ -329,12 +325,7 @@ export default function ClassesPage() {
     });
   }
 
-  const { data: classes = [] } = useClasses(filter);
-
-  const classOptions = classes.map((cls) => ({
-    value: cls.id,
-    label: cls.name,
-  }));
+  const { data: classes = [], options: classOptions } = useClasses(filter);
 
   useEffect(() => {
     if (classes.length === 1) {
